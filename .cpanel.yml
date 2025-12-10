@@ -2,7 +2,7 @@
 deployment:
   tasks:
     # Definir variables de ruta
-    - export DEPLOYPATH=/home/ibbsccou/public_html/
+    - export DEPLOYPATH=/home/ibbsccou/public_html/IBBSC/
     - export REPOPATH=/home/ibbsccou/repositories/IBBSCation/
     
     # Limpiar public_html (excepto .htaccess y archivos ocultos importantes)
