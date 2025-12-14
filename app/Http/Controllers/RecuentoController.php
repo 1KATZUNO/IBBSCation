@@ -65,11 +65,18 @@ class RecuentoController extends Controller
             'culto_id' => 'required|exists:cultos,id',
             'persona_id' => 'nullable|exists:personas,id',
             'metodo_pago' => 'required|in:efectivo,transferencia',
+            'comprobante_numero' => 'nullable|string|max:100',
             'notas' => 'nullable|string',
             'detalles' => 'required|array',
             'detalles.*.categoria' => 'required|string',
             'detalles.*.monto' => 'required|numeric|min:0',
         ]);
+
+        if ($validated['metodo_pago'] === 'transferencia') {
+            $request->validate([
+                'comprobante_numero' => 'required|string|max:100',
+            ]);
+        }
 
         // Verificar que el culto no esté cerrado
         $culto = Culto::findOrFail($validated['culto_id']);
@@ -85,6 +92,7 @@ class RecuentoController extends Controller
             'culto_id' => $validated['culto_id'],
             'persona_id' => $validated['persona_id'] ?? null,
             'metodo_pago' => $validated['metodo_pago'],
+            'comprobante_numero' => $validated['comprobante_numero'] ?? null,
             'total_declarado' => $totalDeclarado,
             'notas' => $validated['notas'] ?? null,
         ]);
@@ -130,17 +138,25 @@ class RecuentoController extends Controller
         $validated = $request->validate([
             'persona_id' => 'nullable|exists:personas,id',
             'metodo_pago' => 'required|in:efectivo,transferencia',
+            'comprobante_numero' => 'nullable|string|max:100',
             'notas' => 'nullable|string',
             'detalles' => 'required|array',
             'detalles.*.categoria' => 'required|string',
             'detalles.*.monto' => 'required|numeric|min:0',
         ]);
 
+        if ($validated['metodo_pago'] === 'transferencia') {
+            $request->validate([
+                'comprobante_numero' => 'required|string|max:100',
+            ]);
+        }
+
         $totalDeclarado = collect($validated['detalles'])->sum('monto');
 
         $sobre->update([
             'persona_id' => $validated['persona_id'] ?? null,
             'metodo_pago' => $validated['metodo_pago'],
+            'comprobante_numero' => $validated['comprobante_numero'] ?? null,
             'total_declarado' => $totalDeclarado,
             'notas' => $validated['notas'] ?? null,
         ]);

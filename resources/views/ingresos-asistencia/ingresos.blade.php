@@ -43,6 +43,11 @@
            class="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors font-semibold" target="_blank">
             Descargar PDF Completo
         </a>
+            <a href="{{ route('ingresos-asistencia.pdf-ingresos-transferencias', ['tipo_reporte' => request('tipo_reporte', 'culto'), 'fecha_inicio' => request('fecha_inicio'), 'fecha_fin' => request('fecha_fin')]) }}" 
+                target="_blank"
+                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors ml-2">
+                Solo Transferencias (PDF)
+            </a>
     </div>
 
     <!-- Tabla de Ingresos -->
@@ -57,6 +62,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipo</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Diezmo</th>
+                           <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ofrenda Especial</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Misiones</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Seminario</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Campamento</th>
@@ -80,6 +86,7 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₡{{ number_format($registro['diezmo'], 2) }}</td>
+                           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₡{{ number_format($registro['ofrenda_especial'] ?? 0, 2) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₡{{ number_format($registro['misiones'], 2) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₡{{ number_format($registro['seminario'], 2) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₡{{ number_format($registro['campa'], 2) }}</td>
@@ -98,6 +105,10 @@
                                 </svg>
                                 PDF
                             </a>
+                                    <span class="mx-2">|</span>
+                                    <a href="{{ route('ingresos-asistencia.pdf-recuento-transferencias', $registro['culto_id']) }}" 
+                                        target="_blank" 
+                                        class="text-blue-600 hover:text-blue-900">Transferencias</a>
                             @endif
                         </td>
                     </tr>

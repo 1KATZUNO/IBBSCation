@@ -86,6 +86,27 @@
             <tr>
                 <th>N° Sobre</th>
                 <th>Persona</th>
+
+    @php
+        $tesorero = $culto->firma_tesorero ?? '';
+        $secretario = $culto->firma_secretario ?? '';
+        $pastor = $culto->firma_pastor ?? '';
+    @endphp
+
+    <div style="margin-top:40px; display:flex; gap:20px;">
+        <div style="flex:1; text-align:center;">
+            <div style="border-top:1px solid #000; padding-top:6px;">Tesorero</div>
+            <div style="font-size:12px; color:#333;">{{ $tesorero }}</div>
+        </div>
+        <div style="flex:1; text-align:center;">
+            <div style="border-top:1px solid #000; padding-top:6px;">Secretario</div>
+            <div style="font-size:12px; color:#333;">{{ $secretario }}</div>
+        </div>
+        <div style="flex:1; text-align:center;">
+            <div style="border-top:1px solid #000; padding-top:6px;">Pastor</div>
+            <div style="font-size:12px; color:#333;">{{ $pastor }}</div>
+        </div>
+    </div>
                 <th>Método</th>
                 <th class="text-right">Diezmo</th>
                 <th class="text-right">Misiones</th>

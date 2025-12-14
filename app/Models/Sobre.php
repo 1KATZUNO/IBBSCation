@@ -15,6 +15,7 @@ class Sobre extends Model
         'persona_id',
         'numero_sobre',
         'metodo_pago',
+        'comprobante_numero',
         'total_declarado',
         'notas',
     ];

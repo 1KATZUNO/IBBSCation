@@ -14,6 +14,7 @@ class CalculoTotalesCultoService
 
         $totales = [
             'total_diezmo' => 0,
+            'total_ofrenda_especial' => 0,
             'total_misiones' => 0,
             'total_seminario' => 0,
             'total_campa' => 0,
@@ -49,6 +50,7 @@ class CalculoTotalesCultoService
         // Calcular total general
         $totales['total_general'] = array_sum([
             $totales['total_diezmo'],
+            $totales['total_ofrenda_especial'],
             $totales['total_misiones'],
             $totales['total_seminario'],
             $totales['total_campa'],

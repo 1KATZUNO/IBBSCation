@@ -92,6 +92,10 @@ class DashboardController extends Controller
 
         foreach ($personas as $persona) {
             foreach ($persona->promesas as $promesa) {
+                // Excluir promesas de diezmo: el diezmo no forma parte de compromisos/promesas
+                if (strtolower($promesa->categoria) === 'diezmo') {
+                    continue;
+                }
                 $montoPagado = $persona->sobres()
                     ->whereHas('detalles', function ($query) use ($promesa) {
                         $query->where('categoria', $promesa->categoria);

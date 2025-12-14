@@ -12,6 +12,7 @@ class TotalesCulto extends Model
     protected $fillable = [
         'culto_id',
         'total_diezmo',
+        'total_ofrenda_especial',
         'total_misiones',
         'total_seminario',
         'total_campa',
@@ -27,6 +28,7 @@ class TotalesCulto extends Model
 
     protected $casts = [
         'total_diezmo' => 'decimal:2',
+        'total_ofrenda_especial' => 'decimal:2',
         'total_misiones' => 'decimal:2',
         'total_seminario' => 'decimal:2',
         'total_campa' => 'decimal:2',

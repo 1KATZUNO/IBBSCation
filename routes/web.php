@@ -21,7 +21,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Dashboard - Solo para Admin y Tesorero
-Route::middleware(['auth', 'role:admin,tesorero'])->group(function () {
+Route::middleware(['auth', 'role:admin,tesorero', 'audit'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
 
@@ -52,13 +52,26 @@ Route::middleware(['auth', 'role:admin,tesorero'])->group(function () {
         Route::get('/{sobre}/edit', [RecuentoController::class, 'edit'])->name('edit');
         Route::put('/{sobre}', [RecuentoController::class, 'update'])->name('update');
         Route::delete('/{sobre}', [RecuentoController::class, 'destroy'])->name('destroy');
+        // Firmas del recuento
+        Route::post('/firmas/{culto}', function (\Illuminate\Http\Request $request, \App\Models\Culto $culto) {
+            $data = $request->validate([
+                'firma_tesorero' => 'nullable|string|max:255',
+                'firma_secretario' => 'nullable|string|max:255',
+                'firma_pastor' => 'nullable|string|max:255',
+            ]);
+            $culto->update($data);
+            return redirect()->route('recuento.index', ['culto_id' => $culto->id])
+                ->with('success', 'Firmas de recuento actualizadas.');
+        })->name('firmas.update');
     });
     
     // Reportes de ingresos
     Route::get('/ingresos-asistencia', [IngresosAsistenciaController::class, 'index'])->name('ingresos-asistencia.index');
     Route::get('/ingresos-asistencia/ingresos', [IngresosAsistenciaController::class, 'ingresos'])->name('ingresos-asistencia.ingresos');
     Route::get('/ingresos-asistencia/pdf-ingresos', [IngresosAsistenciaController::class, 'pdfIngresos'])->name('ingresos-asistencia.pdf-ingresos');
+    Route::get('/ingresos-asistencia/pdf-ingresos-transferencias', [IngresosAsistenciaController::class, 'pdfIngresosTransferencias'])->name('ingresos-asistencia.pdf-ingresos-transferencias');
     Route::get('/ingresos-asistencia/pdf-recuento/{culto}', [IngresosAsistenciaController::class, 'pdfRecuentoIndividual'])->name('ingresos-asistencia.pdf-recuento-individual');
+    Route::get('/ingresos-asistencia/pdf-recuento-transferencias/{culto}', [IngresosAsistenciaController::class, 'pdfRecuentoTransferencias'])->name('ingresos-asistencia.pdf-recuento-transferencias');
     
     // Reporte de Promesas
     Route::get('/ingresos-asistencia/promesas', [App\Http\Controllers\PromesasReporteController::class, 'index'])->name('ingresos-asistencia.promesas');
@@ -67,7 +80,7 @@ Route::middleware(['auth', 'role:admin,tesorero'])->group(function () {
 });
 
 // Rutas para Admin y Asistente - Asistencia
-Route::middleware(['auth', 'role:admin,asistente'])->group(function () {
+Route::middleware(['auth', 'role:admin,asistente', 'audit'])->group(function () {
     // Asistencia
     Route::post('asistencia/{asistencium}/cerrar', [AsistenciaController::class, 'cerrarAsistencia'])->name('asistencia.cerrar');
     Route::resource('asistencia', AsistenciaController::class);
@@ -80,7 +93,7 @@ Route::middleware(['auth', 'role:admin,asistente'])->group(function () {
 });
 
 // Solo admin
-Route::middleware(['auth', 'role:admin'])->group(function () {
+Route::middleware(['auth', 'role:admin', 'audit'])->group(function () {
     // Cultos
     Route::resource('cultos', CultoController::class);
     
@@ -112,6 +125,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     
     // Gestión de Usuarios
     Route::resource('usuarios', App\Http\Controllers\UserController::class);
+
+    // Auditoría
+    Route::get('/admin/auditoria', [App\Http\Controllers\AuditLogController::class, 'index'])->name('admin.auditoria.index');
 });
 
 require __DIR__.'/auth.php';

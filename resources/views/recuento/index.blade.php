@@ -49,6 +49,12 @@
                     </svg>
                     <span class="hidden sm:inline">Descargar </span>PDF
                 </a>
+                <a href="{{ route('ingresos-asistencia.pdf-recuento-transferencias', $cultoSeleccionado->id) }}" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span class="hidden sm:inline">Transferencias</span>
+                </a>
                 <button type="button" onclick="mostrarModalCerrarCulto({{ $cultoSeleccionado->id }})" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
@@ -61,6 +67,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
                     <span class="hidden sm:inline">Descargar </span>PDF
+                </a>
+                <a href="{{ route('ingresos-asistencia.pdf-recuento-transferencias', $cultoSeleccionado->id) }}" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span class="hidden sm:inline">Transferencias</span>
                 </a>
                 <div class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md border border-gray-300 flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -79,10 +91,32 @@
 
     @if($cultoSeleccionado && !$cultoSeleccionado->cerrado)
     <!-- MODO EDICIÓN: Culto Activo Seleccionado -->
+    <!-- Firmas de Recuento -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold mb-4">Firmas de Recuento</h3>
+        <form method="POST" action="{{ route('recuento.firmas.update', $cultoSeleccionado->id) }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            @csrf
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Tesorero</label>
+                <input type="text" name="firma_tesorero" value="{{ old('firma_tesorero', $cultoSeleccionado->firma_tesorero) }}" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Nombre del tesorero">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Secretario</label>
+                <input type="text" name="firma_secretario" value="{{ old('firma_secretario', $cultoSeleccionado->firma_secretario) }}" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Nombre del secretario">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Pastor</label>
+                <input type="text" name="firma_pastor" value="{{ old('firma_pastor', $cultoSeleccionado->firma_pastor) }}" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Nombre del pastor">
+            </div>
+            <div class="md:col-span-3 flex justify-end mt-2">
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Guardar Firmas</button>
+            </div>
+        </form>
+    </div>
     
     <!-- Resumen del Culto -->
     @if($cultoSeleccionado->totales)
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
         <div class="bg-white rounded-lg shadow p-4">
             <p class="text-sm text-gray-600">Total General</p>
             <p class="text-2xl font-bold text-blue-600">₡{{ number_format($cultoSeleccionado->totales->total_general, 2) }}</p>
@@ -95,6 +129,10 @@
             <p class="text-sm text-gray-600">Diezmos</p>
             <p class="text-2xl font-bold text-purple-600">₡{{ number_format($cultoSeleccionado->totales->total_diezmo, 2) }}</p>
         </div>
+            <div class="bg-white rounded-lg shadow p-4">
+                <p class="text-sm text-gray-600">Ofrenda Especial</p>
+                <p class="text-2xl font-bold text-pink-600">₡{{ number_format($cultoSeleccionado->totales->total_ofrenda_especial, 2) }}</p>
+            </div>
         <div class="bg-white rounded-lg shadow p-4">
             <p class="text-sm text-gray-600">Transferencias</p>
             <p class="text-2xl font-bold text-orange-600">{{ $cultoSeleccionado->totales->cantidad_transferencias }}</p>

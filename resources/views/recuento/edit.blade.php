@@ -41,6 +41,14 @@
                 @error('metodo_pago')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
+                <div id="comprobanteWrapper" class="mt-3 hidden">
+                    <label for="comprobante_numero" class="block text-sm font-medium text-gray-700 mb-2">N° Comprobante (Transferencia)</label>
+                    <input type="text" name="comprobante_numero" id="comprobante_numero" value="{{ old('comprobante_numero', $sobre->comprobante_numero) }}"
+                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Ej: 1234567890">
+                    @error('comprobante_numero')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
             </div>
 
             <div class="space-y-4 mb-6">
@@ -103,6 +111,9 @@
     document.addEventListener('DOMContentLoaded', function() {
         const inputs = document.querySelectorAll('.detalle-monto');
         const totalDisplay = document.getElementById('totalDeclarado');
+        const metodoPagoSelect = document.getElementById('metodo_pago');
+        const comprobanteWrapper = document.getElementById('comprobanteWrapper');
+        const comprobanteInput = document.getElementById('comprobante_numero');
 
         function calcularTotal() {
             let total = 0;
@@ -122,6 +133,18 @@
         });
 
         calcularTotal();
+
+        function toggleComprobante() {
+            if (metodoPagoSelect.value === 'transferencia') {
+                comprobanteWrapper.classList.remove('hidden');
+                comprobanteInput.required = true;
+            } else {
+                comprobanteWrapper.classList.add('hidden');
+                comprobanteInput.required = false;
+            }
+        }
+        metodoPagoSelect.addEventListener('change', toggleComprobante);
+        toggleComprobante();
     });
 </script>
 @endpush

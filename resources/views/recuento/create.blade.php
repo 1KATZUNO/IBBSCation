@@ -63,6 +63,14 @@
                         @error('metodo_pago')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
+                        <div id="comprobanteWrapper" class="mt-3 hidden">
+                            <label for="comprobante_numero" class="block text-sm font-medium text-gray-700 mb-2">N° Comprobante (Transferencia)</label>
+                            <input type="text" name="comprobante_numero" id="comprobante_numero" value="{{ old('comprobante_numero') }}" 
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Ej: 1234567890">
+                            @error('comprobante_numero')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
                 </div>
 
@@ -83,12 +91,22 @@
                             </div>
 
                             <div>
+                                <label for="ofrenda_especial" class="block text-sm font-medium text-gray-700 mb-2">Ofrenda Especial</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">₡</span>
+                                    <input type="number" name="detalles[1][monto]" id="ofrenda_especial" step="0.01" min="0" value="0"
+                                           class="w-full pl-7 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 detalle-monto">
+                                    <input type="hidden" name="detalles[1][categoria]" value="ofrenda_especial">
+                                </div>
+                            </div>
+
+                            <div>
                                 <label for="misiones" class="block text-sm font-medium text-gray-700 mb-2">Misiones</label>
                                 <div class="relative">
                                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">₡</span>
-                                    <input type="number" name="detalles[1][monto]" id="misiones" step="0.01" min="0" value="0"
+                                    <input type="number" name="detalles[2][monto]" id="misiones" step="0.01" min="0" value="0"
                                            class="w-full pl-7 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 detalle-monto">
-                                    <input type="hidden" name="detalles[1][categoria]" value="misiones">
+                                    <input type="hidden" name="detalles[2][categoria]" value="misiones">
                                 </div>
                             </div>
 
@@ -96,9 +114,9 @@
                                 <label for="seminario" class="block text-sm font-medium text-gray-700 mb-2">Seminario</label>
                                 <div class="relative">
                                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">₡</span>
-                                    <input type="number" name="detalles[2][monto]" id="seminario" step="0.01" min="0" value="0"
+                                    <input type="number" name="detalles[3][monto]" id="seminario" step="0.01" min="0" value="0"
                                            class="w-full pl-7 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 detalle-monto">
-                                    <input type="hidden" name="detalles[2][categoria]" value="seminario">
+                                    <input type="hidden" name="detalles[3][categoria]" value="seminario">
                                 </div>
                             </div>
 
@@ -106,9 +124,9 @@
                                 <label for="campa" class="block text-sm font-medium text-gray-700 mb-2">Campamento</label>
                                 <div class="relative">
                                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">₡</span>
-                                    <input type="number" name="detalles[3][monto]" id="campa" step="0.01" min="0" value="0"
+                                    <input type="number" name="detalles[4][monto]" id="campa" step="0.01" min="0" value="0"
                                            class="w-full pl-7 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 detalle-monto">
-                                    <input type="hidden" name="detalles[3][categoria]" value="campa">
+                                    <input type="hidden" name="detalles[4][categoria]" value="campa">
                                 </div>
                             </div>
 
@@ -116,9 +134,9 @@
                                 <label for="prestamo" class="block text-sm font-medium text-gray-700 mb-2">Préstamo</label>
                                 <div class="relative">
                                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">₡</span>
-                                    <input type="number" name="detalles[4][monto]" id="prestamo" step="0.01" min="0" value="0"
+                                    <input type="number" name="detalles[5][monto]" id="prestamo" step="0.01" min="0" value="0"
                                            class="w-full pl-7 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 detalle-monto">
-                                    <input type="hidden" name="detalles[4][categoria]" value="prestamo">
+                                    <input type="hidden" name="detalles[5][categoria]" value="prestamo">
                                 </div>
                             </div>
 
@@ -126,9 +144,9 @@
                                 <label for="construccion" class="block text-sm font-medium text-gray-700 mb-2">Construcción</label>
                                 <div class="relative">
                                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">₡</span>
-                                    <input type="number" name="detalles[5][monto]" id="construccion" step="0.01" min="0" value="0"
+                                    <input type="number" name="detalles[6][monto]" id="construccion" step="0.01" min="0" value="0"
                                            class="w-full pl-7 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 detalle-monto">
-                                    <input type="hidden" name="detalles[5][categoria]" value="construccion">
+                                    <input type="hidden" name="detalles[6][categoria]" value="construccion">
                                 </div>
                             </div>
 
@@ -136,9 +154,9 @@
                                 <label for="micro" class="block text-sm font-medium text-gray-700 mb-2">Micro</label>
                                 <div class="relative">
                                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">₡</span>
-                                    <input type="number" name="detalles[6][monto]" id="micro" step="0.01" min="0" value="0"
+                                    <input type="number" name="detalles[7][monto]" id="micro" step="0.01" min="0" value="0"
                                            class="w-full pl-7 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 detalle-monto">
-                                    <input type="hidden" name="detalles[6][categoria]" value="micro">
+                                    <input type="hidden" name="detalles[7][categoria]" value="micro">
                                 </div>
                             </div>
                         </div>
@@ -184,6 +202,9 @@
         const resultadosDiv = document.getElementById('resultadosBusqueda');
         const personaSelect = document.getElementById('persona_id');
         const btnAgregarRapida = document.getElementById('btnAgregarRapida');
+        const metodoPagoSelect = document.getElementById('metodo_pago');
+        const comprobanteWrapper = document.getElementById('comprobanteWrapper');
+        const comprobanteInput = document.getElementById('comprobante_numero');
 
         function calcularTotal() {
             let total = 0;
@@ -204,6 +225,20 @@
         });
 
         calcularTotal();
+
+        function toggleComprobante() {
+            if (metodoPagoSelect.value === 'transferencia') {
+                comprobanteWrapper.classList.remove('hidden');
+                comprobanteInput.required = true;
+            } else {
+                comprobanteWrapper.classList.add('hidden');
+                comprobanteInput.required = false;
+                comprobanteInput.value = '';
+            }
+        }
+        metodoPagoSelect.addEventListener('change', toggleComprobante);
+        // Initialize on load
+        toggleComprobante();
 
         // Búsqueda de personas
         buscarInput.addEventListener('input', function() {

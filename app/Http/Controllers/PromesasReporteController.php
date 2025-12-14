@@ -94,6 +94,10 @@ class PromesasReporteController extends Controller
         // PASO 1: Calcular montos prometidos por categoría
         foreach ($personas as $persona) {
             foreach ($persona->promesas as $promesa) {
+                // Excluir diezmo de promesas/compromisos
+                if (strtolower($promesa->categoria) === 'diezmo') {
+                    continue;
+                }
                 // Filtrar por categoría si se especificó
                 if ($categoria && $promesa->categoria != $categoria) {
                     continue;
@@ -118,7 +122,12 @@ class PromesasReporteController extends Controller
         }
 
         // PASO 2: Calcular TODOS los montos dados en el mes (incluyendo anónimos)
-        $categorias = $categoria ? [$categoria] : ['diezmo', 'misiones', 'seminario', 'campa', 'construccion', 'prestamo', 'micro'];
+        // Excluir diezmo del cálculo de promesas; diezmo se trata por aparte
+        $categorias = $categoria ? [$categoria] : ['misiones', 'seminario', 'campa', 'construccion', 'prestamo', 'micro'];
+        // Si se solicitó específicamente la categoría 'diezmo', devolver sin datos en promesas
+        if ($categoria && strtolower($categoria) === 'diezmo') {
+            $totalesPorCategoria = [];
+        }
         
         foreach ($categorias as $cat) {
             // Obtener TODOS los sobres del mes en esta categoría (con o sin persona)
