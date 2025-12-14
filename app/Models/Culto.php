@@ -17,7 +17,7 @@ class Culto extends Model
         'tipo_culto',
         'notas',
         'firma_tesorero',
-        'firma_secretario',
+        'firmas_tesoreros',
         'firma_pastor',
         'cerrado',
         'cerrado_at',
@@ -38,6 +38,7 @@ class Culto extends Model
             'hora' => 'datetime',
             'cerrado' => 'boolean',
             'cerrado_at' => 'datetime',
+            'firmas_tesoreros' => 'array',
         ];
     }
 

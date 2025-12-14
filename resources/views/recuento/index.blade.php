@@ -94,24 +94,47 @@
     <!-- Firmas de Recuento -->
     <div class="bg-white rounded-lg shadow p-6">
         <h3 class="text-lg font-semibold mb-4">Firmas de Recuento</h3>
-        <form method="POST" action="{{ route('recuento.firmas.update', $cultoSeleccionado->id) }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <form method="POST" action="{{ route('recuento.firmas.update', $cultoSeleccionado->id) }}" class="space-y-4">
             @csrf
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Tesorero</label>
-                <input type="text" name="firma_tesorero" value="{{ old('firma_tesorero', $cultoSeleccionado->firma_tesorero) }}" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Nombre del tesorero">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Pastor</label>
+                    <input type="text" name="firma_pastor" value="{{ old('firma_pastor', $cultoSeleccionado->firma_pastor) }}" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Nombre del pastor">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tesoreros</label>
+                    <div id="tesorerosContainer" class="space-y-2">
+                        @php $tesoreros = old('firmas_tesoreros', $cultoSeleccionado->firmas_tesoreros ?? []); @endphp
+                        @if(empty($tesoreros))
+                            <div class="flex gap-2">
+                                <input type="text" name="firmas_tesoreros[]" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Nombre del tesorero">
+                                <button type="button" class="px-3 py-2 bg-gray-100 rounded-md" onclick="agregarTesorero()">Agregar</button>
+                            </div>
+                        @else
+                            @foreach($tesoreros as $t)
+                            <div class="flex gap-2">
+                                <input type="text" name="firmas_tesoreros[]" value="{{ $t }}" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <button type="button" class="px-3 py-2 bg-gray-100 rounded-md" onclick="agregarTesorero()">Agregar</button>
+                            </div>
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Secretario</label>
-                <input type="text" name="firma_secretario" value="{{ old('firma_secretario', $cultoSeleccionado->firma_secretario) }}" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Nombre del secretario">
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Pastor</label>
-                <input type="text" name="firma_pastor" value="{{ old('firma_pastor', $cultoSeleccionado->firma_pastor) }}" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Nombre del pastor">
-            </div>
-            <div class="md:col-span-3 flex justify-end mt-2">
+            <div class="flex justify-end">
                 <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Guardar Firmas</button>
             </div>
         </form>
+        <script>
+            function agregarTesorero() {
+                const container = document.getElementById('tesorerosContainer');
+                const div = document.createElement('div');
+                div.className = 'flex gap-2';
+                div.innerHTML = `<input type="text" name="firmas_tesoreros[]" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Nombre del tesorero">
+                                 <button type="button" class="px-3 py-2 bg-red-100 rounded-md" onclick="this.parentElement.remove()">Quitar</button>`;
+                container.appendChild(div);
+            }
+        </script>
     </div>
     
     <!-- Resumen del Culto -->

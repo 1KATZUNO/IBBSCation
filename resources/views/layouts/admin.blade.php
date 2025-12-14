@@ -139,6 +139,14 @@
                         </svg>
                         <span class="relative z-10 font-medium">Gestionar Usuarios</span>
                     </a>
+
+                    <a href="{{ route('admin.auditoria.index') }}" class="nav-link group flex items-center px-5 py-3.5 rounded-xl transition-all duration-300 relative overflow-hidden {{ request()->routeIs('admin.auditoria.index') ? 'bg-white/20 shadow-glass' : 'hover:bg-white/10' }}">
+                        <span class="absolute inset-0 bg-white/5 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
+                        <svg class="w-5 h-5 mr-3 relative z-10 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <span class="relative z-10 font-medium">Auditoría</span>
+                    </a>
                 </div>
                 @endif
             </nav>

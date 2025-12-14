@@ -95,8 +95,13 @@
 
     <div style="margin-top:40px; display:flex; gap:20px;">
         <div style="flex:1; text-align:center;">
-            <div style="border-top:1px solid #000; padding-top:6px;">Tesorero</div>
-            <div style="font-size:12px; color:#333;">{{ $tesorero }}</div>
+            <div style="border-top:1px solid #000; padding-top:6px;">Tesoreros</div>
+            <div style="font-size:12px; color:#333;">
+                @php $tes = $culto->firmas_tesoreros ?? []; @endphp
+                @if(!empty($tes))
+                    {{ implode(', ', $tes) }}
+                @endif
+            </div>
         </div>
         <div style="flex:1; text-align:center;">
             <div style="border-top:1px solid #000; padding-top:6px;">Secretario</div>

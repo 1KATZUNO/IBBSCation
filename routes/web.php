@@ -55,11 +55,14 @@ Route::middleware(['auth', 'role:admin,tesorero'])->group(function () {
         // Firmas del recuento
         Route::post('/firmas/{culto}', function (\Illuminate\Http\Request $request, \App\Models\Culto $culto) {
             $data = $request->validate([
-                'firma_tesorero' => 'nullable|string|max:255',
-                'firma_secretario' => 'nullable|string|max:255',
                 'firma_pastor' => 'nullable|string|max:255',
+                'firmas_tesoreros' => 'nullable|array',
+                'firmas_tesoreros.*' => 'nullable|string|max:255',
             ]);
-            $culto->update($data);
+            $culto->update([
+                'firma_pastor' => $data['firma_pastor'] ?? null,
+                'firmas_tesoreros' => array_values(array_filter($data['firmas_tesoreros'] ?? [])),
+            ]);
             return redirect()->route('recuento.index', ['culto_id' => $culto->id])
                 ->with('success', 'Firmas de recuento actualizadas.');
         })->name('firmas.update');

@@ -94,8 +94,9 @@ class PromesasReporteController extends Controller
         // PASO 1: Calcular montos prometidos por categoría
         foreach ($personas as $persona) {
             foreach ($persona->promesas as $promesa) {
-                // Excluir diezmo de promesas/compromisos
-                if (strtolower($promesa->categoria) === 'diezmo') {
+                // Excluir diezmo y ofrenda_especial de promesas/compromisos
+                $catLower = strtolower($promesa->categoria);
+                if (in_array($catLower, ['diezmo', 'ofrenda_especial'])) {
                     continue;
                 }
                 // Filtrar por categoría si se especificó
