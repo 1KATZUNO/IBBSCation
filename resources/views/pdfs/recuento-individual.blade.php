@@ -86,33 +86,9 @@
             <tr>
                 <th>N° Sobre</th>
                 <th>Persona</th>
-
-    @php
-        $tesorero = $culto->firma_tesorero ?? '';
-        $secretario = $culto->firma_secretario ?? '';
-        $pastor = $culto->firma_pastor ?? '';
-    @endphp
-
-    <div style="margin-top:40px; display:flex; gap:20px;">
-        <div style="flex:1; text-align:center;">
-            <div style="border-top:1px solid #000; padding-top:6px;">Tesoreros</div>
-            <div style="font-size:12px; color:#333;">
-                @php $tes = $culto->firmas_tesoreros ?? []; @endphp
-                @if(!empty($tes))
-                    {{ implode(', ', $tes) }}
-                @endif
-            </div>
-        </div>
-        <div style="flex:1; text-align:center;">
-            <div style="border-top:1px solid #000; padding-top:6px;">Secretario</div>
-            <div style="font-size:12px; color:#333;">{{ $secretario }}</div>
-        </div>
-        <div style="flex:1; text-align:center;">
-            <div style="border-top:1px solid #000; padding-top:6px;">Pastor</div>
-            <div style="font-size:12px; color:#333;">{{ $pastor }}</div>
-        </div>
-    </div>
                 <th>Método</th>
+                <th>Comprobante</th>
+                <th>Notas</th>
                 <th class="text-right">Diezmo</th>
                 <th class="text-right">Misiones</th>
                 <th class="text-right">Semin.</th>
@@ -126,6 +102,8 @@
         <tbody>
             @php
                 $totalGeneral = 0;
+                $totalEfectivo = 0;
+                $totalTransferencias = 0;
             @endphp
             
             @foreach($culto->sobres as $sobre)
@@ -139,6 +117,7 @@
                 $construccion = $detallesPorCategoria->get('construccion')->monto ?? 0;
                 $micro = $detallesPorCategoria->get('micro')->monto ?? 0;
                 $totalGeneral += $sobre->total_declarado;
+                if ($sobre->metodo_pago === 'transferencia') { $totalTransferencias += $sobre->total_declarado; } else { $totalEfectivo += $sobre->total_declarado; }
             @endphp
             <tr class="sobre-row">
                 <td class="text-center"><strong>#{{ $sobre->numero_sobre }}</strong></td>
@@ -148,6 +127,8 @@
                         {{ ucfirst($sobre->metodo_pago) }}
                     </span>
                 </td>
+                <td>{{ $sobre->metodo_pago === 'transferencia' ? ($sobre->comprobante_numero ?? '-') : '-' }}</td>
+                <td>{{ $sobre->notas ? $sobre->notas : '-' }}</td>
                 <td class="text-right">{{ number_format($diezmo, 2) }}</td>
                 <td class="text-right">{{ number_format($misiones, 2) }}</td>
                 <td class="text-right">{{ number_format($seminario, 2) }}</td>
@@ -186,7 +167,7 @@
 
             <!-- Totales -->
             <tr class="total-row">
-                <td colspan="3" class="text-right">TOTALES</td>
+                <td colspan="5" class="text-right">TOTALES</td>
                 <td class="text-right">{{ number_format($totalesPorCategoria['diezmo'], 2) }}</td>
                 <td class="text-right">{{ number_format($totalesPorCategoria['misiones'], 2) }}</td>
                 <td class="text-right">{{ number_format($totalesPorCategoria['seminario'], 2) }}</td>
@@ -198,6 +179,18 @@
             </tr>
         </tbody>
     </table>
+
+    <!-- Totales por método -->
+    <div class="summary-grid" style="margin-top: 10px;">
+        <div class="summary-card">
+            <div class="label">Total Efectivo</div>
+            <div class="value">{{ number_format($totalEfectivo, 2) }}</div>
+        </div>
+        <div class="summary-card">
+            <div class="label">Total Transferencias</div>
+            <div class="value">{{ number_format($totalTransferencias, 2) }}</div>
+        </div>
+    </div>
 
     <!-- Resumen por Categorías -->
     <div class="resumen-box">
@@ -224,6 +217,19 @@
             <span class="categoria-item">
                 <span class="categoria-label">Micro:</span> {{ number_format($totalesPorCategoria['micro'], 2) }}
             </span>
+        </div>
+    </div>
+
+    <!-- Firmas -->
+    @php $pastor = $culto->firma_pastor ?? ''; $tes = $culto->firmas_tesoreros ?? []; @endphp
+    <div style="margin-top:20px; display:flex; gap:20px;">
+        <div style="flex:1; text-align:center;">
+            <div style="border-top:1px solid #000; padding-top:6px;">Tesoreros</div>
+            <div style="font-size:12px; color:#333;">{{ !empty($tes) ? implode(', ', $tes) : '' }}</div>
+        </div>
+        <div style="flex:1; text-align:center;">
+            <div style="border-top:1px solid #000; padding-top:6px;">Pastor</div>
+            <div style="font-size:12px; color:#333;">{{ $pastor }}</div>
         </div>
     </div>
 

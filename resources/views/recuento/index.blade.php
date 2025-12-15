@@ -272,6 +272,20 @@
 
     <!-- Tabla Resumen por Culto -->
     @if($sobres->count() > 0)
+    @php
+        $totalEfectivo = $sobres->where('metodo_pago', 'efectivo')->sum('total_declarado');
+        $totalTransferencias = $sobres->where('metodo_pago', 'transferencia')->sum('total_declarado');
+    @endphp
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div class="bg-white rounded-lg shadow p-4">
+            <p class="text-sm text-gray-600">Total Efectivo</p>
+            <p class="text-2xl font-bold text-green-600">₡{{ number_format($totalEfectivo, 2) }}</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4">
+            <p class="text-sm text-gray-600">Total Transferencias</p>
+            <p class="text-2xl font-bold text-blue-600">₡{{ number_format($totalTransferencias, 2) }}</p>
+        </div>
+    </div>
     <div class="bg-white rounded-lg shadow overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
             <h3 class="text-lg font-semibold text-gray-900">Resumen Detallado por Categorías</h3>
