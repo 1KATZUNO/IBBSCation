@@ -123,6 +123,7 @@
                     <tr class="bg-gray-100 font-bold">
                         <td colspan="2" class="px-6 py-4 text-sm text-gray-900">TOTALES</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₡{{ number_format(collect($registros)->sum('diezmo'), 2) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₡{{ number_format(collect($registros)->sum('ofrenda_especial'), 2) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₡{{ number_format(collect($registros)->sum('misiones'), 2) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₡{{ number_format(collect($registros)->sum('seminario'), 2) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">₡{{ number_format(collect($registros)->sum('campa'), 2) }}</td>

@@ -45,6 +45,7 @@
             <tr>
                 <th>Fecha/Periodo</th>
                 <th>Diezmo</th>
+                <th>Ofr. Esp.</th>
                 <th>Misiones</th>
                 <th>Seminario</th>
                 <th>Camp.</th>
@@ -73,6 +74,7 @@
             <tr>
                 <td style="text-align: left;">{{ $registro['fecha'] }}</td>
                 <td>{{ number_format($registro['diezmo'], 2) }}</td>
+                <td>{{ number_format($registro['ofrenda_especial'] ?? 0, 2) }}</td>
                 <td>{{ number_format($registro['misiones'], 2) }}</td>
                 <td>{{ number_format($registro['seminario'], 2) }}</td>
                 <td>{{ number_format($registro['campa'], 2) }}</td>
@@ -84,6 +86,7 @@
             </tr>
             @php
                 $totales['diezmo'] += $registro['diezmo'];
+                $totales['ofrenda_especial'] = ($totales['ofrenda_especial'] ?? 0) + ($registro['ofrenda_especial'] ?? 0);
                 $totales['misiones'] += $registro['misiones'];
                 $totales['seminario'] += $registro['seminario'];
                 $totales['campa'] += $registro['campa'];
@@ -97,6 +100,7 @@
             <tr class="total-row">
                 <td style="text-align: left;">TOTALES</td>
                 <td>{{ number_format($totales['diezmo'], 2) }}</td>
+                <td>{{ number_format($totales['ofrenda_especial'] ?? 0, 2) }}</td>
                 <td>{{ number_format($totales['misiones'], 2) }}</td>
                 <td>{{ number_format($totales['seminario'], 2) }}</td>
                 <td>{{ number_format($totales['campa'], 2) }}</td>

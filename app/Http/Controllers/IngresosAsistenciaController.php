@@ -104,23 +104,22 @@ class IngresosAsistenciaController extends Controller
 
         if ($tipoReporte == 'culto') {
             foreach ($cultos as $culto) {
-                if ($culto->totales) {
-                    $registros[] = [
-                        'culto_id' => $culto->id,
-                        'fecha' => $culto->fecha->format('d/m/Y'),
-                        'tipo' => ucfirst($culto->tipo_culto),
-                        'diezmo' => $culto->totales->total_diezmo,
-                        'ofrenda_especial' => $culto->totales->total_ofrenda_especial,
-                        'misiones' => $culto->totales->total_misiones,
-                        'seminario' => $culto->totales->total_seminario,
-                        'campa' => $culto->totales->total_campa,
-                        'construccion' => $culto->totales->total_construccion,
-                        'prestamo' => $culto->totales->total_prestamo,
-                        'micro' => $culto->totales->total_micro,
-                        'suelto' => $culto->totales->total_suelto,
-                        'total' => $culto->totales->total_general,
-                    ];
-                }
+                $t = $culto->totales; // puede ser null
+                $registros[] = [
+                    'culto_id' => $culto->id,
+                    'fecha' => $culto->fecha->format('d/m/Y'),
+                    'tipo' => ucfirst($culto->tipo_culto),
+                    'diezmo' => $t->total_diezmo ?? 0,
+                    'ofrenda_especial' => $t->total_ofrenda_especial ?? 0,
+                    'misiones' => $t->total_misiones ?? 0,
+                    'seminario' => $t->total_seminario ?? 0,
+                    'campa' => $t->total_campa ?? 0,
+                    'construccion' => $t->total_construccion ?? 0,
+                    'prestamo' => $t->total_prestamo ?? 0,
+                    'micro' => $t->total_micro ?? 0,
+                    'suelto' => $t->total_suelto ?? 0,
+                    'total' => $t->total_general ?? 0,
+                ];
             }
         } elseif ($tipoReporte == 'semana') {
             $semanas = $cultos->groupBy(function($culto) {
@@ -233,21 +232,21 @@ class IngresosAsistenciaController extends Controller
 
         if ($tipoReporte == 'culto') {
             foreach ($cultos as $culto) {
-                if ($culto->totales) {
-                    $registros[] = [
-                        'fecha' => $culto->fecha->format('d/m/Y'),
-                        'tipo' => ucfirst($culto->tipo_culto),
-                        'diezmo' => $culto->totales->total_diezmo,
-                        'misiones' => $culto->totales->total_misiones,
-                        'seminario' => $culto->totales->total_seminario,
-                        'campa' => $culto->totales->total_campa,
-                        'construccion' => $culto->totales->total_construccion,
-                        'prestamo' => $culto->totales->total_prestamo,
-                        'micro' => $culto->totales->total_micro,
-                        'suelto' => $culto->totales->total_suelto,
-                        'total' => $culto->totales->total_general,
-                    ];
-                }
+                $t = $culto->totales; // puede ser null
+                $registros[] = [
+                    'fecha' => $culto->fecha->format('d/m/Y'),
+                    'tipo' => ucfirst($culto->tipo_culto),
+                    'diezmo' => $t->total_diezmo ?? 0,
+                    'ofrenda_especial' => $t->total_ofrenda_especial ?? 0,
+                    'misiones' => $t->total_misiones ?? 0,
+                    'seminario' => $t->total_seminario ?? 0,
+                    'campa' => $t->total_campa ?? 0,
+                    'construccion' => $t->total_construccion ?? 0,
+                    'prestamo' => $t->total_prestamo ?? 0,
+                    'micro' => $t->total_micro ?? 0,
+                    'suelto' => $t->total_suelto ?? 0,
+                    'total' => $t->total_general ?? 0,
+                ];
             }
         } elseif ($tipoReporte == 'semana') {
             $semanas = $cultos->groupBy(function($culto) {
@@ -259,6 +258,7 @@ class IngresosAsistenciaController extends Controller
                     'fecha' => 'Semana del ' . $semana,
                     'tipo' => 'Semanal',
                     'diezmo' => $cultosSeamana->sum('totales.total_diezmo'),
+                    'ofrenda_especial' => $cultosSeamana->sum('totales.total_ofrenda_especial'),
                     'misiones' => $cultosSeamana->sum('totales.total_misiones'),
                     'seminario' => $cultosSeamana->sum('totales.total_seminario'),
                     'campa' => $cultosSeamana->sum('totales.total_campa'),
@@ -280,6 +280,7 @@ class IngresosAsistenciaController extends Controller
                     'fecha' => $fecha->locale('es')->translatedFormat('F Y'),
                     'tipo' => 'Mensual',
                     'diezmo' => $cultosMes->sum('totales.total_diezmo'),
+                    'ofrenda_especial' => $cultosMes->sum('totales.total_ofrenda_especial'),
                     'misiones' => $cultosMes->sum('totales.total_misiones'),
                     'seminario' => $cultosMes->sum('totales.total_seminario'),
                     'campa' => $cultosMes->sum('totales.total_campa'),
@@ -323,6 +324,7 @@ class IngresosAsistenciaController extends Controller
                     'fecha' => $culto->fecha->format('d/m/Y'),
                     'tipo' => ucfirst($culto->tipo_culto),
                     'diezmo' => $sumCategorias($sobres, 'diezmo'),
+                    'ofrenda_especial' => $sumCategorias($sobres, 'ofrenda_especial'),
                     'misiones' => $sumCategorias($sobres, 'misiones'),
                     'seminario' => $sumCategorias($sobres, 'seminario'),
                     'campa' => $sumCategorias($sobres, 'campa'),
@@ -341,6 +343,7 @@ class IngresosAsistenciaController extends Controller
                     'fecha' => 'Semana del ' . $semana,
                     'tipo' => 'Semanal',
                     'diezmo' => $sumCategorias($sobresSemana, 'diezmo'),
+                    'ofrenda_especial' => $sumCategorias($sobresSemana, 'ofrenda_especial'),
                     'misiones' => $sumCategorias($sobresSemana, 'misiones'),
                     'seminario' => $sumCategorias($sobresSemana, 'seminario'),
                     'campa' => $sumCategorias($sobresSemana, 'campa'),
@@ -360,6 +363,7 @@ class IngresosAsistenciaController extends Controller
                     'fecha' => $fecha->locale('es')->translatedFormat('F Y'),
                     'tipo' => 'Mensual',
                     'diezmo' => $sumCategorias($sobresMes, 'diezmo'),
+                    'ofrenda_especial' => $sumCategorias($sobresMes, 'ofrenda_especial'),
                     'misiones' => $sumCategorias($sobresMes, 'misiones'),
                     'seminario' => $sumCategorias($sobresMes, 'seminario'),
                     'campa' => $sumCategorias($sobresMes, 'campa'),
@@ -383,8 +387,18 @@ class IngresosAsistenciaController extends Controller
                 if (is_array($decoded)) { $nombres = array_filter($decoded); }
             }
             if (!empty($nombres)) {
-                $tesorerosPorFecha[$fecha] = $nombres;
+                $tesorerosPorFecha[$fecha] = isset($tesorerosPorFecha[$fecha])
+                    ? array_values(array_unique(array_merge($tesorerosPorFecha[$fecha], $nombres)))
+                    : array_values(array_unique($nombres));
             }
+        }
+        // Ordenar por fecha ascendente si hay múltiples días
+        if (!empty($tesorerosPorFecha)) {
+            uksort($tesorerosPorFecha, function ($a, $b) {
+                $da = \Carbon\Carbon::createFromFormat('d/m/Y', $a);
+                $db = \Carbon\Carbon::createFromFormat('d/m/Y', $b);
+                return $da <=> $db;
+            });
         }
 
         $pdf = Pdf::loadView('pdfs.ingresos', ['registros' => $registros, 'tipoReporte' => $tipoReporte, 'soloTransferencias' => true, 'tesorerosPorFecha' => $tesorerosPorFecha]);
@@ -398,6 +412,7 @@ class IngresosAsistenciaController extends Controller
         // Preparar datos de sobres agrupados por categoría
         $totalesPorCategoria = [
             'diezmo' => 0,
+            'ofrenda_especial' => 0,
             'misiones' => 0,
             'seminario' => 0,
             'campa' => 0,
@@ -424,6 +439,7 @@ class IngresosAsistenciaController extends Controller
 
         $totalesPorCategoria = [
             'diezmo' => 0,
+            'ofrenda_especial' => 0,
             'misiones' => 0,
             'seminario' => 0,
             'campa' => 0,

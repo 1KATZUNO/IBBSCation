@@ -99,6 +99,7 @@
                 <th>Comprobante</th>
                 <th>Notas</th>
                 <th class="text-right">Diezmo</th>
+                <th class="text-right">Ofr. Esp.</th>
                 <th class="text-right">Misiones</th>
                 <th class="text-right">Semin.</th>
                 <th class="text-right">Camp.</th>
@@ -119,6 +120,7 @@
             @php
                 $detallesPorCategoria = $sobre->detalles->keyBy('categoria');
                 $diezmo = $detallesPorCategoria->get('diezmo')->monto ?? 0;
+                $ofrendaEspecial = $detallesPorCategoria->get('ofrenda_especial')->monto ?? 0;
                 $misiones = $detallesPorCategoria->get('misiones')->monto ?? 0;
                 $seminario = $detallesPorCategoria->get('seminario')->monto ?? 0;
                 $campa = $detallesPorCategoria->get('campa')->monto ?? 0;
@@ -139,6 +141,7 @@
                 <td>{{ $sobre->metodo_pago === 'transferencia' ? ($sobre->comprobante_numero ?? '-') : '-' }}</td>
                 <td>{{ $sobre->notas ? $sobre->notas : '-' }}</td>
                 <td class="text-right">{{ number_format($diezmo, 2) }}</td>
+                <td class="text-right">{{ number_format($ofrendaEspecial, 2) }}</td>
                 <td class="text-right">{{ number_format($misiones, 2) }}</td>
                 <td class="text-right">{{ number_format($seminario, 2) }}</td>
                 <td class="text-right">{{ number_format($campa, 2) }}</td>
@@ -177,6 +180,7 @@
             <tr class="total-row">
                 <td colspan="5" class="text-right">TOTALES</td>
                 <td class="text-right">{{ number_format($totalesPorCategoria['diezmo'], 2) }}</td>
+                <td class="text-right">{{ number_format($totalesPorCategoria['ofrenda_especial'], 2) }}</td>
                 <td class="text-right">{{ number_format($totalesPorCategoria['misiones'], 2) }}</td>
                 <td class="text-right">{{ number_format($totalesPorCategoria['seminario'], 2) }}</td>
                 <td class="text-right">{{ number_format($totalesPorCategoria['campa'], 2) }}</td>
@@ -207,6 +211,9 @@
         <div>
             <span class="categoria-item">
                 <span class="categoria-label">Diezmo:</span> {{ number_format($totalesPorCategoria['diezmo'], 2) }}
+            </span>
+            <span class="categoria-item">
+                <span class="categoria-label">Ofrenda Especial:</span> {{ number_format($totalesPorCategoria['ofrenda_especial'], 2) }}
             </span>
             <span class="categoria-item">
                 <span class="categoria-label">Misiones:</span> {{ number_format($totalesPorCategoria['misiones'], 2) }}
