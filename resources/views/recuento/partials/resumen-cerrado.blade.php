@@ -101,7 +101,12 @@
                     $totales['subtotal'] += $subtotal;
                 @endphp
                 <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-3 text-sm font-medium text-gray-900">#{{ $sobre->numero_sobre }}</td>
+                    <td class="px-4 py-3 text-sm font-medium text-gray-900">
+                        #{{ $sobre->numero_sobre }}
+                        @if($isAdmin)
+                        <a href="{{ route('recuento.edit', $sobre) }}" class="ml-2 inline-block text-blue-600 hover:text-blue-800 font-medium">Editar</a>
+                        @endif
+                    </td>
                     <td class="px-4 py-3 text-sm text-right text-gray-700">₡{{ number_format($diezmo, 2) }}</td>
                     <td class="px-4 py-3 text-sm text-right text-gray-700">₡{{ number_format($misiones, 2) }}</td>
                     <td class="px-4 py-3 text-sm text-right text-gray-700">₡{{ number_format($seminario, 2) }}</td>
