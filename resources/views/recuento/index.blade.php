@@ -200,6 +200,14 @@
                                     {{ ucfirst($detalle->categoria) }}: ₡{{ number_format($detalle->monto, 2) }}
                                 </span>
                             @endforeach
+                            @if($sobre->metodo_pago === 'transferencia' && $sobre->comprobante_numero)
+                                <span class="inline-block bg-blue-100 text-blue-800 rounded px-2 py-1 text-xs mr-1 mb-1">
+                                    Comprobante: {{ $sobre->comprobante_numero }}
+                                </span>
+                            @endif
+                            @if($sobre->notas)
+                                <span class="block text-xs text-gray-500 mt-1">Notas: {{ $sobre->notas }}</span>
+                            @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <!-- Desktop actions -->

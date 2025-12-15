@@ -7,6 +7,7 @@ use App\Models\Persona;
 use App\Models\Sobre;
 use App\Models\SobreDetalle;
 use App\Models\OfrendaSuelta;
+use App\Models\AuditLog;
 use App\Services\CalculoTotalesCultoService;
 use Illuminate\Http\Request;
 
@@ -97,6 +98,26 @@ class RecuentoController extends Controller
             'notas' => $validated['notas'] ?? null,
         ]);
 
+        // Auditoría
+        $user = $request->user();
+        AuditLog::create([
+            'user_id' => $user->id ?? null,
+            'user_name' => $user->name ?? ($user->nombre ?? null),
+            'user_email' => $user->email ?? null,
+            'ip_address' => $request->ip(),
+            'user_agent' => substr($request->userAgent() ?? '', 0, 255),
+            'method' => 'POST',
+            'route' => 'recuento.store',
+            'action' => 'Agregar Sobre',
+            'details' => json_encode([
+                'culto_id' => $sobre->culto_id,
+                'sobre_id' => $sobre->id,
+                'metodo_pago' => $sobre->metodo_pago,
+                'comprobante_numero' => $sobre->comprobante_numero,
+                'total_declarado' => $sobre->total_declarado,
+            ]),
+        ]);
+
         // Crear detalles
         foreach ($validated['detalles'] as $detalle) {
             if ($detalle['monto'] > 0) {
@@ -161,6 +182,26 @@ class RecuentoController extends Controller
             'notas' => $validated['notas'] ?? null,
         ]);
 
+        // Auditoría
+        $user = $request->user();
+        AuditLog::create([
+            'user_id' => $user->id ?? null,
+            'user_name' => $user->name ?? ($user->nombre ?? null),
+            'user_email' => $user->email ?? null,
+            'ip_address' => $request->ip(),
+            'user_agent' => substr($request->userAgent() ?? '', 0, 255),
+            'method' => 'PUT',
+            'route' => 'recuento.update',
+            'action' => 'Editar Sobre',
+            'details' => json_encode([
+                'culto_id' => $sobre->culto_id,
+                'sobre_id' => $sobre->id,
+                'metodo_pago' => $sobre->metodo_pago,
+                'comprobante_numero' => $sobre->comprobante_numero,
+                'total_declarado' => $sobre->total_declarado,
+            ]),
+        ]);
+
         // Eliminar detalles existentes y crear nuevos
         $sobre->detalles()->delete();
         foreach ($validated['detalles'] as $detalle) {
@@ -194,6 +235,10 @@ class RecuentoController extends Controller
         }
 
         $cultoId = $sobre->culto_id;
+        $sobreId = $sobre->id;
+        $metodo = $sobre->metodo_pago;
+        $comprobante = $sobre->comprobante_numero;
+        $totalDeclarado = $sobre->total_declarado;
         $sobre->delete();
 
         // Recalcular totales
@@ -201,6 +246,26 @@ class RecuentoController extends Controller
         if ($culto) {
             $this->calculoService->recalcular($culto);
         }
+
+        // Auditoría
+        $user = auth()->user();
+        AuditLog::create([
+            'user_id' => $user->id ?? null,
+            'user_name' => $user->name ?? ($user->nombre ?? null),
+            'user_email' => $user->email ?? null,
+            'ip_address' => request()->ip(),
+            'user_agent' => substr(request()->userAgent() ?? '', 0, 255),
+            'method' => 'DELETE',
+            'route' => 'recuento.destroy',
+            'action' => 'Eliminar Sobre',
+            'details' => json_encode([
+                'culto_id' => $cultoId,
+                'sobre_id' => $sobreId,
+                'metodo_pago' => $metodo,
+                'comprobante_numero' => $comprobante,
+                'total_declarado' => $totalDeclarado,
+            ]),
+        ]);
 
         return redirect()->route('recuento.index', ['culto_id' => $cultoId])
             ->with('success', 'Sobre eliminado correctamente.');
