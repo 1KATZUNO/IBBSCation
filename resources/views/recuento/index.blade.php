@@ -214,7 +214,7 @@
                             <div class="hidden sm:flex sm:items-center sm:justify-end sm:gap-3">
                                 <a href="{{ route('recuento.edit', $sobre) }}" class="text-blue-600 hover:text-blue-900">Editar</a>
                                 @if(in_array(auth()->user()->rol, ['admin', 'tesorero']))
-                                <button type="button" onclick="mostrarModalEliminarSobre({{ $sobre->id }}, {{ $sobre->numero }})" class="text-red-600 hover:text-red-900">
+                                <button type="button" onclick="mostrarModalEliminarSobre({{ $sobre->id }}, {{ $sobre->numero_sobre }})" class="text-red-600 hover:text-red-900">
                                     Eliminar
                                 </button>
                                 @endif
@@ -239,7 +239,7 @@
                                             </span>
                                         </a>
                                         @if(in_array(auth()->user()->rol, ['admin', 'tesorero']))
-                                        <button type="button" onclick="mostrarModalEliminarSobre({{ $sobre->id }}, {{ $sobre->numero }}); toggleSobreDropdown({{ $sobre->id }})" class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-red-50">
+                                        <button type="button" onclick="mostrarModalEliminarSobre({{ $sobre->id }}, {{ $sobre->numero_sobre }}); toggleSobreDropdown({{ $sobre->id }})" class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-red-50">
                                             <span class="flex items-center gap-2">
                                                 <svg class="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>

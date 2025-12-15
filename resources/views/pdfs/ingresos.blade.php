@@ -33,7 +33,13 @@
             <p><strong>Generado:</strong> {{ now()->format('d/m/Y H:i') }}</p>
         </div>
     </div>
-    
+    @if(isset($soloTransferencias) && $soloTransferencias)
+    @php $totalTransferenciasGlobal = collect($registros)->sum('total'); @endphp
+    <div class="info-box" style="margin-top:10px;">
+        <strong>Total Transferencias:</strong> {{ number_format($totalTransferenciasGlobal, 2) }}
+    </div>
+    @endif
+
     <table>
         <thead>
             <tr>
@@ -103,6 +109,26 @@
         </tbody>
     </table>
     
+    @if(isset($tesorerosPorFecha) && is_array($tesorerosPorFecha) && count($tesorerosPorFecha) > 0)
+    <h3 style="margin-top: 20px; font-size: 11px;">Tesoreros por Fecha</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Tesoreros</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($tesorerosPorFecha as $fecha => $nombres)
+            <tr>
+                <td style="text-align:left;">{{ $fecha }}</td>
+                <td style="text-align:left;">{{ is_array($nombres) ? implode(', ', $nombres) : $nombres }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+    @endif
+
     <div class="footer">
         <p>Sistema de Administración - IBBSC - Iglesia Bíblica Bautista en Santa Cruz</p>
     </div>

@@ -372,7 +372,22 @@ class IngresosAsistenciaController extends Controller
             }
         }
 
-        $pdf = Pdf::loadView('pdfs.ingresos', ['registros' => $registros, 'tipoReporte' => $tipoReporte, 'soloTransferencias' => true]);
+        // Agregar tesoreros por fecha a pie de página
+        $tesorerosPorFecha = [];
+        foreach ($cultos as $c) {
+            $fecha = $c->fecha->format('d/m/Y');
+            $nombres = [];
+            if (is_array($c->firmas_tesoreros)) { $nombres = array_filter($c->firmas_tesoreros); }
+            elseif (is_string($c->firmas_tesoreros) && !empty($c->firmas_tesoreros)) {
+                $decoded = json_decode($c->firmas_tesoreros, true);
+                if (is_array($decoded)) { $nombres = array_filter($decoded); }
+            }
+            if (!empty($nombres)) {
+                $tesorerosPorFecha[$fecha] = $nombres;
+            }
+        }
+
+        $pdf = Pdf::loadView('pdfs.ingresos', ['registros' => $registros, 'tipoReporte' => $tipoReporte, 'soloTransferencias' => true, 'tesorerosPorFecha' => $tesorerosPorFecha]);
         return $pdf->download('ingresos_transferencias_' . $tipoReporte . '_' . now()->format('Y-m-d') . '.pdf');
     }
 
@@ -425,7 +440,7 @@ class IngresosAsistenciaController extends Controller
             }
         }
 
-        $pdf = Pdf::loadView('pdfs.recuento-individual', ['culto' => $culto, 'totalesPorCategoria' => $totalesPorCategoria, 'soloTransferencias' => true]);
+        $pdf = Pdf::loadView('pdfs.recuento-individual', ['culto' => $culto, 'totalesPorCategoria' => $totalesPorCategoria, 'transferenciasOnly' => true]);
         return $pdf->download('recuento_transferencias_' . $culto->fecha->format('Y-m-d') . '_' . $culto->tipo_culto . '.pdf');
     }
 }

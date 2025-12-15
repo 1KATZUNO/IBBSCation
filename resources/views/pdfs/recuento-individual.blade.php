@@ -57,30 +57,39 @@
         @endif
     </div>
 
-    <!-- Summary Cards -->
+    @php $transferenciasOnly = isset($transferenciasOnly) && $transferenciasOnly === true; @endphp
     @if($culto->totales)
-    <div class="summary-grid">
-        <div class="summary-card">
-            <div class="label">Total General</div>
-            <div class="value">{{ number_format($culto->totales->total_general, 2) }}</div>
+        @if(!$transferenciasOnly)
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="label">Total General</div>
+                <div class="value">{{ number_format($culto->totales->total_general, 2) }}</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">Cantidad Sobres</div>
+                <div class="value">{{ $culto->totales->cantidad_sobres }}</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">Diezmos</div>
+                <div class="value">{{ number_format($culto->totales->total_diezmo, 2) }}</div>
+            </div>
+            <div class="summary-card">
+                <div class="label">Transferencias</div>
+                <div class="value">{{ $culto->totales->cantidad_transferencias }}</div>
+            </div>
         </div>
-        <div class="summary-card">
-            <div class="label">Cantidad Sobres</div>
-            <div class="value">{{ $culto->totales->cantidad_sobres }}</div>
+        @else
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="label">Total Transferencias</div>
+                <div class="value">{{ number_format($culto->totales->total_transferencias ?? ($culto->sobres->where('metodo_pago','transferencia')->sum('total_declarado')), 2) }}</div>
+            </div>
         </div>
-        <div class="summary-card">
-            <div class="label">Diezmos</div>
-            <div class="value">{{ number_format($culto->totales->total_diezmo, 2) }}</div>
-        </div>
-        <div class="summary-card">
-            <div class="label">Transferencias</div>
-            <div class="value">{{ $culto->totales->cantidad_transferencias }}</div>
-        </div>
-    </div>
+        @endif
     @endif
 
     <!-- Tabla de Sobres -->
-    <h3 style="margin-top: 20px; margin-bottom: 10px; font-size: 11px;">Detalle de Sobres y Dinero Suelto</h3>
+    <h3 style="margin-top: 20px; margin-bottom: 10px; font-size: 11px;">Detalle de Sobres{{ $transferenciasOnly ? ' (solo transferencias)' : ' y Dinero Suelto' }}</h3>
     <table>
         <thead>
             <tr>
@@ -106,7 +115,7 @@
                 $totalTransferencias = 0;
             @endphp
             
-            @foreach($culto->sobres as $sobre)
+            @foreach($culto->sobres->filter(fn($s) => !$transferenciasOnly || $s->metodo_pago === 'transferencia') as $sobre)
             @php
                 $detallesPorCategoria = $sobre->detalles->keyBy('categoria');
                 $diezmo = $detallesPorCategoria->get('diezmo')->monto ?? 0;
@@ -140,30 +149,29 @@
             </tr>
             @endforeach
 
-            <!-- Dinero Suelto -->
-            @foreach($culto->ofrendasSueltas as $ofrenda)
-            @php
-                $totalGeneral += $ofrenda->monto;
-            @endphp
-            <tr class="suelto-row">
-                <td class="text-center">-</td>
-                <td>
-                    <strong>Dinero Suelto</strong>
-                    @if($ofrenda->descripcion)
-                    <br><small style="font-size: 8px; color: #6b7280;">{{ $ofrenda->descripcion }}</small>
-                    @endif
-                </td>
-                <td>Efectivo</td>
-                <td class="text-right">-</td>
-                <td class="text-right">-</td>
-                <td class="text-right">-</td>
-                <td class="text-right">-</td>
-                <td class="text-right">-</td>
-                <td class="text-right">-</td>
-                <td class="text-right">-</td>
-                <td class="text-right subtotal">{{ number_format($ofrenda->monto, 2) }}</td>
-            </tr>
-            @endforeach
+            @if(!$transferenciasOnly)
+                @foreach($culto->ofrendasSueltas as $ofrenda)
+                @php $totalGeneral += $ofrenda->monto; @endphp
+                <tr class="suelto-row">
+                    <td class="text-center">-</td>
+                    <td>
+                        <strong>Dinero Suelto</strong>
+                        @if($ofrenda->descripcion)
+                        <br><small style="font-size: 8px; color: #6b7280;">{{ $ofrenda->descripcion }}</small>
+                        @endif
+                    </td>
+                    <td>Efectivo</td>
+                    <td class="text-right">-</td>
+                    <td class="text-right">-</td>
+                    <td class="text-right">-</td>
+                    <td class="text-right">-</td>
+                    <td class="text-right">-</td>
+                    <td class="text-right">-</td>
+                    <td class="text-right">-</td>
+                    <td class="text-right subtotal">{{ number_format($ofrenda->monto, 2) }}</td>
+                </tr>
+                @endforeach
+            @endif
 
             <!-- Totales -->
             <tr class="total-row">
@@ -180,7 +188,7 @@
         </tbody>
     </table>
 
-    <!-- Totales por método -->
+    @if(!$transferenciasOnly)
     <div class="summary-grid" style="margin-top: 10px;">
         <div class="summary-card">
             <div class="label">Total Efectivo</div>
@@ -191,6 +199,7 @@
             <div class="value">{{ number_format($totalTransferencias, 2) }}</div>
         </div>
     </div>
+    @endif
 
     <!-- Resumen por Categorías -->
     <div class="resumen-box">
