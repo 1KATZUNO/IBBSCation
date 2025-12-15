@@ -123,8 +123,12 @@ class PromesasReporteController extends Controller
         }
 
         // PASO 2: Calcular TODOS los montos dados en el mes (incluyendo anónimos)
-        // Excluir diezmo del cálculo de promesas; diezmo se trata por aparte
+        // Excluir diezmo y ofrenda_especial del cálculo de promesas
         $categorias = $categoria ? [$categoria] : ['misiones', 'seminario', 'campa', 'construccion', 'prestamo', 'micro'];
+        // Sanear cuando piden una categoría excluida
+        if ($categoria && in_array(strtolower($categoria), ['diezmo', 'ofrenda_especial'])) {
+            $categorias = [];
+        }
         // Si se solicitó específicamente la categoría 'diezmo', devolver sin datos en promesas
         if ($categoria && strtolower($categoria) === 'diezmo') {
             $totalesPorCategoria = [];
@@ -158,6 +162,11 @@ class PromesasReporteController extends Controller
 
         // PASO 3: Calcular faltante y profit POR CATEGORÍA
         foreach ($totalesPorCategoria as $cat => $datos) {
+            $catKey = strtolower($cat);
+            if (in_array($catKey, ['diezmo', 'ofrenda_especial'])) {
+                unset($totalesPorCategoria[$cat]);
+                continue;
+            }
             $saldo = $datos['total_dado'] - $datos['total_prometido'];
             
             if ($saldo < 0) {
