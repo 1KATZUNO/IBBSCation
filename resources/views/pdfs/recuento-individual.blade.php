@@ -93,7 +93,9 @@
     <table>
         <thead>
             <tr>
+                @if(!$transferenciasOnly)
                 <th>N° Sobre</th>
+                @endif
                 <th>Persona</th>
                 <th>Método</th>
                 <th>Comprobante</th>
@@ -131,7 +133,9 @@
                 if ($sobre->metodo_pago === 'transferencia') { $totalTransferencias += $sobre->total_declarado; } else { $totalEfectivo += $sobre->total_declarado; }
             @endphp
             <tr class="sobre-row">
+                @if(!$transferenciasOnly)
                 <td class="text-center"><strong>#{{ $sobre->numero_sobre }}</strong></td>
+                @endif
                 <td>{{ $sobre->persona ? $sobre->persona->nombre : 'Anónimo' }}</td>
                 <td>
                     <span class="badge {{ $sobre->metodo_pago == 'transferencia' ? 'badge-transferencia' : 'badge-efectivo' }}">
@@ -178,7 +182,7 @@
 
             <!-- Totales -->
             <tr class="total-row">
-                <td colspan="5" class="text-right">TOTALES</td>
+                <td colspan="{{ $transferenciasOnly ? 4 : 5 }}" class="text-right">TOTALES</td>
                 <td class="text-right">{{ number_format($totalesPorCategoria['diezmo'], 2) }}</td>
                 <td class="text-right">{{ number_format($totalesPorCategoria['ofrenda_especial'], 2) }}</td>
                 <td class="text-right">{{ number_format($totalesPorCategoria['misiones'], 2) }}</td>
