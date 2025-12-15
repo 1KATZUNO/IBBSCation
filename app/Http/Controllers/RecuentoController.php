@@ -223,8 +223,9 @@ class RecuentoController extends Controller
 
     public function destroy(Sobre $sobre)
     {
-        // Solo admin y tesorero pueden eliminar sobres
-        if (!in_array(auth()->user()->rol, ['admin', 'tesorero'])) {
+        // Solo admin y tesorero pueden eliminar sobres (con null-guard)
+        $currentUser = auth()->user();
+        if (!$currentUser || !in_array($currentUser->rol, ['admin', 'tesorero'])) {
             return redirect()->route('recuento.index', ['culto_id' => $sobre->culto_id])
                 ->with('error', 'No tienes permiso para eliminar sobres.');
         }
@@ -248,7 +249,7 @@ class RecuentoController extends Controller
         }
 
         // Auditoría
-        $user = auth()->user();
+        $user = $currentUser;
         AuditLog::create([
             'user_id' => $user->id ?? null,
             'user_name' => $user->name ?? ($user->nombre ?? null),
