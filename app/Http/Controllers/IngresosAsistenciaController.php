@@ -89,7 +89,7 @@ class IngresosAsistenciaController extends Controller
     public function ingresos(Request $request)
     {
         $tipoReporte = $request->get('tipo_reporte', 'culto');
-        $query = Culto::with('totales')->orderBy('fecha', 'desc');
+        $query = Culto::with(['totales', 'sobres.detalles', 'ofrendasSueltas'])->orderBy('fecha', 'desc');
 
         if ($request->filled('fecha_inicio')) {
             $query->where('fecha', '>=', $request->fecha_inicio);
@@ -105,21 +105,45 @@ class IngresosAsistenciaController extends Controller
         if ($tipoReporte == 'culto') {
             foreach ($cultos as $culto) {
                 $t = $culto->totales; // puede ser null
-                $registros[] = [
-                    'culto_id' => $culto->id,
-                    'fecha' => $culto->fecha->format('d/m/Y'),
-                    'tipo' => ucfirst($culto->tipo_culto),
-                    'diezmo' => $t->total_diezmo ?? 0,
-                    'ofrenda_especial' => $t->total_ofrenda_especial ?? 0,
-                    'misiones' => $t->total_misiones ?? 0,
-                    'seminario' => $t->total_seminario ?? 0,
-                    'campa' => $t->total_campa ?? 0,
-                    'construccion' => $t->total_construccion ?? 0,
-                    'prestamo' => $t->total_prestamo ?? 0,
-                    'micro' => $t->total_micro ?? 0,
-                    'suelto' => $t->total_suelto ?? 0,
-                    'total' => $t->total_general ?? 0,
-                ];
+                if ($t) {
+                    $registros[] = [
+                        'culto_id' => $culto->id,
+                        'fecha' => $culto->fecha->format('d/m/Y'),
+                        'tipo' => ucfirst($culto->tipo_culto),
+                        'diezmo' => $t->total_diezmo ?? 0,
+                        'ofrenda_especial' => $t->total_ofrenda_especial ?? 0,
+                        'misiones' => $t->total_misiones ?? 0,
+                        'seminario' => $t->total_seminario ?? 0,
+                        'campa' => $t->total_campa ?? 0,
+                        'construccion' => $t->total_construccion ?? 0,
+                        'prestamo' => $t->total_prestamo ?? 0,
+                        'micro' => $t->total_micro ?? 0,
+                        'suelto' => $t->total_suelto ?? 0,
+                        'total' => $t->total_general ?? 0,
+                    ];
+                } else {
+                    // Calcular en vivo desde sobres y suelto para cultos sin totales
+                    $sumCat = function ($categoria) use ($culto) {
+                        return $culto->sobres->flatMap->detalles->where('categoria', $categoria)->sum('monto');
+                    };
+                    $suelto = $culto->ofrendasSueltas->sum('monto');
+                    $total = $culto->sobres->flatMap->detalles->sum('monto') + $suelto;
+                    $registros[] = [
+                        'culto_id' => $culto->id,
+                        'fecha' => $culto->fecha->format('d/m/Y'),
+                        'tipo' => ucfirst($culto->tipo_culto),
+                        'diezmo' => $sumCat('diezmo'),
+                        'ofrenda_especial' => $sumCat('ofrenda_especial'),
+                        'misiones' => $sumCat('misiones'),
+                        'seminario' => $sumCat('seminario'),
+                        'campa' => $sumCat('campa'),
+                        'construccion' => $sumCat('construccion'),
+                        'prestamo' => $sumCat('prestamo'),
+                        'micro' => $sumCat('micro'),
+                        'suelto' => $suelto,
+                        'total' => $total,
+                    ];
+                }
             }
         } elseif ($tipoReporte == 'semana') {
             $semanas = $cultos->groupBy(function($culto) {
