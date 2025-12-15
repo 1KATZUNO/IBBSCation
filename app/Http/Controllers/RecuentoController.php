@@ -138,7 +138,9 @@ class RecuentoController extends Controller
 
     public function edit(Sobre $sobre)
     {
-        if ($sobre->culto->cerrado) {
+        $user = auth()->user();
+        $isAdmin = $user && method_exists($user, 'isAdmin') ? $user->isAdmin() : ($user && $user->rol === 'admin');
+        if ($sobre->culto->cerrado && !$isAdmin) {
             return redirect()->route('recuento.index', ['culto_id' => $sobre->culto_id])
                 ->with('error', 'No se puede editar un sobre de un culto cerrado.');
         }
@@ -151,7 +153,9 @@ class RecuentoController extends Controller
 
     public function update(Request $request, Sobre $sobre)
     {
-        if ($sobre->culto->cerrado) {
+        $user = auth()->user();
+        $isAdmin = $user && method_exists($user, 'isAdmin') ? $user->isAdmin() : ($user && $user->rol === 'admin');
+        if ($sobre->culto->cerrado && !$isAdmin) {
             return redirect()->route('recuento.index', ['culto_id' => $sobre->culto_id])
                 ->with('error', 'No se puede editar un sobre de un culto cerrado.');
         }

@@ -1,4 +1,7 @@
 <!-- Información del Culto -->
+@php
+    $isAdmin = auth()->check() && (method_exists(auth()->user(), 'isAdmin') ? auth()->user()->isAdmin() : (auth()->user()->rol ?? null) === 'admin');
+@endphp
 <div class="bg-gradient-to-r from-gray-100 to-gray-200 rounded-lg p-6 border-l-4 border-gray-500 mb-6">
     <div class="flex items-center justify-between">
         <div>
@@ -58,6 +61,9 @@
                     <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase">Construcción</th>
                     <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase">Micro</th>
                     <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase font-bold">Subtotal</th>
+                    @if($isAdmin)
+                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase">Acciones</th>
+                    @endif
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -104,6 +110,11 @@
                     <td class="px-4 py-3 text-sm text-right text-gray-700">₡{{ number_format($construccion, 2) }}</td>
                     <td class="px-4 py-3 text-sm text-right text-gray-700">₡{{ number_format($micro, 2) }}</td>
                     <td class="px-4 py-3 text-sm text-right font-bold text-blue-600">₡{{ number_format($subtotal, 2) }}</td>
+                    @if($isAdmin)
+                    <td class="px-4 py-3 text-sm text-right">
+                        <a href="{{ route('recuento.edit', $sobre) }}" class="text-blue-600 hover:text-blue-800 font-medium">Editar</a>
+                    </td>
+                    @endif
                 </tr>
                 @endforeach
                 
@@ -127,6 +138,9 @@
                     <td class="px-4 py-3 text-sm text-right text-gray-400">-</td>
                     <td class="px-4 py-3 text-sm text-right text-gray-400">-</td>
                     <td class="px-4 py-3 text-sm text-right font-bold text-green-600">₡{{ number_format($ofrenda->monto, 2) }}</td>
+                    @if($isAdmin)
+                    <td class="px-4 py-3 text-sm text-right text-gray-400">-</td>
+                    @endif
                 </tr>
                 @endforeach
                 
@@ -141,6 +155,9 @@
                     <td class="px-4 py-3 text-sm text-right font-bold text-blue-700">₡{{ number_format($totales['construccion'], 2) }}</td>
                     <td class="px-4 py-3 text-sm text-right font-bold text-blue-700">₡{{ number_format($totales['micro'], 2) }}</td>
                     <td class="px-4 py-3 text-sm text-right font-bold text-green-700 text-lg">₡{{ number_format($totales['subtotal'], 2) }}</td>
+                    @if($isAdmin)
+                    <td class="px-4 py-3 text-sm text-right text-gray-400">-</td>
+                    @endif
                 </tr>
             </tbody>
         </table>
