@@ -39,7 +39,11 @@
                         </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                        ${{ $culto->totales ? number_format($culto->totales->total_general, 2) : '0.00' }}
+                        @php
+                            $t = $culto->totales;
+                            $totalGeneral = $t ? $t->total_general : ($culto->sobres->flatMap->detalles->sum('monto') + $culto->ofrendasSueltas->sum('monto'));
+                        @endphp
+                        ${{ number_format($totalGeneral, 2) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {{ $culto->asistencia ? $culto->asistencia->total_asistencia : '-' }}

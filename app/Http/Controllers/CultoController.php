@@ -9,7 +9,7 @@ class CultoController extends Controller
 {
     public function index()
     {
-        $cultos = Culto::with(['totales', 'asistencia'])
+        $cultos = Culto::with(['totales', 'asistencia', 'sobres.detalles', 'ofrendasSueltas'])
             ->orderBy('fecha', 'desc')
             ->paginate(20);
             
