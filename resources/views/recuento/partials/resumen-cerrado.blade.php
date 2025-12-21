@@ -148,6 +148,31 @@
                     @endif
                 </tr>
                 @endforeach
+
+                @foreach($culto->egresos as $egreso)
+                @php
+                    $totales['subtotal'] -= $egreso->monto;
+                @endphp
+                <tr class="hover:bg-red-50 bg-red-50/30">
+                    <td class="px-4 py-3 text-sm">
+                        <span class="font-medium text-red-700">Egreso</span>
+                        @if($egreso->descripcion)
+                        <span class="text-xs text-gray-500 block">{{ $egreso->descripcion }}</span>
+                        @endif
+                    </td>
+                    <td class="px-4 py-3 text-sm text-right text-gray-400">-</td>
+                    <td class="px-4 py-3 text-sm text-right text-gray-400">-</td>
+                    <td class="px-4 py-3 text-sm text-right text-gray-400">-</td>
+                    <td class="px-4 py-3 text-sm text-right text-gray-400">-</td>
+                    <td class="px-4 py-3 text-sm text-right text-gray-400">-</td>
+                    <td class="px-4 py-3 text-sm text-right text-gray-400">-</td>
+                    <td class="px-4 py-3 text-sm text-right text-gray-400">-</td>
+                    <td class="px-4 py-3 text-sm text-right font-bold text-red-600">₡{{ number_format($egreso->monto, 2) }}</td>
+                    @if($isAdmin)
+                    <td class="px-4 py-3 text-sm text-right text-gray-400">-</td>
+                    @endif
+                </tr>
+                @endforeach
                 
                 <!-- Fila de Totales -->
                 <tr class="bg-blue-50 border-t-2 border-blue-200">

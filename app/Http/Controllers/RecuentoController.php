@@ -48,7 +48,11 @@ class RecuentoController extends Controller
             ? OfrendaSuelta::where('culto_id', $cultoId)->orderBy('created_at', 'desc')->get()
             : collect();
 
-        return view('recuento.index', compact('sobres', 'cultos', 'cultoSeleccionado', 'ofrendasSueltas', 'cultosCerrados'));
+        $egresos = $cultoId
+            ? \App\Models\Egreso::where('culto_id', $cultoId)->orderBy('created_at', 'desc')->get()
+            : collect();
+
+        return view('recuento.index', compact('sobres', 'cultos', 'cultoSeleccionado', 'ofrendasSueltas', 'egresos', 'cultosCerrados'));
     }
 
     public function create(Request $request)
@@ -305,6 +309,101 @@ class RecuentoController extends Controller
 
         return redirect()->route('recuento.index', ['culto_id' => $validated['culto_id']])
             ->with('success', 'Dinero suelto registrado correctamente.');
+    }
+
+    // Egresos
+    public function storeEgreso(Request $request)
+    {
+        $validated = $request->validate([
+            'culto_id' => 'required|exists:cultos,id',
+            'monto' => 'required|numeric|min:0.01',
+            'descripcion' => 'nullable|string|max:500',
+        ]);
+
+        // Verificar que el culto no esté cerrado
+        $culto = Culto::findOrFail($validated['culto_id']);
+        if ($culto->cerrado) {
+            return redirect()->route('recuento.index', ['culto_id' => $culto->id])
+                ->with('error', 'No se puede agregar egresos a un culto cerrado.');
+        }
+
+        \App\Models\Egreso::create([
+            'culto_id' => $validated['culto_id'],
+            'monto' => $validated['monto'],
+            'descripcion' => $validated['descripcion'] ?? null,
+        ]);
+
+        // Recalcular totales
+        $culto = Culto::find($validated['culto_id']);
+        if ($culto) {
+            $this->calculoService->recalcular($culto);
+        }
+
+        return redirect()->route('recuento.index', ['culto_id' => $validated['culto_id']])
+            ->with('success', 'Egreso registrado correctamente.');
+    }
+
+    public function editEgreso(\App\Models\Egreso $egreso)
+    {
+        if ($egreso->culto->cerrado) {
+            return redirect()->route('recuento.index', ['culto_id' => $egreso->culto_id])
+                ->with('error', 'No se puede editar egresos de un culto cerrado.');
+        }
+
+        return response()->json($egreso);
+    }
+
+    public function updateEgreso(Request $request, \App\Models\Egreso $egreso)
+    {
+        if ($egreso->culto->cerrado) {
+            return redirect()->route('recuento.index', ['culto_id' => $egreso->culto_id])
+                ->with('error', 'No se puede editar egresos de un culto cerrado.');
+        }
+
+        $validated = $request->validate([
+            'monto' => 'required|numeric|min:0.01',
+            'descripcion' => 'nullable|string|max:500',
+        ]);
+
+        $egreso->update([
+            'monto' => $validated['monto'],
+            'descripcion' => $validated['descripcion'] ?? null,
+        ]);
+
+        // Recalcular totales
+        $culto = Culto::find($egreso->culto_id);
+        if ($culto) {
+            $this->calculoService->recalcular($culto);
+        }
+
+        return redirect()->route('recuento.index', ['culto_id' => $egreso->culto_id])
+            ->with('success', 'Egreso actualizado correctamente.');
+    }
+
+    public function destroyEgreso(\App\Models\Egreso $egreso)
+    {
+        // Solo admin y tesorero pueden eliminar egresos
+        if (!in_array(auth()->user()->rol, ['admin', 'tesorero'])) {
+            return redirect()->route('recuento.index', ['culto_id' => $egreso->culto_id])
+                ->with('error', 'No tienes permiso para eliminar egresos.');
+        }
+
+        if ($egreso->culto->cerrado) {
+            return redirect()->route('recuento.index', ['culto_id' => $egreso->culto_id])
+                ->with('error', 'No se puede eliminar egresos de un culto cerrado.');
+        }
+
+        $cultoId = $egreso->culto_id;
+        $egreso->delete();
+
+        // Recalcular totales
+        $culto = Culto::find($cultoId);
+        if ($culto) {
+            $this->calculoService->recalcular($culto);
+        }
+
+        return redirect()->route('recuento.index', ['culto_id' => $cultoId])
+            ->with('success', 'Egreso eliminado correctamente.');
     }
 
     public function editSuelto(OfrendaSuelta $suelto)

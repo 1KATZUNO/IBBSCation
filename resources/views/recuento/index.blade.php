@@ -43,6 +43,9 @@
                 <button type="button" onclick="document.getElementById('modalSuelto').classList.remove('hidden')" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
                     + Dinero Suelto
                 </button>
+                <button type="button" onclick="document.getElementById('modalEgreso').classList.remove('hidden')" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
+                    - Egresos
+                </button>
                 <a href="{{ route('ingresos-asistencia.pdf-recuento-individual', $cultoSeleccionado->id) }}" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -401,6 +404,48 @@
                         <td class="px-4 py-3 text-sm text-right font-bold text-green-600">₡{{ number_format($ofrenda->monto, 2) }}</td>
                     </tr>
                     @endforeach
+
+                    <!-- Filas de Egresos -->
+                    @foreach($egresos as $egreso)
+                    @php
+                        $totales['subtotal'] -= $egreso->monto;
+                    @endphp
+                    <tr class="hover:bg-red-50 bg-red-50/30">
+                        <td class="px-4 py-3 text-sm">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <span class="font-medium text-red-700">Egreso</span>
+                                    @if($egreso->descripcion)
+                                    <span class="text-xs text-gray-500 block">{{ $egreso->descripcion }}</span>
+                                    @endif
+                                </div>
+                                <div class="flex gap-2 ml-2">
+                                    <button onclick="editarEgreso({{ $egreso->id }}, {{ $egreso->monto }}, '{{ $egreso->descripcion }}')" 
+                                            class="text-blue-600 hover:text-blue-900 text-xs">
+                                        Editar
+                                    </button>
+                                    @if(in_array(auth()->user()->rol, ['admin', 'tesorero']))
+                                    <button type="button" onclick="mostrarModalEliminarEgreso({{ $egreso->id }}, '{{ $egreso->descripcion }}')" class="text-red-600 hover:text-red-900 text-xs">
+                                        Eliminar
+                                    </button>
+                                    <form id="form-eliminar-egreso-{{ $egreso->id }}" action="{{ route('recuento.destroy-egreso', $egreso) }}" method="POST" class="hidden">
+                                        @csrf
+                                        @method('DELETE')
+                                    </form>
+                                    @endif
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3 text-sm text-right text-gray-400">-</td>
+                        <td class="px-4 py-3 text-sm text-right text-gray-400">-</td>
+                        <td class="px-4 py-3 text-sm text-right text-gray-400">-</td>
+                        <td class="px-4 py-3 text-sm text-right text-gray-400">-</td>
+                        <td class="px-4 py-3 text-sm text-right text-gray-400">-</td>
+                        <td class="px-4 py-3 text-sm text-right text-gray-400">-</td>
+                        <td class="px-4 py-3 text-sm text-right text-gray-400">-</td>
+                        <td class="px-4 py-3 text-sm text-right font-bold text-red-600">₡{{ number_format($egreso->monto, 2) }}</td>
+                    </tr>
+                    @endforeach
                     
                     <!-- Fila de Totales -->
                     <tr class="bg-blue-50 border-t-2 border-blue-200">
@@ -659,10 +704,12 @@ function confirmarCerrarCulto() {
 }
 
 // Modales de eliminación
+// Modales de eliminación
 let sobreIdEliminar = null;
 let sueltoIdEliminar = null;
 let cultoIdEliminar = null;
 let cultoIdCerrar = null;
+let egresoIdEliminar = null;
 
 function mostrarModalEliminarSobre(id, numero) {
     sobreIdEliminar = id;
@@ -695,6 +742,30 @@ function cerrarModalEliminarSuelto() {
 function confirmarEliminacionSuelto() {
     if (sueltoIdEliminar) {
         document.getElementById('form-eliminar-suelto-' + sueltoIdEliminar).submit();
+    }
+}
+
+function editarEgreso(id, monto, descripcion) {
+    document.getElementById('formEditarEgreso').action = `/recuento/egreso/${id}`;
+    document.getElementById('monto_egreso_edit').value = monto;
+    document.getElementById('descripcion_egreso_edit').value = descripcion || '';
+    document.getElementById('modalEditarEgreso').classList.remove('hidden');
+}
+
+function mostrarModalEliminarEgreso(id, descripcion) {
+    egresoIdEliminar = id;
+    document.getElementById('descripcionEgreso').textContent = descripcion || 'este egreso';
+    document.getElementById('modalEliminarEgreso').classList.remove('hidden');
+}
+
+function cerrarModalEliminarEgreso() {
+    document.getElementById('modalEliminarEgreso').classList.add('hidden');
+    egresoIdEliminar = null;
+}
+
+function confirmarEliminacionEgreso() {
+    if (egresoIdEliminar) {
+        document.getElementById('form-eliminar-egreso-' + egresoIdEliminar).submit();
     }
 }
 
@@ -801,6 +872,117 @@ document.addEventListener('click', function(event) {
                 </button>
                 <button type="button" 
                         onclick="confirmarEliminacionSuelto()"
+                        class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+                    Sí, Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Egreso -->
+<div id="modalEgreso" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Agregar Egreso</h3>
+            <form action="{{ route('recuento.store-egreso') }}" method="POST">
+                @csrf
+                <input type="hidden" name="culto_id" value="{{ $cultoSeleccionado?->id }}">
+                
+                <div class="mb-4">
+                    <label for="monto_egreso" class="block text-sm font-medium text-gray-700 mb-2">Monto (₡) *</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">₡</span>
+                        <input type="number" name="monto" id="monto_egreso" min="0.01" step="0.01" required
+                               class="w-full pl-7 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="descripcion_egreso" class="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
+                    <textarea name="descripcion" id="descripcion_egreso" rows="2"
+                              class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3">
+                    <button type="button" onclick="document.getElementById('modalEgreso').classList.add('hidden')"
+                            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Editar Egreso -->
+<div id="modalEditarEgreso" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Editar Egreso</h3>
+            <form id="formEditarEgreso" method="POST">
+                @csrf
+                @method('PUT')
+                
+                <div class="mb-4">
+                    <label for="monto_egreso_edit" class="block text-sm font-medium text-gray-700 mb-2">Monto (₡) *</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">₡</span>
+                        <input type="number" name="monto" id="monto_egreso_edit" min="0.01" step="0.01" required
+                               class="w-full pl-7 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="descripcion_egreso_edit" class="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
+                    <textarea name="descripcion" id="descripcion_egreso_edit" rows="2"
+                              class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3">
+                    <button type="button" onclick="document.getElementById('modalEditarEgreso').classList.add('hidden')"
+                            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+                        Actualizar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Eliminar Egreso -->
+<div id="modalEliminarEgreso" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-red-900">⚠️ Eliminar Egreso</h3>
+                <button onclick="cerrarModalEliminarEgreso()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                <p class="text-sm text-yellow-800 mb-2">
+                    ¿Estás seguro de que deseas eliminar <strong id="descripcionEgreso"></strong>?
+                </p>
+            </div>
+
+            <div class="flex justify-end gap-3">
+                <button type="button" 
+                        onclick="cerrarModalEliminarEgreso()"
+                        class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                    Cancelar
+                </button>
+                <button type="button" 
+                        onclick="confirmarEliminacionEgreso()"
                         class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
                     Sí, Eliminar
                 </button>

@@ -61,6 +61,11 @@ class Culto extends Model
         return $this->hasMany(OfrendaSuelta::class);
     }
 
+    public function egresos(): HasMany
+    {
+        return $this->hasMany(Egreso::class);
+    }
+
     public function asistencia(): HasOne
     {
         return $this->hasOne(Asistencia::class);

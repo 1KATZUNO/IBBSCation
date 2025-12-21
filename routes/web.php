@@ -47,6 +47,11 @@ Route::middleware(['auth', 'role:admin,tesorero'])->group(function () {
         Route::get('/suelto/{suelto}/edit', [RecuentoController::class, 'editSuelto'])->name('edit-suelto');
         Route::put('/suelto/{suelto}', [RecuentoController::class, 'updateSuelto'])->name('update-suelto');
         Route::delete('/suelto/{suelto}', [RecuentoController::class, 'destroySuelto'])->name('destroy-suelto');
+        // Egresos (restas)
+        Route::post('/egreso', [RecuentoController::class, 'storeEgreso'])->name('store-egreso');
+        Route::get('/egreso/{egreso}/edit', [RecuentoController::class, 'editEgreso'])->name('edit-egreso');
+        Route::put('/egreso/{egreso}', [RecuentoController::class, 'updateEgreso'])->name('update-egreso');
+        Route::delete('/egreso/{egreso}', [RecuentoController::class, 'destroyEgreso'])->name('destroy-egreso');
         Route::post('/{culto}/cerrar', [RecuentoController::class, 'cerrarCulto'])->name('cerrar-culto');
         Route::get('/culto-cerrado/{culto}', [RecuentoController::class, 'verCultoCerrado'])->name('ver-culto-cerrado');
         Route::get('/{sobre}/edit', [RecuentoController::class, 'edit'])->name('edit');

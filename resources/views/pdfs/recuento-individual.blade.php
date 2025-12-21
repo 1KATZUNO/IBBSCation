@@ -21,6 +21,7 @@
         .sobre-row { background-color: #ffffff; }
         .sobre-row:hover { background-color: #f9fafb; }
         .suelto-row { background-color: #dcfce7; }
+        .egreso-row { background-color: #fee2e2; }
         .total-row { font-weight: bold; background-color: #dbeafe; font-size: 11px; }
         .subtotal { font-weight: bold; color: #1e40af; }
         .badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 8px; }
@@ -176,6 +177,27 @@
                     <td class="text-right">-</td>
                     <td class="text-right">-</td>
                     <td class="text-right subtotal">{{ number_format($ofrenda->monto, 2) }}</td>
+                </tr>
+                @endforeach
+                @foreach($culto->egresos as $egreso)
+                @php $totalGeneral -= $egreso->monto; @endphp
+                <tr class="egreso-row">
+                    <td class="text-center">-</td>
+                    <td>
+                        <strong>Egreso</strong>
+                        @if($egreso->descripcion)
+                        <br><small style="font-size: 8px; color: #6b7280;">{{ $egreso->descripcion }}</small>
+                        @endif
+                    </td>
+                    <td>Efectivo</td>
+                    <td class="text-right">-</td>
+                    <td class="text-right">-</td>
+                    <td class="text-right">-</td>
+                    <td class="text-right">-</td>
+                    <td class="text-right">-</td>
+                    <td class="text-right">-</td>
+                    <td class="text-right">-</td>
+                    <td class="text-right subtotal">-{{ number_format($egreso->monto, 2) }}</td>
                 </tr>
                 @endforeach
             @endif

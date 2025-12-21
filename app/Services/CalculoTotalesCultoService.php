@@ -22,6 +22,7 @@ class CalculoTotalesCultoService
             'total_construccion' => 0,
             'total_micro' => 0,
             'total_suelto' => 0,
+            'total_egresos' => 0,
             'cantidad_sobres' => $sobres->count(),
             'cantidad_transferencias' => 0,
         ];
@@ -47,7 +48,14 @@ class CalculoTotalesCultoService
             $totales['total_suelto'] += $ofrenda->monto;
         }
 
+        // Calcular total de egresos (restas)
+        $egresos = $culto->egresos ?? collect();
+        foreach ($egresos as $egreso) {
+            $totales['total_egresos'] += $egreso->monto;
+        }
+
         // Calcular total general
+        // Total general incluye ingresos y resta egresos
         $totales['total_general'] = array_sum([
             $totales['total_diezmo'],
             $totales['total_ofrenda_especial'],
@@ -58,7 +66,7 @@ class CalculoTotalesCultoService
             $totales['total_construccion'],
             $totales['total_micro'],
             $totales['total_suelto'],
-        ]);
+        ]) - $totales['total_egresos'];
 
         // Actualizar o crear registro de totales
         return $culto->totales()->updateOrCreate(
