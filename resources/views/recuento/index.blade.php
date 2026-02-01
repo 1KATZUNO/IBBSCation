@@ -97,48 +97,383 @@
     <!-- Firmas de Recuento -->
     <div class="bg-white rounded-lg shadow p-6">
         <h3 class="text-lg font-semibold mb-4">Firmas de Recuento</h3>
-        <form method="POST" action="{{ route('recuento.firmas.update', $cultoSeleccionado->id) }}" class="space-y-4">
+        <form method="POST" action="{{ route('recuento.firmas.update', $cultoSeleccionado->id) }}" class="space-y-4" id="firmasForm">
             @csrf
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Pastor</label>
-                    <input type="text" name="firma_pastor" value="{{ old('firma_pastor', $cultoSeleccionado->firma_pastor) }}" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Nombre del pastor">
-                </div>
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Tesoreros</label>
-                    <div id="tesorerosContainer" class="space-y-2">
-                        @php $tesoreros = old('firmas_tesoreros', $cultoSeleccionado->firmas_tesoreros ?? []); @endphp
-                        @if(empty($tesoreros))
-                            <div class="flex gap-2">
-                                <input type="text" name="firmas_tesoreros[]" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Nombre del tesorero">
-                                <button type="button" class="px-3 py-2 bg-gray-100 rounded-md" onclick="agregarTesorero()">Agregar</button>
-                            </div>
+
+            <!-- Pastor -->
+            <div class="border rounded-lg p-4 bg-gray-50">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Pastor</label>
+                <div class="flex flex-wrap gap-3 items-center">
+                    <input type="text" name="firma_pastor" id="firma_pastor_nombre"
+                           value="{{ old('firma_pastor', $cultoSeleccionado->firma_pastor) }}"
+                           class="flex-1 min-w-[200px] rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                           placeholder="Nombre del pastor">
+                    <input type="hidden" name="firma_pastor_imagen" id="firma_pastor_imagen"
+                           value="{{ old('firma_pastor_imagen', $cultoSeleccionado->firma_pastor_imagen) }}">
+                    <button type="button" onclick="abrirModalFirma('pastor', document.getElementById('firma_pastor_nombre').value || 'Pastor')"
+                            class="px-4 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                        </svg>
+                        Firmar
+                    </button>
+                    <div id="preview_pastor" class="w-24 h-12 border rounded bg-white flex items-center justify-center overflow-hidden">
+                        @if($cultoSeleccionado->firma_pastor_imagen)
+                            <img src="{{ $cultoSeleccionado->firma_pastor_imagen }}" class="max-w-full max-h-full object-contain">
                         @else
-                            @foreach($tesoreros as $t)
-                            <div class="flex gap-2">
-                                <input type="text" name="firmas_tesoreros[]" value="{{ $t }}" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                <button type="button" class="px-3 py-2 bg-gray-100 rounded-md" onclick="agregarTesorero()">Agregar</button>
-                            </div>
-                            @endforeach
+                            <span class="text-xs text-gray-400">Sin firma</span>
                         @endif
                     </div>
                 </div>
             </div>
+
+            <!-- Tesoreros -->
+            <div class="border rounded-lg p-4 bg-gray-50">
+                <div class="flex justify-between items-center mb-3">
+                    <label class="block text-sm font-medium text-gray-700">Tesoreros</label>
+                    <button type="button" onclick="agregarTesorero()"
+                            class="px-3 py-1 bg-green-100 text-green-700 rounded-md hover:bg-green-200 text-sm flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Agregar Tesorero
+                    </button>
+                </div>
+                <div id="tesorerosContainer" class="space-y-3">
+                    @php
+                        $tesorerosImagenes = old('firmas_tesoreros', $cultoSeleccionado->firmas_tesoreros_imagenes ?? []);
+                        if (empty($tesorerosImagenes)) {
+                            // Si no hay imágenes, usar los nombres viejos
+                            $tesoreros = $cultoSeleccionado->firmas_tesoreros ?? [];
+                            $tesorerosImagenes = array_map(fn($n) => ['nombre' => $n, 'imagen' => ''], $tesoreros);
+                        }
+                    @endphp
+                    @if(empty($tesorerosImagenes))
+                        <div class="tesorero-row flex flex-wrap gap-3 items-center p-3 bg-white rounded-lg border" data-index="0">
+                            <input type="text" name="firmas_tesoreros[0][nombre]"
+                                   class="flex-1 min-w-[200px] rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 tesorero-nombre"
+                                   placeholder="Nombre del tesorero">
+                            <input type="hidden" name="firmas_tesoreros[0][imagen]" class="tesorero-imagen">
+                            <button type="button" onclick="abrirModalFirmaTesorero(this)"
+                                    class="px-4 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                </svg>
+                                Firmar
+                            </button>
+                            <div class="tesorero-preview w-24 h-12 border rounded bg-white flex items-center justify-center overflow-hidden">
+                                <span class="text-xs text-gray-400">Sin firma</span>
+                            </div>
+                            <button type="button" onclick="quitarTesorero(this)"
+                                    class="px-3 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                            </button>
+                        </div>
+                    @else
+                        @foreach($tesorerosImagenes as $index => $t)
+                        <div class="tesorero-row flex flex-wrap gap-3 items-center p-3 bg-white rounded-lg border" data-index="{{ $index }}">
+                            <input type="text" name="firmas_tesoreros[{{ $index }}][nombre]"
+                                   value="{{ is_array($t) ? ($t['nombre'] ?? '') : $t }}"
+                                   class="flex-1 min-w-[200px] rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 tesorero-nombre"
+                                   placeholder="Nombre del tesorero">
+                            <input type="hidden" name="firmas_tesoreros[{{ $index }}][imagen]"
+                                   class="tesorero-imagen"
+                                   value="{{ is_array($t) ? ($t['imagen'] ?? '') : '' }}">
+                            <button type="button" onclick="abrirModalFirmaTesorero(this)"
+                                    class="px-4 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                </svg>
+                                Firmar
+                            </button>
+                            <div class="tesorero-preview w-24 h-12 border rounded bg-white flex items-center justify-center overflow-hidden">
+                                @if(is_array($t) && !empty($t['imagen']))
+                                    <img src="{{ $t['imagen'] }}" class="max-w-full max-h-full object-contain">
+                                @else
+                                    <span class="text-xs text-gray-400">Sin firma</span>
+                                @endif
+                            </div>
+                            <button type="button" onclick="quitarTesorero(this)"
+                                    class="px-3 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                            </button>
+                        </div>
+                        @endforeach
+                    @endif
+                </div>
+            </div>
+
             <div class="flex justify-end">
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Guardar Firmas</button>
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Guardar Firmas
+                </button>
             </div>
         </form>
-        <script>
-            function agregarTesorero() {
-                const container = document.getElementById('tesorerosContainer');
-                const div = document.createElement('div');
-                div.className = 'flex gap-2';
-                div.innerHTML = `<input type="text" name="firmas_tesoreros[]" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Nombre del tesorero">
-                                 <button type="button" class="px-3 py-2 bg-red-100 rounded-md" onclick="this.parentElement.remove()">Quitar</button>`;
-                container.appendChild(div);
-            }
-        </script>
     </div>
+
+    <!-- Modal de Firma -->
+    <div id="modalFirma" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h4 class="text-lg font-semibold text-gray-800">
+                    Firma de: <span id="modalFirmaNombre" class="text-blue-600"></span>
+                </h4>
+                <button type="button" onclick="cerrarModalFirma()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="p-4">
+                <div class="border-2 border-dashed border-gray-300 rounded-lg bg-white mb-4">
+                    <canvas id="signatureCanvas" class="w-full cursor-crosshair" style="touch-action: none;"></canvas>
+                </div>
+                <p class="text-sm text-gray-500 text-center mb-4">Dibuje su firma con el mouse o dedo</p>
+            </div>
+            <div class="flex justify-between p-4 border-t bg-gray-50 rounded-b-xl">
+                <button type="button" onclick="limpiarCanvas()"
+                        class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-md hover:bg-yellow-200 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    Limpiar
+                </button>
+                <div class="flex gap-2">
+                    <button type="button" onclick="cerrarModalFirma()"
+                            class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100">
+                        Cancelar
+                    </button>
+                    <button type="button" onclick="guardarFirma()"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Guardar Firma
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales para firma
+        let canvas, ctx;
+        let isDrawing = false;
+        let lastX = 0, lastY = 0;
+        let currentSignerType = null; // 'pastor' o 'tesorero'
+        let currentTesoreroRow = null;
+        let tesoreroIndex = {{ count($tesorerosImagenes) > 0 ? count($tesorerosImagenes) : 1 }};
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initCanvas();
+        });
+
+        function initCanvas() {
+            canvas = document.getElementById('signatureCanvas');
+            if (!canvas) return;
+
+            // Ajustar tamaño del canvas
+            const container = canvas.parentElement;
+            canvas.width = container.offsetWidth - 4;
+            canvas.height = 200;
+
+            ctx = canvas.getContext('2d');
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            // Mouse events
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+
+            // Touch events
+            canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+            canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+            canvas.addEventListener('touchend', stopDrawing);
+        }
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            };
+        }
+
+        function getTouchPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: e.touches[0].clientX - rect.left,
+                y: e.touches[0].clientY - rect.top
+            };
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            const pos = getMousePos(e);
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+
+        function handleTouchStart(e) {
+            e.preventDefault();
+            isDrawing = true;
+            const pos = getTouchPos(e);
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const pos = getMousePos(e);
+
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+
+        function handleTouchMove(e) {
+            e.preventDefault();
+            if (!isDrawing) return;
+            const pos = getTouchPos(e);
+
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        function limpiarCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function abrirModalFirma(type, nombre) {
+            currentSignerType = type;
+            currentTesoreroRow = null;
+            document.getElementById('modalFirmaNombre').textContent = nombre || 'Firmante';
+            document.getElementById('modalFirma').classList.remove('hidden');
+
+            // Reinicializar canvas
+            setTimeout(() => {
+                initCanvas();
+                limpiarCanvas();
+
+                // Cargar firma existente si hay
+                const existingSignature = document.getElementById('firma_pastor_imagen').value;
+                if (existingSignature) {
+                    loadSignatureToCanvas(existingSignature);
+                }
+            }, 100);
+        }
+
+        function abrirModalFirmaTesorero(btn) {
+            const row = btn.closest('.tesorero-row');
+            currentSignerType = 'tesorero';
+            currentTesoreroRow = row;
+
+            const nombre = row.querySelector('.tesorero-nombre').value || 'Tesorero';
+            document.getElementById('modalFirmaNombre').textContent = nombre;
+            document.getElementById('modalFirma').classList.remove('hidden');
+
+            setTimeout(() => {
+                initCanvas();
+                limpiarCanvas();
+
+                // Cargar firma existente si hay
+                const existingSignature = row.querySelector('.tesorero-imagen').value;
+                if (existingSignature) {
+                    loadSignatureToCanvas(existingSignature);
+                }
+            }, 100);
+        }
+
+        function loadSignatureToCanvas(dataUrl) {
+            const img = new Image();
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            };
+            img.src = dataUrl;
+        }
+
+        function cerrarModalFirma() {
+            document.getElementById('modalFirma').classList.add('hidden');
+            currentSignerType = null;
+            currentTesoreroRow = null;
+        }
+
+        function guardarFirma() {
+            const dataUrl = canvas.toDataURL('image/png');
+
+            if (currentSignerType === 'pastor') {
+                document.getElementById('firma_pastor_imagen').value = dataUrl;
+                document.getElementById('preview_pastor').innerHTML =
+                    `<img src="${dataUrl}" class="max-w-full max-h-full object-contain">`;
+            } else if (currentSignerType === 'tesorero' && currentTesoreroRow) {
+                currentTesoreroRow.querySelector('.tesorero-imagen').value = dataUrl;
+                currentTesoreroRow.querySelector('.tesorero-preview').innerHTML =
+                    `<img src="${dataUrl}" class="max-w-full max-h-full object-contain">`;
+            }
+
+            cerrarModalFirma();
+        }
+
+        function agregarTesorero() {
+            const container = document.getElementById('tesorerosContainer');
+            const div = document.createElement('div');
+            div.className = 'tesorero-row flex flex-wrap gap-3 items-center p-3 bg-white rounded-lg border';
+            div.setAttribute('data-index', tesoreroIndex);
+            div.innerHTML = `
+                <input type="text" name="firmas_tesoreros[${tesoreroIndex}][nombre]"
+                       class="flex-1 min-w-[200px] rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 tesorero-nombre"
+                       placeholder="Nombre del tesorero">
+                <input type="hidden" name="firmas_tesoreros[${tesoreroIndex}][imagen]" class="tesorero-imagen">
+                <button type="button" onclick="abrirModalFirmaTesorero(this)"
+                        class="px-4 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                    </svg>
+                    Firmar
+                </button>
+                <div class="tesorero-preview w-24 h-12 border rounded bg-white flex items-center justify-center overflow-hidden">
+                    <span class="text-xs text-gray-400">Sin firma</span>
+                </div>
+                <button type="button" onclick="quitarTesorero(this)"
+                        class="px-3 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                </button>
+            `;
+            container.appendChild(div);
+            tesoreroIndex++;
+        }
+
+        function quitarTesorero(btn) {
+            const row = btn.closest('.tesorero-row');
+            row.remove();
+        }
+    </script>
     
     <!-- Resumen del Culto -->
     @if($cultoSeleccionado->totales)
@@ -284,17 +619,36 @@
     <!-- Tabla Resumen por Culto -->
     @if($sobres->count() > 0)
     @php
-        $totalEfectivo = $sobres->where('metodo_pago', 'efectivo')->sum('total_declarado');
-        $totalTransferencias = $sobres->where('metodo_pago', 'transferencia')->sum('total_declarado');
+        // Sobres por método de pago
+        $sobresEfectivo = $sobres->where('metodo_pago', 'efectivo')->sum('total_declarado');
+        $sobresTransferencias = $sobres->where('metodo_pago', 'transferencia')->sum('total_declarado');
+
+        // Dinero suelto siempre es efectivo
+        $totalSuelto = $ofrendasSueltas->sum('monto');
+
+        // Total de egresos (solo se resta del efectivo)
+        $totalEgresos = $egresos->sum('monto');
+
+        // Totales finales
+        $totalEfectivo = $sobresEfectivo + $totalSuelto - $totalEgresos;
+        $totalTransferencias = $sobresTransferencias;
+        $totalGeneral = $totalEfectivo + $totalTransferencias;
     @endphp
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div class="bg-white rounded-lg shadow p-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
             <p class="text-sm text-gray-600">Total Efectivo</p>
             <p class="text-2xl font-bold text-green-600">₡{{ number_format($totalEfectivo, 2) }}</p>
+            <p class="text-xs text-gray-500 mt-1">Sobres + Suelto - Egresos</p>
         </div>
-        <div class="bg-white rounded-lg shadow p-4">
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
             <p class="text-sm text-gray-600">Total Transferencias</p>
             <p class="text-2xl font-bold text-blue-600">₡{{ number_format($totalTransferencias, 2) }}</p>
+            <p class="text-xs text-gray-500 mt-1">Sobres + Suelto</p>
+        </div>
+        <div class="bg-white rounded-lg shadow p-4 border-l-4 border-purple-500">
+            <p class="text-sm text-gray-600">Total General</p>
+            <p class="text-2xl font-bold text-purple-600">₡{{ number_format($totalGeneral, 2) }}</p>
+            <p class="text-xs text-gray-500 mt-1">Efectivo + Transferencias</p>
         </div>
     </div>
     <div class="bg-white rounded-lg shadow overflow-hidden">

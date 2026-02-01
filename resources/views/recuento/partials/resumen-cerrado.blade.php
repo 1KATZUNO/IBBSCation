@@ -27,18 +27,29 @@
 
 <!-- Resumen Estadístico -->
 @if($culto->totales)
+@php
+    // Calcular totales por método de pago
+    $sobresEfectivo = $sobres->where('metodo_pago', 'efectivo')->sum('total_declarado');
+    $sobresTransferencias = $sobres->where('metodo_pago', 'transferencia')->sum('total_declarado');
+    $totalSuelto = $ofrendasSueltas->sum('monto');
+    $totalEgresosCerrado = $culto->egresos->sum('monto');
+    $totalEfectivoCerrado = $sobresEfectivo + $totalSuelto - $totalEgresosCerrado;
+    $totalTransferenciasCerrado = $sobresTransferencias;
+@endphp
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
     <div class="bg-white rounded-lg shadow p-4 border-l-4 border-green-500">
-        <p class="text-sm text-gray-600">Cantidad de Sobres</p>
-        <p class="text-2xl font-bold text-green-600">{{ $culto->totales->cantidad_sobres }}</p>
+        <p class="text-sm text-gray-600">Total Efectivo</p>
+        <p class="text-2xl font-bold text-green-600">₡{{ number_format($totalEfectivoCerrado, 2) }}</p>
+        <p class="text-xs text-gray-500 mt-1">Sobres + Suelto - Egresos</p>
     </div>
-    <div class="bg-white rounded-lg shadow p-4 border-l-4 border-purple-500">
-        <p class="text-sm text-gray-600">Total Diezmos</p>
-        <p class="text-2xl font-bold text-purple-600">₡{{ number_format($culto->totales->total_diezmo, 2) }}</p>
+    <div class="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
+        <p class="text-sm text-gray-600">Total Transferencias</p>
+        <p class="text-2xl font-bold text-blue-600">₡{{ number_format($totalTransferenciasCerrado, 2) }}</p>
+        <p class="text-xs text-gray-500 mt-1">Sobres transferencia</p>
     </div>
     <div class="bg-white rounded-lg shadow p-4 border-l-4 border-orange-500">
-        <p class="text-sm text-gray-600">Transferencias</p>
-        <p class="text-2xl font-bold text-orange-600">{{ $culto->totales->cantidad_transferencias }}</p>
+        <p class="text-sm text-gray-600">Cantidad de Sobres</p>
+        <p class="text-2xl font-bold text-orange-600">{{ $culto->totales->cantidad_sobres }}</p>
     </div>
 </div>
 @endif

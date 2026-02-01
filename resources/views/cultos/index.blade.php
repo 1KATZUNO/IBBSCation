@@ -43,7 +43,7 @@
                             $t = $culto->totales;
                             $totalGeneral = $t ? $t->total_general : ($culto->sobres->flatMap->detalles->sum('monto') + $culto->ofrendasSueltas->sum('monto'));
                         @endphp
-                        ${{ number_format($totalGeneral, 2) }}
+                        ₡{{ number_format($totalGeneral, 2) }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {{ $culto->asistencia ? $culto->asistencia->total_asistencia : '-' }}

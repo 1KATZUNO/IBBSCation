@@ -165,7 +165,7 @@
                     <div class="mt-6 p-4 bg-gray-50 rounded-lg">
                         <div class="flex justify-between items-center">
                             <span class="text-lg font-medium text-gray-700">Total Declarado:</span>
-                            <span class="text-2xl font-bold text-blue-600" id="totalDeclarado">$0.00</span>
+                            <span class="text-2xl font-bold text-blue-600" id="totalDeclarado">₡0.00</span>
                         </div>
                     </div>
                 </div>
@@ -212,7 +212,7 @@
                 const valor = parseFloat(input.value) || 0;
                 total += valor;
             });
-            totalElement.textContent = '$' + total.toFixed(2);
+            totalElement.textContent = '₡' + total.toFixed(2);
         }
 
         inputs.forEach(input => {

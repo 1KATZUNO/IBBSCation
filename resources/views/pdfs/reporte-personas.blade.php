@@ -581,10 +581,10 @@
                                 $cumple = $dado >= $esperado && $esperado > 0;
                             @endphp
                             <td class="{{ $esperado > 0 ? ($cumple ? 'cumple' : 'no-cumple') : '' }}">
-                                ${{ number_format($esperado, 2) }}
+                                ₡{{ number_format($esperado, 2) }}
                             </td>
                             <td class="{{ $esperado > 0 ? ($cumple ? 'cumple' : 'no-cumple') : '' }}">
-                                ${{ number_format($dado, 2) }}
+                                ₡{{ number_format($dado, 2) }}
                             </td>
                         @endforeach
                         @php
@@ -593,10 +593,10 @@
                             $diferencia = $totalPersonaDado - $totalPersonaEsperado;
                             $porcentaje = $totalPersonaEsperado > 0 ? ($totalPersonaDado / $totalPersonaEsperado * 100) : 0;
                         @endphp
-                        <td style="font-weight: bold;">${{ number_format($totalPersonaEsperado, 2) }}</td>
-                        <td style="font-weight: bold;">${{ number_format($totalPersonaDado, 2) }}</td>
+                        <td style="font-weight: bold;">₡{{ number_format($totalPersonaEsperado, 2) }}</td>
+                        <td style="font-weight: bold;">₡{{ number_format($totalPersonaDado, 2) }}</td>
                         <td class="{{ $diferencia >= 0 ? 'cumple' : 'no-cumple' }}" style="font-weight: bold;">
-                            ${{ number_format($diferencia, 2) }}
+                            ₡{{ number_format($diferencia, 2) }}
                         </td>
                         <td class="{{ $porcentaje >= 100 ? 'cumple' : ($porcentaje >= 75 ? '' : 'no-cumple') }}" style="font-weight: bold;">
                             {{ number_format($porcentaje, 0) }}%
@@ -608,16 +608,16 @@
                 <tr class="total-row">
                     <td>🎯 TOTALES</td>
                     @foreach($categorias as $categoria)
-                        <td>${{ number_format($totalesEsperado[$categoria], 2) }}</td>
-                        <td>${{ number_format($totalesDado[$categoria], 2) }}</td>
+                        <td>₡{{ number_format($totalesEsperado[$categoria], 2) }}</td>
+                        <td>₡{{ number_format($totalesDado[$categoria], 2) }}</td>
                     @endforeach
-                    <td>${{ number_format($granTotalEsperado, 2) }}</td>
-                    <td>${{ number_format($granTotalDado, 2) }}</td>
+                    <td>₡{{ number_format($granTotalEsperado, 2) }}</td>
+                    <td>₡{{ number_format($granTotalDado, 2) }}</td>
                     @php
                         $diferenciaTotal = $granTotalDado - $granTotalEsperado;
                         $porcentajeTotal = $granTotalEsperado > 0 ? ($granTotalDado / $granTotalEsperado * 100) : 0;
                     @endphp
-                    <td>${{ number_format($diferenciaTotal, 2) }}</td>
+                    <td>₡{{ number_format($diferenciaTotal, 2) }}</td>
                     <td>{{ number_format($porcentajeTotal, 0) }}%</td>
                 </tr>
             </tbody>
@@ -650,11 +650,11 @@
             </div>
             <div class="resumen-item">
                 <label>🎯 Total Esperado</label>
-                <value>${{ number_format($totalPrometidoGeneral, 2) }}</value>
+                <value>₡{{ number_format($totalPrometidoGeneral, 2) }}</value>
             </div>
             <div class="resumen-item">
                 <label>💰 Total Recibido</label>
-                <value>${{ number_format($totalDadoReal, 2) }}</value>
+                <value>₡{{ number_format($totalDadoReal, 2) }}</value>
             </div>
             <div class="resumen-item">
                 <label>📈 Cumplimiento Global</label>

@@ -136,7 +136,7 @@
                                 <div class="flex items-end">
                                     <p class="text-xs text-gray-500">
                                         <span class="font-medium">Ejemplo:</span><br>
-                                        $100 semanal = ~$400-500/mes
+                                        ₡100 semanal = ~₡400-500/mes
                                     </p>
                                 </div>
                             </div>

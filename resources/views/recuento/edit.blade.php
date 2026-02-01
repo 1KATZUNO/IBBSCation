@@ -66,7 +66,7 @@
                     </label>
                     <div class="relative">
                         <input type="hidden" name="detalles[{{ $loop->index }}][categoria]" value="{{ $categoria }}">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">$</span>
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">₡</span>
                         <input type="number" 
                                name="detalles[{{ $loop->index }}][monto]" 
                                id="detalle_{{ $categoria }}"
@@ -82,7 +82,7 @@
             <div class="bg-blue-50 rounded-lg p-4 mb-6">
                 <div class="flex justify-between items-center">
                     <span class="text-lg font-semibold text-gray-700">Total Declarado:</span>
-                    <span id="totalDeclarado" class="text-2xl font-bold text-blue-600">$0.00</span>
+                    <span id="totalDeclarado" class="text-2xl font-bold text-blue-600">₡0.00</span>
                 </div>
             </div>
 

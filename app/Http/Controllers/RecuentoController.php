@@ -298,6 +298,7 @@ class RecuentoController extends Controller
         OfrendaSuelta::create([
             'culto_id' => $validated['culto_id'],
             'monto' => $validated['monto'],
+            'metodo_pago' => 'efectivo', // Dinero suelto siempre es efectivo
             'descripcion' => $validated['descripcion'] ?? null,
         ]);
 

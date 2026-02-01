@@ -263,16 +263,46 @@
     </div>
 
     <!-- Firmas -->
-    @php $pastor = $culto->firma_pastor ?? ''; $tes = $culto->firmas_tesoreros ?? []; @endphp
-    <div style="margin-top:20px; display:flex; gap:20px;">
-        <div style="flex:1; text-align:center;">
-            <div style="border-top:1px solid #000; padding-top:6px;">Tesoreros</div>
-            <div style="font-size:12px; color:#333;">{{ !empty($tes) ? implode(', ', $tes) : '' }}</div>
-        </div>
-        <div style="flex:1; text-align:center;">
-            <div style="border-top:1px solid #000; padding-top:6px;">Pastor</div>
-            <div style="font-size:12px; color:#333;">{{ $pastor }}</div>
-        </div>
+    @php
+        $pastor = $culto->firma_pastor ?? '';
+        $pastorImagen = $culto->firma_pastor_imagen ?? '';
+        $tesorerosImagenes = $culto->firmas_tesoreros_imagenes ?? [];
+        // Fallback a nombres antiguos si no hay imágenes
+        if (empty($tesorerosImagenes)) {
+            $tes = $culto->firmas_tesoreros ?? [];
+            $tesorerosImagenes = array_map(fn($n) => ['nombre' => $n, 'imagen' => ''], $tes);
+        }
+    @endphp
+    <div style="margin-top:30px; page-break-inside: avoid;">
+        <h3 style="text-align:center; font-size:11px; margin-bottom:15px; color:#374151;">FIRMAS DE AUTORIZACIÓN</h3>
+        <table style="width:100%; border-collapse:collapse;">
+            <tr>
+                @foreach($tesorerosImagenes as $t)
+                <td style="width:{{ 100 / (count($tesorerosImagenes) + 1) }}%; text-align:center; vertical-align:bottom; padding:10px;">
+                    <div style="min-height:60px; display:flex; align-items:flex-end; justify-content:center;">
+                        @if(!empty($t['imagen']))
+                            <img src="{{ $t['imagen'] }}" style="max-height:50px; max-width:120px;">
+                        @endif
+                    </div>
+                    <div style="border-top:1px solid #000; padding-top:8px; margin-top:5px;">
+                        <div style="font-size:10px; font-weight:bold;">{{ $t['nombre'] ?? 'Tesorero' }}</div>
+                        <div style="font-size:8px; color:#6b7280;">Tesorero</div>
+                    </div>
+                </td>
+                @endforeach
+                <td style="width:{{ 100 / (count($tesorerosImagenes) + 1) }}%; text-align:center; vertical-align:bottom; padding:10px;">
+                    <div style="min-height:60px; display:flex; align-items:flex-end; justify-content:center;">
+                        @if(!empty($pastorImagen))
+                            <img src="{{ $pastorImagen }}" style="max-height:50px; max-width:120px;">
+                        @endif
+                    </div>
+                    <div style="border-top:1px solid #000; padding-top:8px; margin-top:5px;">
+                        <div style="font-size:10px; font-weight:bold;">{{ $pastor ?: 'Pastor' }}</div>
+                        <div style="font-size:8px; color:#6b7280;">Pastor</div>
+                    </div>
+                </td>
+            </tr>
+        </table>
     </div>
 
     <div class="footer">

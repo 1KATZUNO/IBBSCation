@@ -19,6 +19,8 @@ class Culto extends Model
         'firma_tesorero',
         'firmas_tesoreros',
         'firma_pastor',
+        'firma_pastor_imagen',
+        'firmas_tesoreros_imagenes',
         'cerrado',
         'cerrado_at',
         'cerrado_por',
@@ -39,6 +41,7 @@ class Culto extends Model
             'cerrado' => 'boolean',
             'cerrado_at' => 'datetime',
             'firmas_tesoreros' => 'array',
+            'firmas_tesoreros_imagenes' => 'array',
         ];
     }
 

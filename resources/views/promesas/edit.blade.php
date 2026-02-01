@@ -40,7 +40,7 @@
                     <div>
                         <label for="monto_total" class="block text-sm font-medium text-gray-700 mb-2">Monto Total (₡) *</label>
                         <div class="relative">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">$</span>
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">₡</span>
                             <input type="number" name="monto_total" id="monto_total" min="0.01" step="0.01" value="{{ old('monto_total', $promesa->monto_total) }}" 
                                    class="w-full pl-7 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" required>
                         </div>
