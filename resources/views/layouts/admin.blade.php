@@ -138,7 +138,7 @@
             </nav>
 
             <!-- User Profile Section -->
-            <div class="p-4 border-t border-blue-700 bg-blue-900/50">
+            <div class="p-4 border-t border-blue-700 bg-blue-900">
                 <div class="flex items-center mb-4">
                     <div class="flex-shrink-0">
                         <div class="w-11 h-11 rounded-lg bg-blue-600 flex items-center justify-center">
