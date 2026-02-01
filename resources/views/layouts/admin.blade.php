@@ -146,8 +146,8 @@
                         </div>
                     </div>
                     <div class="ml-3 flex-1">
-                        <p class="text-sm font-semibold truncate">{{ Auth::user()->name }}</p>
-                        <p class="text-xs text-blue-300 capitalize">{{ Auth::user()->rol }}</p>
+                        <p class="text-sm font-semibold text-white truncate">{{ Auth::user()->name }}</p>
+                        <p class="text-xs text-blue-200 capitalize">{{ Auth::user()->rol }}</p>
                     </div>
                 </div>
                 <form method="POST" action="{{ route('logout') }}" class="mb-4" id="logoutForm">
