@@ -401,17 +401,17 @@ class PersonaController extends Controller
             'accion' => 'required|in:ver,descargar',
         ]);
 
-        // Calcular desde enero del año actual hasta el mes actual
-        $añoActual = date('Y');
+        // Calcular desde enero del anio actual hasta el mes actual
+        $anioActual = date('Y');
         $mesActual = date('n'); // Mes sin cero inicial (1-12)
 
-        $fechaInicio = Carbon::create($añoActual, 1, 1)->startOfMonth();
+        $fechaInicio = Carbon::create($anioActual, 1, 1)->startOfMonth();
         $fechaFin = Carbon::now()->endOfMonth();
 
-        // Título del período
+        // Titulo del periodo
         $meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
                   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-        $tituloPeriodo = "Enero - {$meses[$mesActual]} {$añoActual}";
+        $tituloPeriodo = "Enero - {$meses[$mesActual]} {$anioActual}";
 
         // Categorías fijas en orden
         $categorias = ['diezmo', 'misiones', 'seminario', 'campa', 'construccion', 'micro'];
@@ -466,7 +466,7 @@ class PersonaController extends Controller
 
         $pdf->setPaper('letter', 'landscape');
 
-        $nombreArchivo = 'reporte-contribuciones-' . $añoActual . '-' . str_pad($mesActual, 2, '0', STR_PAD_LEFT) . '.pdf';
+        $nombreArchivo = 'reporte-contribuciones-' . $anioActual . '-' . str_pad($mesActual, 2, '0', STR_PAD_LEFT) . '.pdf';
 
         if ($validated['accion'] === 'descargar') {
             return $pdf->download($nombreArchivo);
