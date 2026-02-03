@@ -176,15 +176,20 @@
 </div>
 
 <!-- Modal: Reporte PDF -->
+@php
+    $meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    $mesActual = (int)date('n');
+    $añoActual = date('Y');
+@endphp
 <div id="modalReporte" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-10 mx-auto p-6 border w-full max-w-2xl shadow-lg rounded-lg bg-white">
+    <div class="relative top-20 mx-auto p-6 border w-full max-w-md shadow-lg rounded-lg bg-white">
         <div class="mt-3">
             <div class="flex items-center justify-between mb-6">
-                <h3 class="text-xl font-bold text-purple-900 flex items-center gap-2">
+                <h3 class="text-xl font-bold text-blue-900 flex items-center gap-2">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
-                    Reporte de Personas PDF
+                    Reporte de Contribuciones
                 </h3>
                 <button onclick="cerrarModalReporte()" class="text-gray-400 hover:text-gray-600">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -192,107 +197,35 @@
                     </svg>
                 </button>
             </div>
-            
-            <div class="space-y-6">
-                <!-- Filtro 1: Por Rango de Meses del Año Actual -->
-                <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-5 border border-purple-200">
-                    <h4 class="font-semibold text-purple-900 mb-4 flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                        Opción 1: Filtrar por Meses ({{ date('Y') }})
-                    </h4>
-                    <form action="{{ route('personas.reporte-pdf') }}" method="GET" target="_blank">
-                        <input type="hidden" name="tipo_filtro" value="meses">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Mes de Inicio</label>
-                                <select name="mes_inicio" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500">
-                                    <option value="">Selecciona mes...</option>
-                                    @for($i = 1; $i <= 12; $i++)
-                                        <option value="{{ $i }}" {{ $i == 1 ? 'selected' : '' }}>
-                                            {{ \Carbon\Carbon::create()->month($i)->locale('es')->translatedFormat('F') }}
-                                        </option>
-                                    @endfor
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Mes de Fin</label>
-                                <select name="mes_fin" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500">
-                                    <option value="">Selecciona mes...</option>
-                                    @for($i = 1; $i <= 12; $i++)
-                                        <option value="{{ $i }}" {{ $i == (int)date('m') ? 'selected' : '' }}>
-                                            {{ \Carbon\Carbon::create()->month($i)->locale('es')->translatedFormat('F') }}
-                                        </option>
-                                    @endfor
-                                </select>
-                            </div>
-                        </div>
-                        <div class="flex gap-3">
-                            <button type="submit" name="accion" value="ver" class="flex-1 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors flex items-center justify-center gap-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                </svg>
-                                Ver PDF
-                            </button>
-                            <button type="submit" name="accion" value="descargar" class="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors flex items-center justify-center gap-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                                </svg>
-                                Descargar PDF
-                            </button>
-                        </div>
-                    </form>
+
+            <div class="space-y-4">
+                <div class="bg-blue-50 rounded-lg p-4 border border-blue-200 text-center">
+                    <p class="text-sm text-gray-600 mb-1">Período del reporte:</p>
+                    <p class="text-lg font-bold text-blue-700">Enero - {{ $meses[$mesActual] }} {{ $añoActual }}</p>
+                    <p class="text-xs text-gray-500 mt-2">Contribuciones acumuladas de todas las personas</p>
                 </div>
 
-                <div class="text-center text-gray-500 font-medium">
-                    - O -
-                </div>
+                <form action="{{ route('personas.reporte-pdf') }}" method="GET" target="_blank">
+                    <div class="flex gap-3">
+                        <button type="submit" name="accion" value="ver" class="flex-1 px-4 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                            Ver PDF
+                        </button>
+                        <button type="submit" name="accion" value="descargar" class="flex-1 px-4 py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                            </svg>
+                            Descargar
+                        </button>
+                    </div>
+                </form>
 
-                <!-- Filtro 2: Por Rango de Fechas Exactas -->
-                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-5 border border-blue-200">
-                    <h4 class="font-semibold text-blue-900 mb-4 flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                        Opción 2: Filtrar por Fechas Exactas
-                    </h4>
-                    <form action="{{ route('personas.reporte-pdf') }}" method="GET" target="_blank">
-                        <input type="hidden" name="tipo_filtro" value="fechas">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de Inicio</label>
-                                <input type="date" name="fecha_inicio" required max="{{ date('Y-m-d') }}" 
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Fecha de Fin</label>
-                                <input type="date" name="fecha_fin" required max="{{ date('Y-m-d') }}" 
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-                            </div>
-                        </div>
-                        <div class="flex gap-3">
-                            <button type="submit" name="accion" value="ver" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                </svg>
-                                Ver PDF
-                            </button>
-                            <button type="submit" name="accion" value="descargar" class="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors flex items-center justify-center gap-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                                </svg>
-                                Descargar PDF
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <p class="text-sm text-yellow-800">
-                        <strong>💡 Nota:</strong> El reporte incluirá todas las personas activas que hayan registrado sobres en el período seleccionado.
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                    <p class="text-xs text-gray-600 text-center">
+                        Incluye: Diezmo, Misiones, Seminario, Campamento, Construcción y Micro
                     </p>
                 </div>
             </div>

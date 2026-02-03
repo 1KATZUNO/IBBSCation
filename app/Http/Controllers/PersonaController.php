@@ -393,149 +393,80 @@ class PersonaController extends Controller
     }
 
     /**
-     * Genera un reporte PDF de personas con sus sobres en un rango de fechas
+     * Genera un reporte PDF de contribuciones acumuladas desde enero hasta el mes actual
      */
     public function reportePdf(Request $request)
     {
         $validated = $request->validate([
-            'tipo_filtro' => 'required|in:meses,fechas',
-            'mes_inicio' => 'required_if:tipo_filtro,meses|nullable|integer|min:1|max:12',
-            'mes_fin' => 'required_if:tipo_filtro,meses|nullable|integer|min:1|max:12',
-            'fecha_inicio' => 'required_if:tipo_filtro,fechas|nullable|date',
-            'fecha_fin' => 'required_if:tipo_filtro,fechas|nullable|date',
             'accion' => 'required|in:ver,descargar',
         ]);
 
-        // Determinar el rango de fechas según el tipo de filtro
-        if ($validated['tipo_filtro'] === 'meses') {
-            $añoActual = date('Y');
-            $fechaInicio = Carbon::create($añoActual, $validated['mes_inicio'], 1)->startOfMonth();
-            $fechaFin = Carbon::create($añoActual, $validated['mes_fin'], 1)->endOfMonth();
-            $tituloPeriodo = $fechaInicio->locale('es')->translatedFormat('F') . ' - ' . 
-                           $fechaFin->locale('es')->translatedFormat('F Y');
-        } else {
-            $fechaInicio = Carbon::parse($validated['fecha_inicio'])->startOfDay();
-            $fechaFin = Carbon::parse($validated['fecha_fin'])->endOfDay();
-            $tituloPeriodo = $fechaInicio->locale('es')->translatedFormat('d/m/Y') . ' - ' . 
-                           $fechaFin->locale('es')->translatedFormat('d/m/Y');
-        }
+        // Calcular desde enero del año actual hasta el mes actual
+        $añoActual = date('Y');
+        $mesActual = date('n'); // Mes sin cero inicial (1-12)
 
-        // Validar que fecha inicio no sea mayor a fecha fin
-        if ($fechaInicio->gt($fechaFin)) {
-            return back()->withErrors(['error' => 'La fecha de inicio no puede ser mayor a la fecha de fin.']);
-        }
+        $fechaInicio = Carbon::create($añoActual, 1, 1)->startOfMonth();
+        $fechaFin = Carbon::now()->endOfMonth();
 
-        // Obtener personas activas con sus promesas
+        // Título del período
+        $meses = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                  'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        $tituloPeriodo = "Enero - {$meses[$mesActual]} {$añoActual}";
+
+        // Categorías fijas en orden
+        $categorias = ['diezmo', 'misiones', 'seminario', 'campa', 'construccion', 'micro'];
+
+        // Obtener personas activas con sus sobres del período
         $personas = Persona::where('activo', true)
-            ->with(['promesas', 'sobres' => function($query) use ($fechaInicio, $fechaFin) {
-                $query->whereBetween('created_at', [$fechaInicio, $fechaFin])
-                      ->with(['detalles', 'culto']);
+            ->with(['sobres' => function($query) use ($fechaInicio, $fechaFin) {
+                $query->whereHas('culto', function($q) use ($fechaInicio, $fechaFin) {
+                    $q->whereBetween('fecha', [$fechaInicio, $fechaFin]);
+                })->with('detalles');
             }])
             ->orderBy('nombre')
             ->get();
 
-        // Calcular meses en el período
-        $mesesEnPeriodo = $fechaInicio->diffInMonths($fechaFin) + 1;
-
-        // Calcular totales por categoría y por persona
-        $totalesPorCategoria = [];
+        // Calcular totales por categoría
+        $totalesPorCategoria = array_fill_keys($categorias, 0);
         $totalGeneral = 0;
-        $totalPrometidoGeneral = 0;
 
         foreach ($personas as $persona) {
-            $persona->total_sobres = 0;
-            $persona->cumplimiento_global = 0;
-            
-            // Inicializar array de promesas del período
-            $promesasPeriodo = [];
+            // Inicializar contribuciones por categoría
+            $contribuciones = array_fill_keys($categorias, 0);
+            $totalPersona = 0;
 
-            // Calcular lo que debería dar según sus promesas en este período
-            foreach ($persona->promesas as $promesa) {
-                $montoPorMes = $promesa->monto;
-                $categoria = $promesa->categoria;
-                
-                // Calcular cuánto debería dar en total en el período según frecuencia
-                switch ($promesa->frecuencia) {
-                    case 'semanal':
-                        $montoEsperado = $montoPorMes * 4 * $mesesEnPeriodo; // 4 semanas por mes
-                        break;
-                    case 'quincenal':
-                        $montoEsperado = $montoPorMes * 2 * $mesesEnPeriodo; // 2 quincenas por mes
-                        break;
-                    case 'mensual':
-                        $montoEsperado = $montoPorMes * $mesesEnPeriodo;
-                        break;
-                    default:
-                        $montoEsperado = $montoPorMes * $mesesEnPeriodo;
-                }
-
-                // Calcular cuánto realmente dio en esta categoría
-                $montoDado = 0;
-                foreach ($persona->sobres as $sobre) {
-                    foreach ($sobre->detalles as $detalle) {
-                        if ($detalle->categoria === $categoria) {
-                            $montoDado += $detalle->monto;
-                        }
-                    }
-                }
-
-                $promesasPeriodo[$categoria] = [
-                    'esperado' => $montoEsperado,
-                    'dado' => $montoDado,
-                    'diferencia' => $montoDado - $montoEsperado,
-                    'cumple' => $montoDado >= $montoEsperado,
-                    'porcentaje' => $montoEsperado > 0 ? ($montoDado / $montoEsperado * 100) : 0
-                ];
-
-                $totalPrometidoGeneral += $montoEsperado;
-            }
-            
-            // Asignar promesas del período al objeto persona
-            $persona->promesas_periodo = $promesasPeriodo;
-
-            // Calcular totales de sobres
             foreach ($persona->sobres as $sobre) {
                 foreach ($sobre->detalles as $detalle) {
-                    if (!isset($totalesPorCategoria[$detalle->categoria])) {
-                        $totalesPorCategoria[$detalle->categoria] = 0;
+                    $cat = $detalle->categoria;
+                    if (isset($contribuciones[$cat])) {
+                        $contribuciones[$cat] += $detalle->monto;
+                        $totalesPorCategoria[$cat] += $detalle->monto;
+                        $totalPersona += $detalle->monto;
+                        $totalGeneral += $detalle->monto;
                     }
-                    $totalesPorCategoria[$detalle->categoria] += $detalle->monto;
-                    $persona->total_sobres += $detalle->monto;
-                    $totalGeneral += $detalle->monto;
                 }
             }
 
-            // Calcular cumplimiento global (solo si tiene promesas)
-            if (count($promesasPeriodo) > 0) {
-                $totalEsperado = 0;
-                $totalDado = 0;
-                foreach ($promesasPeriodo as $datos) {
-                    $totalEsperado += $datos['esperado'];
-                    $totalDado += $datos['dado'];
-                }
-                $persona->cumplimiento_global = $totalEsperado > 0 ? ($totalDado / $totalEsperado * 100) : 0;
-            }
+            $persona->contribuciones = $contribuciones;
+            $persona->total_dado = $totalPersona;
         }
 
-        // Filtrar solo personas con promesas o sobres
+        // Filtrar solo personas que han dado algo
         $personas = $personas->filter(function($persona) {
-            return count($persona->promesas) > 0 || $persona->sobres->count() > 0;
+            return $persona->total_dado > 0;
         });
 
-        $pdf = \PDF::loadView('pdfs.reporte-personas', [
+        $pdf = \PDF::loadView('pdfs.reporte-contribuciones', [
             'personas' => $personas,
             'tituloPeriodo' => $tituloPeriodo,
-            'fechaInicio' => $fechaInicio,
-            'fechaFin' => $fechaFin,
+            'categorias' => $categorias,
             'totalesPorCategoria' => $totalesPorCategoria,
             'totalGeneral' => $totalGeneral,
-            'totalPrometidoGeneral' => $totalPrometidoGeneral,
-            'mesesEnPeriodo' => $mesesEnPeriodo,
         ]);
 
-        $pdf->setPaper('letter', 'portrait');
+        $pdf->setPaper('letter', 'landscape');
 
-        $nombreArchivo = 'reporte-personas-' . $fechaInicio->format('Ymd') . '-' . $fechaFin->format('Ymd') . '.pdf';
+        $nombreArchivo = 'reporte-contribuciones-' . $añoActual . '-' . str_pad($mesActual, 2, '0', STR_PAD_LEFT) . '.pdf';
 
         if ($validated['accion'] === 'descargar') {
             return $pdf->download($nombreArchivo);
