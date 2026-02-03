@@ -484,20 +484,20 @@ class PersonaController extends Controller
             'accion' => 'required|in:ver,descargar',
         ]);
 
-        $añoActual = date('Y');
+        $anioActual = date('Y');
         $mesActual = (int) date('n');
 
         $mesesNombres = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
                         'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
-        // Categorías con subdivisión (dado/esperado) - sin diezmo ni ofrenda
+        // Categorias con subdivision (dado/esperado) - sin diezmo ni ofrenda
         $categoriasConPromesa = ['misiones', 'seminario', 'campa', 'construccion', 'micro'];
 
         // Obtener personas activas con promesas y sobres
         $personas = Persona::where('activo', true)
-            ->with(['promesas', 'sobres' => function($query) use ($añoActual) {
-                $query->whereHas('culto', function($q) use ($añoActual) {
-                    $q->whereYear('fecha', $añoActual);
+            ->with(['promesas', 'sobres' => function($query) use ($anioActual) {
+                $query->whereHas('culto', function($q) use ($anioActual) {
+                    $q->whereYear('fecha', $anioActual);
                 })->with(['detalles', 'culto']);
             }])
             ->orderBy('nombre')
@@ -554,7 +554,7 @@ class PersonaController extends Controller
 
                     if (isset($promesasMap[$cat])) {
                         $promesa = $promesasMap[$cat];
-                        $esperado = $this->calcularEsperadoMes($promesa, $añoActual, $mes);
+                        $esperado = $this->calcularEsperadoMes($promesa, $anioActual, $mes);
                     }
 
                     $mesDatos['categorias'][$cat] = [
@@ -621,13 +621,13 @@ class PersonaController extends Controller
             'categoriasConPromesa' => $categoriasConPromesa,
             'mesesNombres' => $mesesNombres,
             'mesActual' => $mesActual,
-            'añoActual' => $añoActual,
+            'anioActual' => $anioActual,
             'totalesGenerales' => $totalesGenerales,
         ]);
 
         $pdf->setPaper('letter', 'landscape');
 
-        $nombreArchivo = 'reporte-general-' . $añoActual . '-' . str_pad($mesActual, 2, '0', STR_PAD_LEFT) . '.pdf';
+        $nombreArchivo = 'reporte-general-' . $anioActual . '-' . str_pad($mesActual, 2, '0', STR_PAD_LEFT) . '.pdf';
 
         if ($validated['accion'] === 'descargar') {
             return $pdf->download($nombreArchivo);
@@ -637,11 +637,11 @@ class PersonaController extends Controller
     }
 
     /**
-     * Calcula el monto esperado según la frecuencia de la promesa para un mes específico
+     * Calcula el monto esperado segun la frecuencia de la promesa para un mes especifico
      */
-    private function calcularEsperadoMes($promesa, int $año, int $mes): float
+    private function calcularEsperadoMes($promesa, int $anio, int $mes): float
     {
-        $fechaMes = Carbon::create($año, $mes, 1);
+        $fechaMes = Carbon::create($anio, $mes, 1);
 
         switch ($promesa->frecuencia) {
             case 'semanal':

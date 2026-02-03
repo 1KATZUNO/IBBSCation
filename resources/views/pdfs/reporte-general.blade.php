@@ -272,7 +272,7 @@
         </div>
 
         <div class="periodo">
-            <p>Periodo: Enero - {{ $mesesNombres[$mesActual] }} {{ $añoActual }}</p>
+            <p>Periodo: Enero - {{ $mesesNombres[$mesActual] }} {{ $anioActual }}</p>
         </div>
 
         @if(count($reporteData) > 0)
