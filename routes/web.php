@@ -142,6 +142,7 @@ Route::middleware(['auth', 'role:admin', 'audit'])->group(function () {
     Route::post('personas/{persona}/reiniciar-compromisos', [PersonaController::class, 'reiniciarCompromisos'])->name('personas.reiniciar-compromisos');
     Route::post('personas/{persona}/limpiar-todo', [PersonaController::class, 'limpiarTodo'])->name('personas.limpiar-todo');
     Route::get('personas/reporte-pdf', [PersonaController::class, 'reportePdf'])->name('personas.reporte-pdf');
+    Route::get('personas/reporte-general', [PersonaController::class, 'reporteGeneral'])->name('personas.reporte-general');
     Route::resource('personas', PersonaController::class);
     Route::resource('promesas', PromesaController::class);
     

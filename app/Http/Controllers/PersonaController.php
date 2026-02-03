@@ -474,4 +474,197 @@ class PersonaController extends Controller
             return $pdf->stream($nombreArchivo);
         }
     }
+
+    /**
+     * Genera un reporte general detallado tipo Excel con dado/esperado por mes
+     */
+    public function reporteGeneral(Request $request)
+    {
+        $validated = $request->validate([
+            'accion' => 'required|in:ver,descargar',
+        ]);
+
+        $añoActual = date('Y');
+        $mesActual = (int) date('n');
+
+        $mesesNombres = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+        // Categorías con subdivisión (dado/esperado) - sin diezmo ni ofrenda
+        $categoriasConPromesa = ['misiones', 'seminario', 'campa', 'construccion', 'micro'];
+
+        // Obtener personas activas con promesas y sobres
+        $personas = Persona::where('activo', true)
+            ->with(['promesas', 'sobres' => function($query) use ($añoActual) {
+                $query->whereHas('culto', function($q) use ($añoActual) {
+                    $q->whereYear('fecha', $añoActual);
+                })->with(['detalles', 'culto']);
+            }])
+            ->orderBy('nombre')
+            ->get();
+
+        // Procesar datos por persona
+        $reporteData = [];
+
+        foreach ($personas as $persona) {
+            $datosPersona = [
+                'nombre' => $persona->nombre,
+                'meses' => [],
+                'totales' => [
+                    'dado' => 0,
+                    'esperado' => 0,
+                    'diferencia' => 0,
+                ],
+            ];
+
+            // Construir mapa de promesas por categoría
+            $promesasMap = [];
+            foreach ($persona->promesas as $promesa) {
+                $promesasMap[$promesa->categoria] = $promesa;
+            }
+
+            // Procesar cada mes desde enero hasta el mes actual
+            for ($mes = 1; $mes <= $mesActual; $mes++) {
+                $mesDatos = [
+                    'nombre' => $mesesNombres[$mes],
+                    'categorias' => [],
+                    'total_dado' => 0,
+                    'total_esperado' => 0,
+                    'diferencia' => 0,
+                ];
+
+                // Calcular lo dado por categoría en este mes
+                $dadoPorCategoria = array_fill_keys($categoriasConPromesa, 0);
+
+                foreach ($persona->sobres as $sobre) {
+                    if ($sobre->culto && Carbon::parse($sobre->culto->fecha)->month === $mes) {
+                        foreach ($sobre->detalles as $detalle) {
+                            $cat = $detalle->categoria;
+                            if (isset($dadoPorCategoria[$cat])) {
+                                $dadoPorCategoria[$cat] += $detalle->monto;
+                            }
+                        }
+                    }
+                }
+
+                // Calcular esperado y procesar cada categoría con promesa
+                foreach ($categoriasConPromesa as $cat) {
+                    $dado = $dadoPorCategoria[$cat];
+                    $esperado = 0;
+
+                    if (isset($promesasMap[$cat])) {
+                        $promesa = $promesasMap[$cat];
+                        $esperado = $this->calcularEsperadoMes($promesa, $añoActual, $mes);
+                    }
+
+                    $mesDatos['categorias'][$cat] = [
+                        'dado' => $dado,
+                        'esperado' => $esperado,
+                    ];
+
+                    $mesDatos['total_dado'] += $dado;
+                    $mesDatos['total_esperado'] += $esperado;
+                }
+
+                $mesDatos['diferencia'] = $mesDatos['total_dado'] - $mesDatos['total_esperado'];
+
+                $datosPersona['meses'][] = $mesDatos;
+
+                // Acumular totales de persona
+                $datosPersona['totales']['dado'] += $mesDatos['total_dado'];
+                $datosPersona['totales']['esperado'] += $mesDatos['total_esperado'];
+            }
+
+            $datosPersona['totales']['diferencia'] = $datosPersona['totales']['dado'] - $datosPersona['totales']['esperado'];
+
+            // Solo incluir personas que tengan algo dado o esperado
+            if ($datosPersona['totales']['dado'] > 0 || $datosPersona['totales']['esperado'] > 0) {
+                $reporteData[] = $datosPersona;
+            }
+        }
+
+        // Calcular totales generales
+        $totalesGenerales = [
+            'meses' => [],
+            'total_dado' => 0,
+            'total_esperado' => 0,
+            'total_diferencia' => 0,
+        ];
+
+        for ($mes = 1; $mes <= $mesActual; $mes++) {
+            $totalesGenerales['meses'][$mes] = [
+                'categorias' => array_fill_keys($categoriasConPromesa, ['dado' => 0, 'esperado' => 0]),
+                'total_dado' => 0,
+                'total_esperado' => 0,
+                'diferencia' => 0,
+            ];
+        }
+
+        foreach ($reporteData as $persona) {
+            foreach ($persona['meses'] as $idx => $mesDatos) {
+                $mes = $idx + 1;
+                foreach ($categoriasConPromesa as $cat) {
+                    $totalesGenerales['meses'][$mes]['categorias'][$cat]['dado'] += $mesDatos['categorias'][$cat]['dado'];
+                    $totalesGenerales['meses'][$mes]['categorias'][$cat]['esperado'] += $mesDatos['categorias'][$cat]['esperado'];
+                }
+                $totalesGenerales['meses'][$mes]['total_dado'] += $mesDatos['total_dado'];
+                $totalesGenerales['meses'][$mes]['total_esperado'] += $mesDatos['total_esperado'];
+                $totalesGenerales['meses'][$mes]['diferencia'] += $mesDatos['diferencia'];
+            }
+            $totalesGenerales['total_dado'] += $persona['totales']['dado'];
+            $totalesGenerales['total_esperado'] += $persona['totales']['esperado'];
+            $totalesGenerales['total_diferencia'] += $persona['totales']['diferencia'];
+        }
+
+        $pdf = \PDF::loadView('pdfs.reporte-general', [
+            'reporteData' => $reporteData,
+            'categoriasConPromesa' => $categoriasConPromesa,
+            'mesesNombres' => $mesesNombres,
+            'mesActual' => $mesActual,
+            'añoActual' => $añoActual,
+            'totalesGenerales' => $totalesGenerales,
+        ]);
+
+        $pdf->setPaper('letter', 'landscape');
+
+        $nombreArchivo = 'reporte-general-' . $añoActual . '-' . str_pad($mesActual, 2, '0', STR_PAD_LEFT) . '.pdf';
+
+        if ($validated['accion'] === 'descargar') {
+            return $pdf->download($nombreArchivo);
+        } else {
+            return $pdf->stream($nombreArchivo);
+        }
+    }
+
+    /**
+     * Calcula el monto esperado según la frecuencia de la promesa para un mes específico
+     */
+    private function calcularEsperadoMes($promesa, int $año, int $mes): float
+    {
+        $fechaMes = Carbon::create($año, $mes, 1);
+
+        switch ($promesa->frecuencia) {
+            case 'semanal':
+                // Contar domingos en el mes
+                $domingos = 0;
+                $fecha = $fechaMes->copy()->startOfMonth();
+                $finMes = $fechaMes->copy()->endOfMonth();
+
+                while ($fecha->lte($finMes)) {
+                    if ($fecha->dayOfWeek === Carbon::SUNDAY) {
+                        $domingos++;
+                    }
+                    $fecha->addDay();
+                }
+
+                return $promesa->monto * $domingos;
+
+            case 'quincenal':
+                return $promesa->monto * 2;
+
+            case 'mensual':
+            default:
+                return $promesa->monto;
+        }
+    }
 }
