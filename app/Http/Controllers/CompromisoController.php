@@ -50,6 +50,7 @@ class CompromisoController extends Controller
 
     /**
      * Calcula los compromisos de una persona para un mes específico
+     * SIN arrastrar saldos - cada mes es independiente
      */
     private function calcularCompromisos(Persona $persona, int $año, int $mes)
     {
@@ -77,29 +78,14 @@ class CompromisoController extends Controller
             // Actualizar monto prometido por si cambió la frecuencia
             $compromiso->monto_prometido = $this->calcularMontoPrometido($promesa, $año, $mes);
 
-            // Obtener saldo del mes anterior
-            // REGLA ESPECIAL: Si estamos en diciembre (mes 12), NO traer saldo de noviembre
-            // porque noviembre cierra el año fiscal y diciembre inicia con saldo 0
-            if ($mes == 12) {
-                $compromiso->saldo_anterior = 0;
-            } else {
-                $mesAnterior = Carbon::create($año, $mes, 1)->subMonth();
-                $compromisoAnterior = Compromiso::where('persona_id', $persona->id)
-                    ->where('categoria', $promesa->categoria)
-                    ->where('año', $mesAnterior->year)
-                    ->where('mes', $mesAnterior->month)
-                    ->first();
-
-                if ($compromisoAnterior) {
-                    $compromiso->saldo_anterior = $compromisoAnterior->saldo_actual;
-                }
-            }
+            // Ya no se arrastra saldo del mes anterior - cada mes es independiente
+            $compromiso->saldo_anterior = 0;
 
             // Calcular lo que ha dado en este mes
             $compromiso->monto_dado = $this->calcularMontoDado($persona, $promesa->categoria, $año, $mes);
 
-            // Calcular saldo actual
-            $compromiso->saldo_actual = ($compromiso->monto_dado + $compromiso->saldo_anterior) - $compromiso->monto_prometido;
+            // Diferencia del mes: Dado - Esperado (sin arrastrar)
+            $compromiso->saldo_actual = $compromiso->monto_dado - $compromiso->monto_prometido;
             $compromiso->save();
 
             $compromisos->push($compromiso);

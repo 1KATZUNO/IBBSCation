@@ -46,10 +46,10 @@
         </form>
     </div>
 
-    <!-- Resumen Total -->
+    <!-- Resumen del Mes -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-white rounded-lg shadow p-6">
-            <p class="text-sm text-gray-600">Total Prometido</p>
+            <p class="text-sm text-gray-600">Total Esperado</p>
             <p class="text-2xl font-bold text-blue-600">₡{{ number_format($resumenTotal['total_prometido'], 2) }}</p>
         </div>
         <div class="bg-white rounded-lg shadow p-6">
@@ -57,19 +57,14 @@
             <p class="text-2xl font-bold text-green-600">₡{{ number_format($resumenTotal['total_dado'], 2) }}</p>
         </div>
         <div class="bg-white rounded-lg shadow p-6">
-            <p class="text-sm text-gray-600">Saldo</p>
+            <p class="text-sm text-gray-600">Diferencia del Mes</p>
             <p class="text-2xl font-bold {{ $resumenTotal['saldo_total'] >= 0 ? 'text-green-600' : 'text-red-600' }}">
-                ₡{{ number_format(abs($resumenTotal['saldo_total']), 2) }}
-                @if($resumenTotal['saldo_total'] >= 0)
-                    <span class="text-sm">(A favor)</span>
-                @else
-                    <span class="text-sm">(Debe)</span>
-                @endif
+                {{ $resumenTotal['saldo_total'] >= 0 ? '+' : '-' }}₡{{ number_format(abs($resumenTotal['saldo_total']), 2) }}
             </p>
         </div>
     </div>
 
-    <!-- Tabla de Compromisos del Mes Actual -->
+    <!-- Tabla de Compromisos del Mes -->
     <div class="bg-white rounded-lg shadow overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
             <h3 class="text-lg font-semibold text-gray-900">Detalle - {{ $meses[$mes - 1] }} {{ $año }}</h3>
@@ -79,10 +74,9 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Categoría</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Saldo Anterior</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Prometido</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Esperado</th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Dado</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Saldo Actual</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Diferencia</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Estado</th>
                     </tr>
                 </thead>
@@ -92,9 +86,6 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 capitalize">
                             {{ ucfirst($compromiso->categoria) }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-right {{ $compromiso->saldo_anterior >= 0 ? 'text-green-600' : 'text-red-600' }}">
-                            ₡{{ number_format($compromiso->saldo_anterior, 2) }}
-                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
                             ₡{{ number_format($compromiso->monto_prometido, 2) }}
                         </td>
@@ -102,27 +93,27 @@
                             ₡{{ number_format($compromiso->monto_dado, 2) }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold {{ $compromiso->saldo_actual >= 0 ? 'text-green-600' : 'text-red-600' }}">
-                            ₡{{ number_format(abs($compromiso->saldo_actual), 2) }}
+                            {{ $compromiso->saldo_actual >= 0 ? '+' : '-' }}₡{{ number_format(abs($compromiso->saldo_actual), 2) }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-center">
                             @if($compromiso->saldo_actual >= 0)
                                 <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
                                     @if($compromiso->saldo_actual > 0)
-                                        A favor
+                                        Excedente
                                     @else
                                         Al día
                                     @endif
                                 </span>
                             @else
                                 <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
-                                    Debe
+                                    Déficit
                                 </span>
                             @endif
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                        <td colspan="5" class="px-6 py-12 text-center text-gray-500">
                             No hay promesas configuradas para esta persona
                         </td>
                     </tr>
@@ -132,26 +123,32 @@
         </div>
     </div>
 
-    <!-- Historial de Compromisos -->
+    <!-- Historial de Meses Anteriores -->
     @if($historial->count() > 1)
     <div class="bg-white rounded-lg shadow overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-            <h3 class="text-lg font-semibold text-gray-900">Historial de Compromisos</h3>
+            <h3 class="text-lg font-semibold text-gray-900">Historial por Mes</h3>
         </div>
         <div class="p-6">
             <div class="space-y-4">
                 @foreach($historial->take(6) as $periodo => $compsMes)
                 @php
                     list($añoHist, $mesHist) = explode('-', $periodo);
+                    $totalMes = $compsMes->sum('saldo_actual');
                 @endphp
-                <div class="border-l-4 border-blue-500 pl-4">
-                    <h4 class="font-semibold text-gray-900">{{ $meses[intval($mesHist) - 1] }} {{ $añoHist }}</h4>
+                <div class="border-l-4 {{ $totalMes >= 0 ? 'border-green-500' : 'border-red-500' }} pl-4">
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-semibold text-gray-900">{{ $meses[intval($mesHist) - 1] }} {{ $añoHist }}</h4>
+                        <span class="font-bold {{ $totalMes >= 0 ? 'text-green-600' : 'text-red-600' }}">
+                            {{ $totalMes >= 0 ? '+' : '-' }}₡{{ number_format(abs($totalMes), 2) }}
+                        </span>
+                    </div>
                     <div class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
                         @foreach($compsMes as $comp)
                         <div>
                             <span class="text-gray-600 capitalize">{{ $comp->categoria }}:</span>
                             <span class="font-semibold {{ $comp->saldo_actual >= 0 ? 'text-green-600' : 'text-red-600' }}">
-                                ₡{{ number_format(abs($comp->saldo_actual), 2) }}
+                                {{ $comp->saldo_actual >= 0 ? '+' : '-' }}₡{{ number_format(abs($comp->saldo_actual), 2) }}
                             </span>
                         </div>
                         @endforeach
@@ -167,11 +164,11 @@
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <h4 class="text-sm font-semibold text-blue-900 mb-2">ℹ️ Información</h4>
         <ul class="text-sm text-blue-800 space-y-1">
-            <li>• <strong>Saldo Anterior:</strong> Excedente o deuda del mes anterior</li>
-            <li>• <strong>Saldo Actual:</strong> Se calcula como: (Dado + Saldo Anterior) - Prometido</li>
-            <li>• <strong>Saldo Positivo (verde):</strong> La persona dio más de lo prometido o está al día</li>
-            <li>• <strong>Saldo Negativo (rojo):</strong> La persona debe dinero</li>
-            <li>• Los excedentes se arrastran automáticamente al siguiente mes</li>
+            <li>• <strong>Esperado:</strong> Lo que debió dar este mes según su promesa</li>
+            <li>• <strong>Dado:</strong> Lo que realmente dio este mes</li>
+            <li>• <strong>Diferencia:</strong> Dado - Esperado (cada mes es independiente)</li>
+            <li>• <strong>Excedente (verde):</strong> Dio más de lo esperado</li>
+            <li>• <strong>Déficit (rojo):</strong> Dio menos de lo esperado</li>
         </ul>
     </div>
 </div>
