@@ -14,7 +14,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
         $middleware->web(append: [
             \App\Http\Middleware\DetectMobileApp::class,
-            \App\Http\Middleware\ResolveTenant::class,
         ]);
 
         $middleware->alias([
