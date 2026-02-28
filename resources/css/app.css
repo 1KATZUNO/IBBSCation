@@ -208,3 +208,68 @@
     .delay-400 { animation-delay: 0.2s; }
     .delay-500 { animation-delay: 0.25s; }
 }
+
+/* ============================================
+   ESTILOS PARA APP MOVIL (IBBSCApp WebView)
+   ============================================ */
+
+/* Bottom Navigation */
+.mobile-nav-item {
+    @apply flex flex-col items-center justify-center px-2 py-1;
+    @apply transition-colors duration-200;
+    min-width: 0;
+    flex: 1;
+}
+
+.mobile-nav-item:active {
+    @apply bg-gray-100;
+}
+
+/* Cuando la clase ibbsc-mobile-app esta presente (inyectada por WebView o por el body class) */
+.ibbsc-mobile-app .stat-card {
+    @apply p-4;
+    min-height: 100px;
+}
+
+.ibbsc-mobile-app .glass-card {
+    @apply p-4;
+}
+
+.ibbsc-mobile-app h1 {
+    @apply text-2xl;
+}
+
+.ibbsc-mobile-app h2 {
+    @apply text-xl;
+}
+
+.ibbsc-mobile-app h3 {
+    @apply text-lg;
+}
+
+/* Modales responsive para movil */
+.ibbsc-mobile-app .modal-content {
+    @apply mx-4 my-4 p-4;
+    max-width: calc(100vw - 2rem);
+}
+
+/* Tablas responsive en movil */
+.ibbsc-mobile-app .table-primary thead th,
+.ibbsc-mobile-app .table-gemini thead th {
+    @apply px-3 py-2 text-xs;
+}
+
+.ibbsc-mobile-app .table-primary tbody td,
+.ibbsc-mobile-app .table-gemini tbody td {
+    @apply px-3 py-2 text-sm;
+}
+
+/* Esconder scrollbar en movil para apariencia mas limpia */
+.ibbsc-mobile-app ::-webkit-scrollbar {
+    display: none;
+}
+
+.ibbsc-mobile-app {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}

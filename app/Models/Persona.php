@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\ClaseAsistencia;
 
 class Persona extends Model
 {
+    use BelongsToTenant;
     protected $table = 'personas';
 
     protected $fillable = [
@@ -18,10 +21,17 @@ class Persona extends Model
         'user_id',
         'activo',
         'notas',
+        'tenant_id',
+        'fecha_nacimiento',
+        'pin',
+        'clase_asistencia_id',
+        'es_maestro',
     ];
 
     protected $casts = [
         'activo' => 'boolean',
+        'es_maestro' => 'boolean',
+        'fecha_nacimiento' => 'date',
     ];
 
     protected $hidden = [
@@ -46,5 +56,10 @@ class Persona extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function claseAsistencia(): BelongsTo
+    {
+        return $this->belongsTo(ClaseAsistencia::class);
     }
 }

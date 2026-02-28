@@ -1,0 +1,2405 @@
+<!DOCTYPE html><html><head>
+      <title>PLAN_MULTI_TENANT</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="file:///c:\Users\David Gonzalez\.vscode\extensions\shd101wyy.markdown-preview-enhanced-0.8.20\crossnote\dependencies\katex\katex.min.css">
+      
+      
+      
+      
+      
+      <style>
+      code[class*=language-],pre[class*=language-]{color:#333;background:0 0;font-family:Consolas,"Liberation Mono",Menlo,Courier,monospace;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.4;-moz-tab-size:8;-o-tab-size:8;tab-size:8;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:.8em;overflow:auto;border-radius:3px;background:#f5f5f5}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal;background:#f5f5f5}.token.blockquote,.token.comment{color:#969896}.token.cdata{color:#183691}.token.doctype,.token.macro.property,.token.punctuation,.token.variable{color:#333}.token.builtin,.token.important,.token.keyword,.token.operator,.token.rule{color:#a71d5d}.token.attr-value,.token.regex,.token.string,.token.url{color:#183691}.token.atrule,.token.boolean,.token.code,.token.command,.token.constant,.token.entity,.token.number,.token.property,.token.symbol{color:#0086b3}.token.prolog,.token.selector,.token.tag{color:#63a35c}.token.attr-name,.token.class,.token.class-name,.token.function,.token.id,.token.namespace,.token.pseudo-class,.token.pseudo-element,.token.url-reference .token.variable{color:#795da3}.token.entity{cursor:help}.token.title,.token.title .token.punctuation{font-weight:700;color:#1d3e81}.token.list{color:#ed6a43}.token.inserted{background-color:#eaffea;color:#55a532}.token.deleted{background-color:#ffecec;color:#bd2c00}.token.bold{font-weight:700}.token.italic{font-style:italic}.language-json .token.property{color:#183691}.language-markup .token.tag .token.punctuation{color:#333}.language-css .token.function,code.language-css{color:#0086b3}.language-yaml .token.atrule{color:#63a35c}code.language-yaml{color:#183691}.language-ruby .token.function{color:#333}.language-markdown .token.url{color:#795da3}.language-makefile .token.symbol{color:#795da3}.language-makefile .token.variable{color:#183691}.language-makefile .token.builtin{color:#0086b3}.language-bash .token.keyword{color:#0086b3}pre[data-line]{position:relative;padding:1em 0 1em 3em}pre[data-line] .line-highlight-wrapper{position:absolute;top:0;left:0;background-color:transparent;display:block;width:100%}pre[data-line] .line-highlight{position:absolute;left:0;right:0;padding:inherit 0;margin-top:1em;background:hsla(24,20%,50%,.08);background:linear-gradient(to right,hsla(24,20%,50%,.1) 70%,hsla(24,20%,50%,0));pointer-events:none;line-height:inherit;white-space:pre}pre[data-line] .line-highlight:before,pre[data-line] .line-highlight[data-end]:after{content:attr(data-start);position:absolute;top:.4em;left:.6em;min-width:1em;padding:0 .5em;background-color:hsla(24,20%,50%,.4);color:#f4f1ef;font:bold 65%/1.5 sans-serif;text-align:center;vertical-align:.3em;border-radius:999px;text-shadow:none;box-shadow:0 1px #fff}pre[data-line] .line-highlight[data-end]:after{content:attr(data-end);top:auto;bottom:.4em}html body{font-family:'Helvetica Neue',Helvetica,'Segoe UI',Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ol,html body>ul{margin-bottom:16px}html body ol,html body ul{padding-left:2em}html body ol.no-list,html body ul.no-list{padding:0;list-style-type:none}html body ol ol,html body ol ul,html body ul ol,html body ul ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:700;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:700}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::after,html body code::before{letter-spacing:-.2em;content:'\00a0'}html body pre>code{padding:0;margin:0;word-break:normal;white-space:pre;background:0 0;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:after,html body pre code:before,html body pre tt:after,html body pre tt:before{content:normal}html body blockquote,html body dl,html body ol,html body p,html body pre,html body ul{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body code,html body pre{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview ul{list-style:disc}.markdown-preview ul ul{list-style:circle}.markdown-preview ul ul ul{list-style:square}.markdown-preview ol{list-style:decimal}.markdown-preview ol ol,.markdown-preview ul ol{list-style-type:lower-roman}.markdown-preview ol ol ol,.markdown-preview ol ul ol,.markdown-preview ul ol ol,.markdown-preview ul ul ol{list-style-type:lower-alpha}.markdown-preview .newpage,.markdown-preview .pagebreak{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center!important}.markdown-preview:not([data-for=preview]) .code-chunk .code-chunk-btn-group{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .status{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .output-div{margin-bottom:16px}.markdown-preview .md-toc{padding:0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link div,.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}.markdown-preview .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0;min-height:100vh}@media screen and (min-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{font-size:14px!important;padding:1em}}@media print{html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc{padding:0 16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link div,html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% - 300px);padding:2em calc(50% - 457px - 300px / 2);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+      <!-- The content below will be included at the end of the <head> element. --><script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function () {
+    // your code here
+  });
+</script></head><body for="html-export">
+    
+    
+      <div class="crossnote markdown-preview  ">
+      
+<h1 id="plan-de-transformacion-multi-tenant---ibbsc--ibbsaas">Plan de Transformacion Multi-Tenant - IBBSC → IBBSaaS </h1>
+<blockquote>
+<p>Documento exhaustivo de cada modificacion necesaria para convertir la app de administracion<br>
+de una sola iglesia en una plataforma multi-iglesia con branding, rubros y configuracion dinamica.</p>
+</blockquote>
+<hr>
+<h2 id="tabla-de-contenidos">TABLA DE CONTENIDOS </h2>
+<ol>
+<li><a href="#1-resumen-ejecutivo">Resumen Ejecutivo</a></li>
+<li><a href="#2-arquitectura-multi-tenant">Arquitectura Multi-Tenant</a></li>
+<li><a href="#3-nuevas-tablas-de-base-de-datos">Nuevas Tablas de Base de Datos</a></li>
+<li><a href="#4-tablas-existentes-que-cambian">Tablas Existentes que Cambian</a></li>
+<li><a href="#5-sistema-de-branding-dinamico-logo--colores">Sistema de Branding Dinamico (Logo + Colores)</a></li>
+<li><a href="#6-sistema-de-rubroscategorias-dinamicos">Sistema de Rubros/Categorias Dinamicos</a></li>
+<li><a href="#7-sistema-de-asistencia-dinamica">Sistema de Asistencia Dinamica</a></li>
+<li><a href="#8-autenticacion-por-dominio-de-email">Autenticacion por Dominio de Email</a></li>
+<li><a href="#9-panel-de-super-admin">Panel de Super Admin</a></li>
+<li><a href="#10-modificaciones-por-archivo-inventario-completo">Modificaciones por Archivo (Inventario Completo)</a></li>
+<li><a href="#11-migraciones-necesarias">Migraciones Necesarias</a></li>
+<li><a href="#12-nuevos-archivos-a-crear">Nuevos Archivos a Crear</a></li>
+<li><a href="#13-orden-de-implementacion">Orden de Implementacion</a></li>
+<li><a href="#14-riesgos-y-decisiones-pendientes">Riesgos y Decisiones Pendientes</a></li>
+</ol>
+<hr>
+<h2 id="1-resumen-ejecutivo">1. RESUMEN EJECUTIVO </h2>
+<h3 id="estado-actual">Estado actual </h3>
+<ul>
+<li>App monolito para <strong>una sola iglesia</strong> (IBBSC - Iglesia Biblica Bautista Santa Cruz)</li>
+<li><strong>459 referencias</strong> a clases <code>blue-*</code> en 44 archivos de vistas</li>
+<li><strong>8 categorias de ingreso</strong> quemadas en schema, servicios, controladores y vistas</li>
+<li><strong>~50 columnas demograficas</strong> quemadas en tabla <code>asistencia</code></li>
+<li><strong>176 referencias</strong> al simbolo de moneda <code>₡</code> en vistas</li>
+<li><strong>65+ referencias</strong> al texto "IBBSC" en vistas y controladores</li>
+<li><strong>23 referencias</strong> a <code>Logo.png</code> / <code>Logo2.png</code></li>
+<li><strong>4 URLs</strong> de redes sociales quemadas</li>
+<li><strong>5 tipos de culto</strong> en ENUM fijo</li>
+<li><strong>5 roles</strong> en ENUM fijo</li>
+</ul>
+<h3 id="objetivo">Objetivo </h3>
+<p>Plataforma SaaS donde:</p>
+<ul>
+<li>Cada iglesia tiene su propio espacio (tenant) con branding, rubros y configuracion independiente</li>
+<li>Un super admin (<code>@admin.com</code>) gestiona todas las iglesias</li>
+<li>La deteccion de tenant es por dominio de email (<code>@ibbla.com</code>, <code>@ibba.com</code>, etc.)</li>
+<li>Misma base de datos MySQL, aislamiento por columna <code>tenant_id</code></li>
+</ul>
+<hr>
+<h2 id="2-arquitectura-multi-tenant">2. ARQUITECTURA MULTI-TENANT </h2>
+<h3 id="enfoque-elegido-single-database-shared-schema-con-tenant_id">Enfoque elegido: Single Database, Shared Schema con <code>tenant_id</code> </h3>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>                    ┌─────────────────────┐
+                    │   Super Admin Panel  │
+                    │   (@admin.com)       │
+                    └──────────┬──────────┘
+                               │
+              ┌────────────────┼────────────────┐
+              │                │                 │
+     ┌────────▼───────┐ ┌─────▼──────┐ ┌───────▼──────┐
+     │  Tenant IBBSC  │ │ Tenant     │ │  Tenant      │
+     │  @ibbsc.com    │ │ @ibbla.com │ │  @ibba.com   │
+     │  Logo: ✝       │ │ Logo: 🕊   │ │  Logo: 📖    │
+     │  Color: Azul   │ │ Color:Rojo │ │  Color:Verde │
+     │  Rubros: 8     │ │ Rubros: 5  │ │  Rubros: 12  │
+     └────────────────┘ └────────────┘ └──────────────┘
+              │                │                 │
+              └────────────────┼────────────────┘
+                               │
+                    ┌──────────▼──────────┐
+                    │   MySQL Database     │
+                    │   (tenant_id en     │
+                    │    cada tabla)       │
+                    └─────────────────────┘
+</code></pre><h3 id="mecanismo-de-tenant-resolution">Mecanismo de Tenant Resolution </h3>
+<ol>
+<li>Usuario inicia sesion con email <code>juan@ibbla.com</code></li>
+<li>Middleware extrae dominio: <code>ibbla.com</code></li>
+<li>Busca en <code>tenant_email_domains</code> → encuentra <code>tenant_id = 2</code></li>
+<li>Setea <code>tenant_id</code> en sesion y en un singleton</li>
+<li>Global Scopes en Eloquent filtran automaticamente todas las queries</li>
+<li>Si dominio es <code>admin.com</code> → redirige a panel Super Admin</li>
+</ol>
+<hr>
+<h2 id="3-nuevas-tablas-de-base-de-datos">3. NUEVAS TABLAS DE BASE DE DATOS </h2>
+<h3 id="31-tenants-iglesias">3.1 <code>tenants</code> (Iglesias) </h3>
+<pre data-role="codeBlock" data-info="sql" class="language-sql sql"><code><span class="token keyword keyword-CREATE">CREATE</span> <span class="token keyword keyword-TABLE">TABLE</span> tenants <span class="token punctuation">(</span>
+    id              <span class="token keyword keyword-BIGINT">BIGINT</span> <span class="token keyword keyword-UNSIGNED">UNSIGNED</span> <span class="token keyword keyword-AUTO_INCREMENT">AUTO_INCREMENT</span> <span class="token keyword keyword-PRIMARY">PRIMARY</span> <span class="token keyword keyword-KEY">KEY</span><span class="token punctuation">,</span>
+    nombre          <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">255</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>          <span class="token comment">-- "Iglesia Biblica Bautista Santa Cruz"</span>
+    slug            <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword keyword-UNIQUE">UNIQUE</span><span class="token punctuation">,</span>    <span class="token comment">-- "ibbsc"</span>
+    <span class="token comment">-- Branding</span>
+    logo_path       <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">500</span><span class="token punctuation">)</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>               <span class="token comment">-- "tenants/1/logo.png"</span>
+    logo_pdf_path   <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">500</span><span class="token punctuation">)</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>               <span class="token comment">-- "tenants/1/logo-pdf.png" (para DomPDF)</span>
+    favicon_path    <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">500</span><span class="token punctuation">)</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>               <span class="token comment">-- "tenants/1/favicon.png"</span>
+    <span class="token comment">-- Colores (paleta completa)</span>
+    color_50        <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token string">'#eff6ff'</span><span class="token punctuation">,</span>
+    color_100       <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token string">'#dbeafe'</span><span class="token punctuation">,</span>
+    color_200       <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token string">'#bfdbfe'</span><span class="token punctuation">,</span>
+    color_300       <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token string">'#93c5fd'</span><span class="token punctuation">,</span>
+    color_400       <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token string">'#60a5fa'</span><span class="token punctuation">,</span>
+    color_500       <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token string">'#3b82f6'</span><span class="token punctuation">,</span>
+    color_600       <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token string">'#2563eb'</span><span class="token punctuation">,</span>
+    color_700       <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token string">'#1d4ed8'</span><span class="token punctuation">,</span>
+    color_800       <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token string">'#1e40af'</span><span class="token punctuation">,</span>
+    color_900       <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token string">'#1e3a8a'</span><span class="token punctuation">,</span>
+    <span class="token comment">-- Alternativa: paleta predefinida</span>
+    color_theme     <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token string">'blue'</span><span class="token punctuation">,</span>      <span class="token comment">-- blue|red|green|purple|orange|teal</span>
+    use_custom_colors <span class="token keyword keyword-BOOLEAN">BOOLEAN</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token boolean">FALSE</span><span class="token punctuation">,</span>          <span class="token comment">-- si true, usa color_50..900; si false, usa color_theme</span>
+    <span class="token comment">-- Configuracion regional</span>
+    timezone        <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token string">'America/Costa_Rica'</span><span class="token punctuation">,</span>
+    locale          <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token string">'es'</span><span class="token punctuation">,</span>
+    moneda_codigo   <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token string">'CRC'</span><span class="token punctuation">,</span>
+    moneda_simbolo  <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token string">'₡'</span><span class="token punctuation">,</span>
+    <span class="token comment">-- Info de contacto</span>
+    direccion       <span class="token keyword keyword-TEXT">TEXT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+    telefono        <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">30</span><span class="token punctuation">)</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+    email_contacto  <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">255</span><span class="token punctuation">)</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+    sitio_web       <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">500</span><span class="token punctuation">)</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+    <span class="token comment">-- Redes sociales (JSON flexible)</span>
+    redes_sociales  JSON <span class="token boolean">NULL</span><span class="token punctuation">,</span>                        <span class="token comment">-- {"instagram":"url","facebook":"url","youtube":"url"}</span>
+    <span class="token comment">-- Estado</span>
+    activo          <span class="token keyword keyword-BOOLEAN">BOOLEAN</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token boolean">TRUE</span><span class="token punctuation">,</span>
+    max_usuarios    <span class="token keyword keyword-INT">INT</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token number">10</span><span class="token punctuation">,</span>                   <span class="token comment">-- limite por plan</span>
+    created_at      <span class="token keyword keyword-TIMESTAMP">TIMESTAMP</span><span class="token punctuation">,</span>
+    updated_at      <span class="token keyword keyword-TIMESTAMP">TIMESTAMP</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre><h3 id="32-tenant_email_domains-dominios-de-email-por-tenant">3.2 <code>tenant_email_domains</code> (Dominios de email por tenant) </h3>
+<pre data-role="codeBlock" data-info="sql" class="language-sql sql"><code><span class="token keyword keyword-CREATE">CREATE</span> <span class="token keyword keyword-TABLE">TABLE</span> tenant_email_domains <span class="token punctuation">(</span>
+    id          <span class="token keyword keyword-BIGINT">BIGINT</span> <span class="token keyword keyword-UNSIGNED">UNSIGNED</span> <span class="token keyword keyword-AUTO_INCREMENT">AUTO_INCREMENT</span> <span class="token keyword keyword-PRIMARY">PRIMARY</span> <span class="token keyword keyword-KEY">KEY</span><span class="token punctuation">,</span>
+    tenant_id   <span class="token keyword keyword-BIGINT">BIGINT</span> <span class="token keyword keyword-UNSIGNED">UNSIGNED</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+    dominio     <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">255</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span> <span class="token keyword keyword-UNIQUE">UNIQUE</span><span class="token punctuation">,</span>  <span class="token comment">-- "ibbsc.com", "ibbla.com"</span>
+    principal   <span class="token keyword keyword-BOOLEAN">BOOLEAN</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token boolean">FALSE</span><span class="token punctuation">,</span>          <span class="token comment">-- dominio principal del tenant</span>
+    activo      <span class="token keyword keyword-BOOLEAN">BOOLEAN</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token boolean">TRUE</span><span class="token punctuation">,</span>
+    created_at  <span class="token keyword keyword-TIMESTAMP">TIMESTAMP</span><span class="token punctuation">,</span>
+    updated_at  <span class="token keyword keyword-TIMESTAMP">TIMESTAMP</span><span class="token punctuation">,</span>
+    <span class="token keyword keyword-FOREIGN">FOREIGN</span> <span class="token keyword keyword-KEY">KEY</span> <span class="token punctuation">(</span>tenant_id<span class="token punctuation">)</span> <span class="token keyword keyword-REFERENCES">REFERENCES</span> tenants<span class="token punctuation">(</span>id<span class="token punctuation">)</span> <span class="token keyword keyword-ON">ON</span> <span class="token keyword keyword-DELETE">DELETE</span> <span class="token keyword keyword-CASCADE">CASCADE</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre><h3 id="33-tenant_categories-rubros-dinamicos-por-iglesia">3.3 <code>tenant_categories</code> (Rubros dinamicos por iglesia) </h3>
+<pre data-role="codeBlock" data-info="sql" class="language-sql sql"><code><span class="token keyword keyword-CREATE">CREATE</span> <span class="token keyword keyword-TABLE">TABLE</span> tenant_categories <span class="token punctuation">(</span>
+    id                  <span class="token keyword keyword-BIGINT">BIGINT</span> <span class="token keyword keyword-UNSIGNED">UNSIGNED</span> <span class="token keyword keyword-AUTO_INCREMENT">AUTO_INCREMENT</span> <span class="token keyword keyword-PRIMARY">PRIMARY</span> <span class="token keyword keyword-KEY">KEY</span><span class="token punctuation">,</span>
+    tenant_id           <span class="token keyword keyword-BIGINT">BIGINT</span> <span class="token keyword keyword-UNSIGNED">UNSIGNED</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+    nombre              <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>      <span class="token comment">-- "Diezmo", "Misiones", etc.</span>
+    slug                <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>       <span class="token comment">-- "diezmo", "misiones"</span>
+    tipo                <span class="token keyword keyword-ENUM">ENUM</span><span class="token punctuation">(</span><span class="token string">'ingreso'</span><span class="token punctuation">,</span> <span class="token string">'compromiso'</span><span class="token punctuation">,</span> <span class="token string">'ambos'</span><span class="token punctuation">)</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token string">'ambos'</span><span class="token punctuation">,</span>
+    <span class="token comment">-- Comportamiento</span>
+    excluir_de_promesas <span class="token keyword keyword-BOOLEAN">BOOLEAN</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token boolean">FALSE</span><span class="token punctuation">,</span>       <span class="token comment">-- true para "diezmo", "ofrenda_especial"</span>
+    es_ofrenda_suelta   <span class="token keyword keyword-BOOLEAN">BOOLEAN</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token boolean">FALSE</span><span class="token punctuation">,</span>       <span class="token comment">-- si es categoria de ofrenda sin sobre</span>
+    <span class="token comment">-- Presentacion</span>
+    icono               <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>            <span class="token comment">-- nombre de icono o emoji</span>
+    color               <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>             <span class="token comment">-- color para graficas</span>
+    orden               <span class="token keyword keyword-INT">INT</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token number">0</span><span class="token punctuation">,</span>
+    activa              <span class="token keyword keyword-BOOLEAN">BOOLEAN</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token boolean">TRUE</span><span class="token punctuation">,</span>
+    created_at          <span class="token keyword keyword-TIMESTAMP">TIMESTAMP</span><span class="token punctuation">,</span>
+    updated_at          <span class="token keyword keyword-TIMESTAMP">TIMESTAMP</span><span class="token punctuation">,</span>
+    <span class="token keyword keyword-FOREIGN">FOREIGN</span> <span class="token keyword keyword-KEY">KEY</span> <span class="token punctuation">(</span>tenant_id<span class="token punctuation">)</span> <span class="token keyword keyword-REFERENCES">REFERENCES</span> tenants<span class="token punctuation">(</span>id<span class="token punctuation">)</span> <span class="token keyword keyword-ON">ON</span> <span class="token keyword keyword-DELETE">DELETE</span> <span class="token keyword keyword-CASCADE">CASCADE</span><span class="token punctuation">,</span>
+    <span class="token keyword keyword-UNIQUE">UNIQUE</span><span class="token punctuation">(</span>tenant_id<span class="token punctuation">,</span> slug<span class="token punctuation">)</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre><h3 id="34-tenant_service_types-tipos-de-culto-por-iglesia">3.4 <code>tenant_service_types</code> (Tipos de culto por iglesia) </h3>
+<pre data-role="codeBlock" data-info="sql" class="language-sql sql"><code><span class="token keyword keyword-CREATE">CREATE</span> <span class="token keyword keyword-TABLE">TABLE</span> tenant_service_types <span class="token punctuation">(</span>
+    id          <span class="token keyword keyword-BIGINT">BIGINT</span> <span class="token keyword keyword-UNSIGNED">UNSIGNED</span> <span class="token keyword keyword-AUTO_INCREMENT">AUTO_INCREMENT</span> <span class="token keyword keyword-PRIMARY">PRIMARY</span> <span class="token keyword keyword-KEY">KEY</span><span class="token punctuation">,</span>
+    tenant_id   <span class="token keyword keyword-BIGINT">BIGINT</span> <span class="token keyword keyword-UNSIGNED">UNSIGNED</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+    nombre      <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>      <span class="token comment">-- "Domingo AM", "Miercoles", etc.</span>
+    slug        <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+    orden       <span class="token keyword keyword-INT">INT</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token number">0</span><span class="token punctuation">,</span>
+    activo      <span class="token keyword keyword-BOOLEAN">BOOLEAN</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token boolean">TRUE</span><span class="token punctuation">,</span>
+    created_at  <span class="token keyword keyword-TIMESTAMP">TIMESTAMP</span><span class="token punctuation">,</span>
+    updated_at  <span class="token keyword keyword-TIMESTAMP">TIMESTAMP</span><span class="token punctuation">,</span>
+    <span class="token keyword keyword-FOREIGN">FOREIGN</span> <span class="token keyword keyword-KEY">KEY</span> <span class="token punctuation">(</span>tenant_id<span class="token punctuation">)</span> <span class="token keyword keyword-REFERENCES">REFERENCES</span> tenants<span class="token punctuation">(</span>id<span class="token punctuation">)</span> <span class="token keyword keyword-ON">ON</span> <span class="token keyword keyword-DELETE">DELETE</span> <span class="token keyword keyword-CASCADE">CASCADE</span><span class="token punctuation">,</span>
+    <span class="token keyword keyword-UNIQUE">UNIQUE</span><span class="token punctuation">(</span>tenant_id<span class="token punctuation">,</span> slug<span class="token punctuation">)</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre><h3 id="35-tenant_demographic_groups-grupos-demograficos-de-asistencia">3.5 <code>tenant_demographic_groups</code> (Grupos demograficos de asistencia) </h3>
+<pre data-role="codeBlock" data-info="sql" class="language-sql sql"><code><span class="token keyword keyword-CREATE">CREATE</span> <span class="token keyword keyword-TABLE">TABLE</span> tenant_demographic_groups <span class="token punctuation">(</span>
+    id              <span class="token keyword keyword-BIGINT">BIGINT</span> <span class="token keyword keyword-UNSIGNED">UNSIGNED</span> <span class="token keyword keyword-AUTO_INCREMENT">AUTO_INCREMENT</span> <span class="token keyword keyword-PRIMARY">PRIMARY</span> <span class="token keyword keyword-KEY">KEY</span><span class="token punctuation">,</span>
+    tenant_id       <span class="token keyword keyword-BIGINT">BIGINT</span> <span class="token keyword keyword-UNSIGNED">UNSIGNED</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+    nombre          <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>  <span class="token comment">-- "Capilla", "Clase 0-1", etc.</span>
+    slug            <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+    tiene_maestros  <span class="token keyword keyword-BOOLEAN">BOOLEAN</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token boolean">FALSE</span><span class="token punctuation">,</span>
+    orden           <span class="token keyword keyword-INT">INT</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token number">0</span><span class="token punctuation">,</span>
+    activo          <span class="token keyword keyword-BOOLEAN">BOOLEAN</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token boolean">TRUE</span><span class="token punctuation">,</span>
+    color           <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+    created_at      <span class="token keyword keyword-TIMESTAMP">TIMESTAMP</span><span class="token punctuation">,</span>
+    updated_at      <span class="token keyword keyword-TIMESTAMP">TIMESTAMP</span><span class="token punctuation">,</span>
+    <span class="token keyword keyword-FOREIGN">FOREIGN</span> <span class="token keyword keyword-KEY">KEY</span> <span class="token punctuation">(</span>tenant_id<span class="token punctuation">)</span> <span class="token keyword keyword-REFERENCES">REFERENCES</span> tenants<span class="token punctuation">(</span>id<span class="token punctuation">)</span> <span class="token keyword keyword-ON">ON</span> <span class="token keyword keyword-DELETE">DELETE</span> <span class="token keyword keyword-CASCADE">CASCADE</span><span class="token punctuation">,</span>
+    <span class="token keyword keyword-UNIQUE">UNIQUE</span><span class="token punctuation">(</span>tenant_id<span class="token punctuation">,</span> slug<span class="token punctuation">)</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre><h3 id="36-tenant_demographic_fields-campos-dentro-de-cada-grupo">3.6 <code>tenant_demographic_fields</code> (Campos dentro de cada grupo) </h3>
+<pre data-role="codeBlock" data-info="sql" class="language-sql sql"><code><span class="token keyword keyword-CREATE">CREATE</span> <span class="token keyword keyword-TABLE">TABLE</span> tenant_demographic_fields <span class="token punctuation">(</span>
+    id          <span class="token keyword keyword-BIGINT">BIGINT</span> <span class="token keyword keyword-UNSIGNED">UNSIGNED</span> <span class="token keyword keyword-AUTO_INCREMENT">AUTO_INCREMENT</span> <span class="token keyword keyword-PRIMARY">PRIMARY</span> <span class="token keyword keyword-KEY">KEY</span><span class="token punctuation">,</span>
+    group_id    <span class="token keyword keyword-BIGINT">BIGINT</span> <span class="token keyword keyword-UNSIGNED">UNSIGNED</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+    nombre      <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>      <span class="token comment">-- "Adultos Hombres", "Jovenes Mujeres"</span>
+    slug        <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>       <span class="token comment">-- "adultos_hombres"</span>
+    es_maestro  <span class="token keyword keyword-BOOLEAN">BOOLEAN</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token boolean">FALSE</span><span class="token punctuation">,</span>       <span class="token comment">-- si es campo de maestros</span>
+    orden       <span class="token keyword keyword-INT">INT</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token number">0</span><span class="token punctuation">,</span>
+    activo      <span class="token keyword keyword-BOOLEAN">BOOLEAN</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token boolean">TRUE</span><span class="token punctuation">,</span>
+    created_at  <span class="token keyword keyword-TIMESTAMP">TIMESTAMP</span><span class="token punctuation">,</span>
+    updated_at  <span class="token keyword keyword-TIMESTAMP">TIMESTAMP</span><span class="token punctuation">,</span>
+    <span class="token keyword keyword-FOREIGN">FOREIGN</span> <span class="token keyword keyword-KEY">KEY</span> <span class="token punctuation">(</span>group_id<span class="token punctuation">)</span> <span class="token keyword keyword-REFERENCES">REFERENCES</span> tenant_demographic_groups<span class="token punctuation">(</span>id<span class="token punctuation">)</span> <span class="token keyword keyword-ON">ON</span> <span class="token keyword keyword-DELETE">DELETE</span> <span class="token keyword keyword-CASCADE">CASCADE</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre><h3 id="37-tenant_roles-roles-personalizables-por-iglesia">3.7 <code>tenant_roles</code> (Roles personalizables por iglesia) </h3>
+<pre data-role="codeBlock" data-info="sql" class="language-sql sql"><code><span class="token keyword keyword-CREATE">CREATE</span> <span class="token keyword keyword-TABLE">TABLE</span> tenant_roles <span class="token punctuation">(</span>
+    id          <span class="token keyword keyword-BIGINT">BIGINT</span> <span class="token keyword keyword-UNSIGNED">UNSIGNED</span> <span class="token keyword keyword-AUTO_INCREMENT">AUTO_INCREMENT</span> <span class="token keyword keyword-PRIMARY">PRIMARY</span> <span class="token keyword keyword-KEY">KEY</span><span class="token punctuation">,</span>
+    tenant_id   <span class="token keyword keyword-BIGINT">BIGINT</span> <span class="token keyword keyword-UNSIGNED">UNSIGNED</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+    nombre      <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>       <span class="token comment">-- "admin", "tesorero", etc.</span>
+    slug        <span class="token keyword keyword-VARCHAR">VARCHAR</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+    permisos    JSON <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>               <span class="token comment">-- {"recuento":true,"asistencia":true,"admin":false}</span>
+    es_default  <span class="token keyword keyword-BOOLEAN">BOOLEAN</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token boolean">FALSE</span><span class="token punctuation">,</span>       <span class="token comment">-- rol por defecto al registrarse</span>
+    orden       <span class="token keyword keyword-INT">INT</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token number">0</span><span class="token punctuation">,</span>
+    created_at  <span class="token keyword keyword-TIMESTAMP">TIMESTAMP</span><span class="token punctuation">,</span>
+    updated_at  <span class="token keyword keyword-TIMESTAMP">TIMESTAMP</span><span class="token punctuation">,</span>
+    <span class="token keyword keyword-FOREIGN">FOREIGN</span> <span class="token keyword keyword-KEY">KEY</span> <span class="token punctuation">(</span>tenant_id<span class="token punctuation">)</span> <span class="token keyword keyword-REFERENCES">REFERENCES</span> tenants<span class="token punctuation">(</span>id<span class="token punctuation">)</span> <span class="token keyword keyword-ON">ON</span> <span class="token keyword keyword-DELETE">DELETE</span> <span class="token keyword keyword-CASCADE">CASCADE</span><span class="token punctuation">,</span>
+    <span class="token keyword keyword-UNIQUE">UNIQUE</span><span class="token punctuation">(</span>tenant_id<span class="token punctuation">,</span> slug<span class="token punctuation">)</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre><h3 id="38-totales_culto_detalle-reemplazo-de-columnas-fijas-en-totales_culto">3.8 <code>totales_culto_detalle</code> (Reemplazo de columnas fijas en totales_culto) </h3>
+<pre data-role="codeBlock" data-info="sql" class="language-sql sql"><code><span class="token keyword keyword-CREATE">CREATE</span> <span class="token keyword keyword-TABLE">TABLE</span> totales_culto_detalle <span class="token punctuation">(</span>
+    id                  <span class="token keyword keyword-BIGINT">BIGINT</span> <span class="token keyword keyword-UNSIGNED">UNSIGNED</span> <span class="token keyword keyword-AUTO_INCREMENT">AUTO_INCREMENT</span> <span class="token keyword keyword-PRIMARY">PRIMARY</span> <span class="token keyword keyword-KEY">KEY</span><span class="token punctuation">,</span>
+    totales_culto_id    <span class="token keyword keyword-BIGINT">BIGINT</span> <span class="token keyword keyword-UNSIGNED">UNSIGNED</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+    category_id         <span class="token keyword keyword-BIGINT">BIGINT</span> <span class="token keyword keyword-UNSIGNED">UNSIGNED</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+    monto               <span class="token keyword keyword-DECIMAL">DECIMAL</span><span class="token punctuation">(</span><span class="token number">15</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">)</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token number">0</span><span class="token punctuation">,</span>
+    created_at          <span class="token keyword keyword-TIMESTAMP">TIMESTAMP</span><span class="token punctuation">,</span>
+    updated_at          <span class="token keyword keyword-TIMESTAMP">TIMESTAMP</span><span class="token punctuation">,</span>
+    <span class="token keyword keyword-FOREIGN">FOREIGN</span> <span class="token keyword keyword-KEY">KEY</span> <span class="token punctuation">(</span>totales_culto_id<span class="token punctuation">)</span> <span class="token keyword keyword-REFERENCES">REFERENCES</span> totales_culto<span class="token punctuation">(</span>id<span class="token punctuation">)</span> <span class="token keyword keyword-ON">ON</span> <span class="token keyword keyword-DELETE">DELETE</span> <span class="token keyword keyword-CASCADE">CASCADE</span><span class="token punctuation">,</span>
+    <span class="token keyword keyword-FOREIGN">FOREIGN</span> <span class="token keyword keyword-KEY">KEY</span> <span class="token punctuation">(</span>category_id<span class="token punctuation">)</span> <span class="token keyword keyword-REFERENCES">REFERENCES</span> tenant_categories<span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token keyword keyword-UNIQUE">UNIQUE</span><span class="token punctuation">(</span>totales_culto_id<span class="token punctuation">,</span> category_id<span class="token punctuation">)</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre><h3 id="39-asistencia_detalle-reemplazo-de-50-columnas-fijas">3.9 <code>asistencia_detalle</code> (Reemplazo de ~50 columnas fijas) </h3>
+<pre data-role="codeBlock" data-info="sql" class="language-sql sql"><code><span class="token keyword keyword-CREATE">CREATE</span> <span class="token keyword keyword-TABLE">TABLE</span> asistencia_detalle <span class="token punctuation">(</span>
+    id                      <span class="token keyword keyword-BIGINT">BIGINT</span> <span class="token keyword keyword-UNSIGNED">UNSIGNED</span> <span class="token keyword keyword-AUTO_INCREMENT">AUTO_INCREMENT</span> <span class="token keyword keyword-PRIMARY">PRIMARY</span> <span class="token keyword keyword-KEY">KEY</span><span class="token punctuation">,</span>
+    asistencia_id           <span class="token keyword keyword-BIGINT">BIGINT</span> <span class="token keyword keyword-UNSIGNED">UNSIGNED</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+    demographic_field_id    <span class="token keyword keyword-BIGINT">BIGINT</span> <span class="token keyword keyword-UNSIGNED">UNSIGNED</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+    cantidad                <span class="token keyword keyword-INT">INT</span> <span class="token keyword keyword-DEFAULT">DEFAULT</span> <span class="token number">0</span><span class="token punctuation">,</span>
+    created_at              <span class="token keyword keyword-TIMESTAMP">TIMESTAMP</span><span class="token punctuation">,</span>
+    updated_at              <span class="token keyword keyword-TIMESTAMP">TIMESTAMP</span><span class="token punctuation">,</span>
+    <span class="token keyword keyword-FOREIGN">FOREIGN</span> <span class="token keyword keyword-KEY">KEY</span> <span class="token punctuation">(</span>asistencia_id<span class="token punctuation">)</span> <span class="token keyword keyword-REFERENCES">REFERENCES</span> asistencia<span class="token punctuation">(</span>id<span class="token punctuation">)</span> <span class="token keyword keyword-ON">ON</span> <span class="token keyword keyword-DELETE">DELETE</span> <span class="token keyword keyword-CASCADE">CASCADE</span><span class="token punctuation">,</span>
+    <span class="token keyword keyword-FOREIGN">FOREIGN</span> <span class="token keyword keyword-KEY">KEY</span> <span class="token punctuation">(</span>demographic_field_id<span class="token punctuation">)</span> <span class="token keyword keyword-REFERENCES">REFERENCES</span> tenant_demographic_fields<span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token keyword keyword-UNIQUE">UNIQUE</span><span class="token punctuation">(</span>asistencia_id<span class="token punctuation">,</span> demographic_field_id<span class="token punctuation">)</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre><hr>
+<h2 id="4-tablas-existentes-que-cambian">4. TABLAS EXISTENTES QUE CAMBIAN </h2>
+<h3 id="41-users">4.1 <code>users</code> </h3>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>AGREGAR:   tenant_id       BIGINT UNSIGNED NULL (NULL = super admin)
+AGREGAR:   tenant_role_id  BIGINT UNSIGNED NULL (FK a tenant_roles)
+AGREGAR:   is_super_admin  BOOLEAN DEFAULT FALSE
+ELIMINAR:  rol             ENUM (reemplazado por tenant_role_id)
+</code></pre><h3 id="42-personas">4.2 <code>personas</code> </h3>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>AGREGAR:   tenant_id    BIGINT UNSIGNED NOT NULL
+AGREGAR:   INDEX(tenant_id)
+</code></pre><h3 id="43-cultos">4.3 <code>cultos</code> </h3>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>AGREGAR:   tenant_id         BIGINT UNSIGNED NOT NULL
+MODIFICAR: tipo_culto        VARCHAR → FK a tenant_service_types (o guardar slug)
+ELIMINAR:  ENUM de tipo_culto
+AGREGAR:   service_type_id   BIGINT UNSIGNED NULL (FK a tenant_service_types)
+</code></pre><h3 id="44-sobres">4.4 <code>sobres</code> </h3>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>Sin cambio directo (hereda tenant_id del culto via relacion)
+Opcional: AGREGAR tenant_id para queries directas mas eficientes
+</code></pre><h3 id="45-sobre_detalles">4.5 <code>sobre_detalles</code> </h3>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>MODIFICAR: categoria    VARCHAR → category_id BIGINT UNSIGNED (FK a tenant_categories)
+</code></pre><h3 id="46-totales_culto">4.6 <code>totales_culto</code> </h3>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>ELIMINAR columnas (mover a totales_culto_detalle):
+  - total_diezmo
+  - total_ofrenda_especial
+  - total_misiones
+  - total_seminario
+  - total_campa
+  - total_prestamo
+  - total_construccion
+  - total_micro
+
+MANTENER:
+  - total_suelto
+  - total_general
+  - cantidad_sobres
+  - cantidad_transferencias
+</code></pre><h3 id="47-asistencia">4.7 <code>asistencia</code> </h3>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>ELIMINAR todas las columnas demograficas (~50 columnas):
+  - chapel_adultos_hombres, chapel_adultos_mujeres, ...
+  - clase_0_1_hombres, clase_0_1_mujeres, ...
+  - clase_2_6_*, clase_7_8_*, clase_9_11_*
+  - salvos_*, bautismos_*, visitas_*
+
+MANTENER:
+  - id, culto_id, total_asistencia
+  - cerrado, cerrado_at, cerrado_por
+
+(Datos demograficos ahora en asistencia_detalle)
+</code></pre><h3 id="48-promesas">4.8 <code>promesas</code> </h3>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>MODIFICAR: categoria → category_id BIGINT UNSIGNED (FK a tenant_categories)
+Opcional:  AGREGAR tenant_id para queries directas
+</code></pre><h3 id="49-compromisos">4.9 <code>compromisos</code> </h3>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>MODIFICAR: categoria → category_id BIGINT UNSIGNED (FK a tenant_categories)
+MODIFICAR: UNIQUE(persona_id, categoria, año, mes) → UNIQUE(persona_id, category_id, año, mes)
+</code></pre><h3 id="410-audit_logs">4.10 <code>audit_logs</code> </h3>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>AGREGAR: tenant_id BIGINT UNSIGNED NULL
+</code></pre><h3 id="411-clases_asistencia">4.11 <code>clases_asistencia</code> </h3>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>AGREGAR: tenant_id BIGINT UNSIGNED NOT NULL
+(Esta tabla ya existia con configuracion, solo falta tenant_id)
+</code></pre><hr>
+<h2 id="5-sistema-de-branding-dinamico-logo--colores">5. SISTEMA DE BRANDING DINAMICO (LOGO + COLORES) </h2>
+<h3 id="51-logo-dinamico">5.1 Logo Dinamico </h3>
+<h4 id="archivos-que-referencian-logopng-web-app">Archivos que referencian Logo.png (web app): </h4>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Linea(s)</th>
+<th>Referencia actual</th>
+<th>Cambio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>layouts/admin.blade.php</code></td>
+<td>16-18</td>
+<td><code>asset('images/Logo.png')</code> x3 (favicon)</td>
+<td><code>$tenant-&gt;favicon_url</code></td>
+</tr>
+<tr>
+<td><code>layouts/admin.blade.php</code></td>
+<td>37</td>
+<td><code>asset('images/Logo.png')</code> (sidebar)</td>
+<td><code>$tenant-&gt;logo_url</code></td>
+</tr>
+<tr>
+<td><code>layouts/admin.blade.php</code></td>
+<td>198</td>
+<td><code>asset('images/Logo.png')</code> (logout overlay)</td>
+<td><code>$tenant-&gt;logo_url</code></td>
+</tr>
+<tr>
+<td><code>layouts/guest.blade.php</code></td>
+<td>11-13</td>
+<td><code>asset('images/Logo.png')</code> x3 (favicon)</td>
+<td><code>$tenant-&gt;favicon_url</code></td>
+</tr>
+<tr>
+<td><code>layouts/guest.blade.php</code></td>
+<td>33</td>
+<td><code>asset('images/Logo.png')</code> (login header)</td>
+<td><code>$tenant-&gt;logo_url</code></td>
+</tr>
+<tr>
+<td><code>layouts/app.blade.php</code></td>
+<td>11-13</td>
+<td><code>asset('images/Logo.png')</code> x3 (favicon)</td>
+<td><code>$tenant-&gt;favicon_url</code></td>
+</tr>
+<tr>
+<td><code>principal/index.blade.php</code></td>
+<td>12</td>
+<td><code>asset('images/Logo.png')</code> (pagina principal)</td>
+<td><code>$tenant-&gt;logo_url</code></td>
+</tr>
+<tr>
+<td><code>auth/login.blade.php</code></td>
+<td>73</td>
+<td><code>asset('images/Logo.png')</code> (pantalla de carga)</td>
+<td><code>$tenant-&gt;logo_url</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 15 referencias a Logo.png</strong></p>
+<h4 id="archivos-que-referencian-logo2png-pdfs">Archivos que referencian Logo2.png (PDFs): </h4>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Linea</th>
+<th>Referencia actual</th>
+<th>Cambio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pdfs/reporte-personas.blade.php</code></td>
+<td>508</td>
+<td><code>public_path('images/Logo2.png')</code></td>
+<td><code>$tenant-&gt;logoPdfBase64()</code></td>
+</tr>
+<tr>
+<td><code>pdfs/reporte-general.blade.php</code></td>
+<td>266</td>
+<td><code>public_path('images/Logo2.png')</code></td>
+<td><code>$tenant-&gt;logoPdfBase64()</code></td>
+</tr>
+<tr>
+<td><code>pdfs/reporte-contribuciones.blade.php</code></td>
+<td>199</td>
+<td><code>public_path('images/Logo2.png')</code></td>
+<td><code>$tenant-&gt;logoPdfBase64()</code></td>
+</tr>
+<tr>
+<td><code>pdfs/recuento-individual.blade.php</code></td>
+<td>47</td>
+<td><code>public_path('images/Logo2.png')</code></td>
+<td><code>$tenant-&gt;logoPdfBase64()</code></td>
+</tr>
+<tr>
+<td><code>pdfs/ingresos.blade.php</code></td>
+<td>29</td>
+<td><code>public_path('images/Logo2.png')</code></td>
+<td><code>$tenant-&gt;logoPdfBase64()</code></td>
+</tr>
+<tr>
+<td><code>pdfs/promesas.blade.php</code></td>
+<td>40</td>
+<td><code>public_path('images/Logo2.png')</code></td>
+<td><code>$tenant-&gt;logoPdfBase64()</code></td>
+</tr>
+<tr>
+<td><code>pdfs/asistencia.blade.php</code></td>
+<td>33</td>
+<td><code>public_path('images/Logo2.png')</code></td>
+<td><code>$tenant-&gt;logoPdfBase64()</code></td>
+</tr>
+<tr>
+<td><code>pdfs/asistencia-culto.blade.php</code></td>
+<td>28</td>
+<td><code>public_path('images/Logo2.png')</code></td>
+<td><code>$tenant-&gt;logoPdfBase64()</code></td>
+</tr>
+<tr>
+<td><code>pdfs/asistencia-mes.blade.php</code></td>
+<td>25</td>
+<td><code>public_path('images/Logo2.png')</code></td>
+<td><code>$tenant-&gt;logoPdfBase64()</code></td>
+</tr>
+<tr>
+<td><code>pdfs/promesas-anual.blade.php</code></td>
+<td>171</td>
+<td><code>public_path('logo-ibbsc.png')</code></td>
+<td><code>$tenant-&gt;logoPdfBase64()</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: 10 referencias a Logo2.png</strong></p>
+<h4 id="implementacion-del-logo">Implementacion del logo: </h4>
+<pre data-role="codeBlock" data-info="php" class="language-php php"><code><span class="token comment">// Modelo Tenant</span>
+<span class="token keyword keyword-public">public</span> <span class="token keyword keyword-function">function</span> <span class="token function-definition function">getLogoUrlAttribute</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span> <span class="token keyword return-type keyword-string">string</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword keyword-return">return</span> <span class="token this keyword">$this</span><span class="token operator">-&gt;</span><span class="token property">logo_path</span>
+        <span class="token operator">?</span> <span class="token scope">Storage<span class="token punctuation">::</span></span><span class="token function">url</span><span class="token punctuation">(</span><span class="token this keyword">$this</span><span class="token operator">-&gt;</span><span class="token property">logo_path</span><span class="token punctuation">)</span>
+        <span class="token punctuation">:</span> <span class="token class-name return-type">asset</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'images/default-logo.png'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword keyword-public">public</span> <span class="token keyword keyword-function">function</span> <span class="token function-definition function">getFaviconUrlAttribute</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span> <span class="token keyword return-type keyword-string">string</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword keyword-return">return</span> <span class="token this keyword">$this</span><span class="token operator">-&gt;</span><span class="token property">favicon_path</span>
+        <span class="token operator">?</span> <span class="token scope">Storage<span class="token punctuation">::</span></span><span class="token function">url</span><span class="token punctuation">(</span><span class="token this keyword">$this</span><span class="token operator">-&gt;</span><span class="token property">favicon_path</span><span class="token punctuation">)</span>
+        <span class="token punctuation">:</span> <span class="token this keyword">$this</span><span class="token operator">-&gt;</span><span class="token property">logo_url</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword keyword-public">public</span> <span class="token keyword keyword-function">function</span> <span class="token function-definition function">logoPdfBase64</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span> <span class="token keyword return-type keyword-string">string</span>
+<span class="token punctuation">{</span>
+    <span class="token variable">$path</span> <span class="token operator">=</span> <span class="token this keyword">$this</span><span class="token operator">-&gt;</span><span class="token property">logo_pdf_path</span> <span class="token operator">??</span> <span class="token this keyword">$this</span><span class="token operator">-&gt;</span><span class="token property">logo_path</span><span class="token punctuation">;</span>
+    <span class="token keyword keyword-if">if</span> <span class="token punctuation">(</span><span class="token variable">$path</span> <span class="token operator">&amp;&amp;</span> <span class="token scope">Storage<span class="token punctuation">::</span></span><span class="token function">exists</span><span class="token punctuation">(</span><span class="token variable">$path</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword keyword-return">return</span> <span class="token function">base64_encode</span><span class="token punctuation">(</span><span class="token scope">Storage<span class="token punctuation">::</span></span><span class="token function">get</span><span class="token punctuation">(</span><span class="token variable">$path</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword keyword-return">return</span> <span class="token function">base64_encode</span><span class="token punctuation">(</span><span class="token function">file_get_contents</span><span class="token punctuation">(</span><span class="token function">public_path</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'images/default-logo.png'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre><h4 id="panel-de-admin-para-subir-logo">Panel de admin para subir logo: </h4>
+<ul>
+<li>Nuevo formulario en seccion de configuracion del tenant</li>
+<li>Aceptar PNG/JPG/SVG, max 2MB</li>
+<li>Guardar en <code>storage/app/public/tenants/{id}/logo.png</code></li>
+<li>Generar thumbnail para favicon automaticamente</li>
+<li>Generar version optimizada para PDF</li>
+</ul>
+<hr>
+<h3 id="52-colores-dinamicos">5.2 Colores Dinamicos </h3>
+<h4 id="enfoque-css-custom-properties-inyectadas-por-tenant">Enfoque: CSS Custom Properties inyectadas por tenant </h4>
+<p>En el <code>&lt;head&gt;</code> del layout, inyectar:</p>
+<pre data-role="codeBlock" data-info="html" class="language-html html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>style</span><span class="token punctuation">&gt;</span></span><span class="token style"><span class="token language-css">
+    <span class="token selector"><span class="token pseudo-class">:root</span></span> <span class="token punctuation">{</span>
+        <span class="token selector">--primary-50:</span> <span class="token punctuation">{</span><span class="token punctuation">{</span> $tenant-&gt;color_50 <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token selector">;
+        --primary-100:</span> <span class="token punctuation">{</span><span class="token punctuation">{</span> $tenant-&gt;color_100 <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token selector">;
+        --primary-200:</span> <span class="token punctuation">{</span><span class="token punctuation">{</span> $tenant-&gt;color_200 <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token selector">;
+        --primary-300:</span> <span class="token punctuation">{</span><span class="token punctuation">{</span> $tenant-&gt;color_300 <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token selector">;
+        --primary-400:</span> <span class="token punctuation">{</span><span class="token punctuation">{</span> $tenant-&gt;color_400 <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token selector">;
+        --primary-500:</span> <span class="token punctuation">{</span><span class="token punctuation">{</span> $tenant-&gt;color_500 <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token selector">;
+        --primary-600:</span> <span class="token punctuation">{</span><span class="token punctuation">{</span> $tenant-&gt;color_600 <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token selector">;
+        --primary-700:</span> <span class="token punctuation">{</span><span class="token punctuation">{</span> $tenant-&gt;color_700 <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token selector">;
+        --primary-800:</span> <span class="token punctuation">{</span><span class="token punctuation">{</span> $tenant-&gt;color_800 <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token selector">;
+        --primary-900:</span> <span class="token punctuation">{</span><span class="token punctuation">{</span> $tenant-&gt;color_900 <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>style</span><span class="token punctuation">&gt;</span></span>
+</code></pre><h4 id="paletas-predefinidas-disponibles">Paletas predefinidas disponibles: </h4>
+<table>
+<thead>
+<tr>
+<th>Nombre</th>
+<th>600 (principal)</th>
+<th>700</th>
+<th>800</th>
+<th>900</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>blue</td>
+<td>#2563eb</td>
+<td>#1d4ed8</td>
+<td>#1e40af</td>
+<td>#1e3a8a</td>
+</tr>
+<tr>
+<td>red</td>
+<td>#dc2626</td>
+<td>#b91c1c</td>
+<td>#991b1b</td>
+<td>#7f1d1d</td>
+</tr>
+<tr>
+<td>green</td>
+<td>#16a34a</td>
+<td>#15803d</td>
+<td>#166534</td>
+<td>#14532d</td>
+</tr>
+<tr>
+<td>purple</td>
+<td>#9333ea</td>
+<td>#7e22ce</td>
+<td>#6b21a8</td>
+<td>#581c87</td>
+</tr>
+<tr>
+<td>orange</td>
+<td>#ea580c</td>
+<td>#c2410c</td>
+<td>#9a3412</td>
+<td>#7c2d12</td>
+</tr>
+<tr>
+<td>teal</td>
+<td>#0d9488</td>
+<td>#0f766e</td>
+<td>#115e59</td>
+<td>#134e4a</td>
+</tr>
+<tr>
+<td>indigo</td>
+<td>#4f46e5</td>
+<td>#4338ca</td>
+<td>#3730a3</td>
+<td>#312e81</td>
+</tr>
+<tr>
+<td>pink</td>
+<td>#db2777</td>
+<td>#be185d</td>
+<td>#9d174d</td>
+<td>#831843</td>
+</tr>
+</tbody>
+</table>
+<h4 id="inventario-completo-de-clases-blue--a-reemplazar">Inventario COMPLETO de clases <code>blue-*</code> a reemplazar: </h4>
+<p><strong>459 ocurrencias en 44 archivos.</strong> Desglose por archivo:</p>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Ocurrencias</th>
+<th>Clases blue-* presentes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>asistencia/create_new.blade.php</code></td>
+<td>51</td>
+<td><code>focus:border-blue-500</code>, <code>focus:ring-blue-500</code>, <code>bg-blue-50</code>, <code>hover:bg-blue-100</code>, <code>text-blue-900</code>, <code>border-blue-300</code>, <code>bg-blue-600</code>, <code>hover:bg-blue-700</code></td>
+</tr>
+<tr>
+<td><code>asistencia/create.blade.php</code></td>
+<td>51</td>
+<td>(identico al anterior)</td>
+</tr>
+<tr>
+<td><code>asistencia/edit.blade.php</code></td>
+<td>50</td>
+<td>(identico)</td>
+</tr>
+<tr>
+<td><code>recuento/index.blade.php</code></td>
+<td>44</td>
+<td><code>bg-blue-600</code>, <code>hover:bg-blue-700</code>, <code>text-blue-600</code>, <code>text-blue-700</code>, <code>bg-blue-50</code>, <code>border-blue-200</code>, <code>focus:border-blue-500</code>, <code>focus:ring-blue-500</code></td>
+</tr>
+<tr>
+<td><code>layouts/admin.blade.php</code></td>
+<td>25</td>
+<td><code>bg-blue-800</code>, <code>border-blue-700</code>, <code>bg-blue-700</code>, <code>bg-blue-900</code>, <code>bg-blue-600</code>, <code>text-blue-100</code>, <code>text-blue-200</code>, <code>text-blue-300</code>, <code>hover:bg-blue-700/50</code>, <code>hover:bg-blue-600</code>, <code>hover:bg-blue-500</code></td>
+</tr>
+<tr>
+<td><code>recuento/create.blade.php</code></td>
+<td>18</td>
+<td><code>bg-blue-50</code>, <code>text-blue-900</code>, <code>focus:border-blue-500</code>, <code>focus:ring-blue-500</code>, <code>text-blue-600</code>, <code>bg-blue-600</code>, <code>hover:bg-blue-700</code></td>
+</tr>
+<tr>
+<td><code>recuento/partials/resumen-cerrado.blade.php</code></td>
+<td>14</td>
+<td><code>text-blue-600</code>, <code>border-blue-500</code>, <code>hover:text-blue-800</code>, <code>text-blue-700</code>, <code>bg-blue-50</code>, <code>border-blue-200</code></td>
+</tr>
+<tr>
+<td><code>ingresos-asistencia/asistencia.blade.php</code></td>
+<td>12</td>
+<td><code>bg-blue-600</code>, <code>hover:bg-blue-700</code>, <code>text-blue-600</code>, <code>focus:border-blue-500</code>, <code>focus:ring-blue-500</code></td>
+</tr>
+<tr>
+<td><code>ingresos-asistencia/promesas.blade.php</code></td>
+<td>11</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>personas/edit.blade.php</code></td>
+<td>9</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>personas/create.blade.php</code></td>
+<td>9</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>personas/index.blade.php</code></td>
+<td>8</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>asistencia/index.blade.php</code></td>
+<td>9</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>ingresos-asistencia/index.blade.php</code></td>
+<td>8</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>recuento/edit.blade.php</code></td>
+<td>8</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>asistencia/show.blade.php</code></td>
+<td>7</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>auth/login.blade.php</code></td>
+<td>7</td>
+<td><code>text-blue-600</code>, <code>focus:ring-blue-500</code>, <code>hover:border-blue-300</code>, <code>bg-blue-700</code>, <code>text-blue-100</code></td>
+</tr>
+<tr>
+<td><code>principal/index.blade.php</code></td>
+<td>7</td>
+<td><code>bg-blue-600</code>, <code>hover:bg-blue-700</code>, gradientes blue</td>
+</tr>
+<tr>
+<td><code>mi-perfil/index.blade.php</code></td>
+<td>8</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>personas/show.blade.php</code></td>
+<td>11</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>promesas/index.blade.php</code></td>
+<td>3</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>promesas/edit.blade.php</code></td>
+<td>8</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>promesas/create.blade.php</code></td>
+<td>6</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>cultos/index.blade.php</code></td>
+<td>3</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>cultos/edit.blade.php</code></td>
+<td>5</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>cultos/create.blade.php</code></td>
+<td>5</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>compromisos/show.blade.php</code></td>
+<td>5</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>dashboard.blade.php</code></td>
+<td>4</td>
+<td><code>text-blue-700</code>, <code>text-blue-600</code></td>
+</tr>
+<tr>
+<td><code>admin/usuarios/index.blade.php</code></td>
+<td>3</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>admin/clases/index.blade.php</code></td>
+<td>3</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>admin/clases/edit.blade.php</code></td>
+<td>5</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>admin/clases/create.blade.php</code></td>
+<td>4</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>layouts/guest.blade.php</code></td>
+<td>4</td>
+<td><code>text-blue-700</code>, <code>bg-blue-600</code></td>
+</tr>
+<tr>
+<td><code>admin/usuarios/edit.blade.php</code></td>
+<td>1</td>
+<td><code>bg-blue-600</code></td>
+</tr>
+<tr>
+<td><code>admin/usuarios/create.blade.php</code></td>
+<td>1</td>
+<td><code>bg-blue-600</code></td>
+</tr>
+<tr>
+<td><code>admin/audit/index.blade.php</code></td>
+<td>1</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>errors/500.blade.php</code></td>
+<td>1</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>errors/404.blade.php</code></td>
+<td>1</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>errors/403.blade.php</code></td>
+<td>1</td>
+<td>Similar</td>
+</tr>
+<tr>
+<td><code>css/app.css</code></td>
+<td>11</td>
+<td><code>bg-blue-600</code>, <code>hover:bg-blue-700</code>, <code>focus:border-blue-500</code>, <code>focus:ring-blue-500/20</code>, <code>bg-blue-700</code>, <code>text-blue-800</code>, <code>bg-blue-100</code>, <code>hover:bg-blue-50</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="estrategia-de-reemplazo-en-css-appcss">Estrategia de reemplazo en CSS (<code>app.css</code>): </h4>
+<p><strong>ANTES:</strong></p>
+<pre data-role="codeBlock" data-info="css" class="language-css css"><code><span class="token selector"><span class="token class">.btn-primary</span></span> <span class="token punctuation">{</span>
+    <span class="token atrule"><span class="token rule">@apply</span> relative bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg<span class="token punctuation">;</span></span>
+    <span class="token atrule"><span class="token rule">@apply</span> <span class="token property">hover</span><span class="token punctuation">:</span>bg-blue-700 <span class="token property">hover</span><span class="token punctuation">:</span>shadow-md <span class="token property">active</span><span class="token punctuation">:</span>bg-blue-800<span class="token punctuation">;</span></span>
+<span class="token punctuation">}</span>
+<span class="token selector"><span class="token class">.stat-card</span></span> <span class="token punctuation">{</span>
+    <span class="token atrule"><span class="token rule">@apply</span> border-l-4 border-l-blue-600<span class="token punctuation">;</span></span>
+<span class="token punctuation">}</span>
+<span class="token selector"><span class="token class">.table-primary</span> thead tr</span> <span class="token punctuation">{</span>
+    <span class="token atrule"><span class="token rule">@apply</span> bg-blue-700 text-white<span class="token punctuation">;</span></span>
+<span class="token punctuation">}</span>
+</code></pre><p><strong>DESPUES:</strong></p>
+<pre data-role="codeBlock" data-info="css" class="language-css css"><code><span class="token selector"><span class="token class">.btn-primary</span></span> <span class="token punctuation">{</span>
+    <span class="token atrule"><span class="token rule">@apply</span> relative text-white font-semibold px-6 py-3 rounded-lg<span class="token punctuation">;</span></span>
+    <span class="token property">background-color</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span><span class="token variable">--primary-600</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token selector"><span class="token class">.btn-primary</span><span class="token pseudo-class">:hover</span></span> <span class="token punctuation">{</span>
+    <span class="token property">background-color</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span><span class="token variable">--primary-700</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token selector"><span class="token class">.stat-card</span></span> <span class="token punctuation">{</span>
+    <span class="token atrule"><span class="token rule">@apply</span> border-l-4<span class="token punctuation">;</span></span>
+    <span class="token property">border-left-color</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span><span class="token variable">--primary-600</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token selector"><span class="token class">.table-primary</span> thead tr</span> <span class="token punctuation">{</span>
+    <span class="token property">background-color</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span><span class="token variable">--primary-700</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token atrule"><span class="token rule">@apply</span> text-white<span class="token punctuation">;</span></span>
+<span class="token punctuation">}</span>
+</code></pre><h4 id="estrategia-de-reemplazo-en-blade">Estrategia de reemplazo en Blade: </h4>
+<p><strong>ANTES (ej: sidebar en admin.blade.php):</strong></p>
+<pre data-role="codeBlock" data-info="html" class="language-html html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>aside</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>bg-blue-800 text-white<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>border-b border-blue-700<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>bg-white/10 rounded-xl<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>bg-blue-700 text-white hover:bg-blue-700/50<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+</code></pre><p><strong>DESPUES:</strong></p>
+<pre data-role="codeBlock" data-info="html" class="language-html html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>aside</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>text-white<span class="token punctuation">"</span></span> <span class="token special-attr"><span class="token attr-name">style</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span><span class="token value css language-css"><span class="token property">background-color</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span><span class="token variable">--primary-800</span><span class="token punctuation">)</span></span><span class="token punctuation">"</span></span></span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token special-attr"><span class="token attr-name">style</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span><span class="token value css language-css"><span class="token property">border-color</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span><span class="token variable">--primary-700</span><span class="token punctuation">)</span></span><span class="token punctuation">"</span></span></span><span class="token punctuation">&gt;</span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>bg-white/10 rounded-xl<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>text-white<span class="token punctuation">"</span></span> <span class="token special-attr"><span class="token attr-name">style</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span><span class="token value css language-css"><span class="token property">background-color</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span><span class="token variable">--primary-700</span><span class="token punctuation">)</span></span><span class="token punctuation">"</span></span></span><span class="token punctuation">&gt;</span></span>
+</code></pre><p><strong>Alternativa mas limpia (clases semanticas en app.css):</strong></p>
+<pre data-role="codeBlock" data-info="css" class="language-css css"><code><span class="token selector"><span class="token class">.sidebar</span></span> <span class="token punctuation">{</span> <span class="token property">background-color</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span><span class="token variable">--primary-800</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token selector"><span class="token class">.sidebar-border</span></span> <span class="token punctuation">{</span> <span class="token property">border-color</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span><span class="token variable">--primary-700</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token selector"><span class="token class">.sidebar-item-active</span></span> <span class="token punctuation">{</span> <span class="token property">background-color</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span><span class="token variable">--primary-700</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token selector"><span class="token class">.sidebar-item-hover</span><span class="token pseudo-class">:hover</span></span> <span class="token punctuation">{</span> <span class="token property">background-color</span><span class="token punctuation">:</span> <span class="token function">color-mix</span><span class="token punctuation">(</span>in srgb<span class="token punctuation">,</span> <span class="token function">var</span><span class="token punctuation">(</span><span class="token variable">--primary-700</span><span class="token punctuation">)</span> <span class="token number">50</span><span class="token unit">%</span><span class="token punctuation">,</span> <span class="token color">transparent</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token selector"><span class="token class">.sidebar-footer</span></span> <span class="token punctuation">{</span> <span class="token property">background-color</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span><span class="token variable">--primary-900</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+</code></pre><h4 id="colores-en-pdfs-dompdf">Colores en PDFs (DomPDF): </h4>
+<p>Los PDFs usan inline CSS, no Tailwind. Hay que pasar los colores del tenant a cada vista PDF.</p>
+<p><strong>Archivos PDF con colores quemados:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Archivo PDF</th>
+<th>Lineas con colores</th>
+<th>Color actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pdfs/ingresos.blade.php</code></td>
+<td>10, 12, 15, 23, 25, 29</td>
+<td><code>#1e40af</code>, <code>#2563eb</code>, <code>#1d4ed8</code></td>
+</tr>
+<tr>
+<td><code>pdfs/recuento-individual.blade.php</code></td>
+<td>12, 14, 17, 23, 47</td>
+<td>Mismos azules</td>
+</tr>
+<tr>
+<td><code>pdfs/promesas.blade.php</code></td>
+<td>12, 14, 17, 23, 40</td>
+<td>Mismos azules</td>
+</tr>
+<tr>
+<td><code>pdfs/asistencia.blade.php</code></td>
+<td>10, 12, 15, 33</td>
+<td>Mismos azules</td>
+</tr>
+<tr>
+<td><code>pdfs/asistencia-culto.blade.php</code></td>
+<td>10, 12, 15, 28</td>
+<td>Mismos azules</td>
+</tr>
+<tr>
+<td><code>pdfs/asistencia-mes.blade.php</code></td>
+<td>10, 12, 15, 25</td>
+<td>Mismos azules</td>
+</tr>
+<tr>
+<td><code>pdfs/reporte-personas.blade.php</code></td>
+<td>34, 51, 63, 66, 73, 83, 84, 508</td>
+<td>Mismos azules</td>
+</tr>
+<tr>
+<td><code>pdfs/reporte-general.blade.php</code></td>
+<td>varios</td>
+<td>Mismos azules</td>
+</tr>
+<tr>
+<td><code>pdfs/reporte-contribuciones.blade.php</code></td>
+<td>34, 51, 63, 66, 73, 83, 84, 199</td>
+<td>Mismos azules</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Solucion:</strong> Pasar <code>$tenant</code> a cada vista PDF y usar variables inline:</p>
+<pre data-role="codeBlock" data-info="html" class="language-html html"><code><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>style</span><span class="token punctuation">&gt;</span></span><span class="token style"><span class="token language-css">
+    <span class="token selector"><span class="token class">.header</span></span> <span class="token punctuation">{</span> <span class="token selector">background-color:</span> <span class="token punctuation">{</span><span class="token punctuation">{</span> $tenant-&gt;color_800 <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+    <span class="token selector"><span class="token class">.header</span> h1</span> <span class="token punctuation">{</span> <span class="token selector">color:</span> <span class="token punctuation">{</span><span class="token punctuation">{</span> $tenant-&gt;color_100 <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+    <span class="token selector">th</span> <span class="token punctuation">{</span> <span class="token selector">background-color:</span> <span class="token punctuation">{</span><span class="token punctuation">{</span> $tenant-&gt;color_700 <span class="token punctuation">}</span><span class="token punctuation">}</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+</span></span><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>style</span><span class="token punctuation">&gt;</span></span>
+</code></pre><hr>
+<h3 id="53-nombre-de-iglesia-dinamico">5.3 Nombre de Iglesia Dinamico </h3>
+<h4 id="inventario-de-texto-ibbsc-quemado">Inventario de texto "IBBSC" quemado: </h4>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Linea</th>
+<th>Texto actual</th>
+<th>Cambio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>layouts/admin.blade.php</code></td>
+<td>13</td>
+<td><code>'IBBSC - Sistema de Administracion'</code></td>
+<td><code>$tenant-&gt;nombre . ' - Admin'</code></td>
+</tr>
+<tr>
+<td><code>layouts/admin.blade.php</code></td>
+<td>39</td>
+<td><code>IBBSC Admin</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>layouts/guest.blade.php</code></td>
+<td>8</td>
+<td><code>IBBSC - Iniciar Sesion</code></td>
+<td><code>$tenant-&gt;nombre . ' - Iniciar Sesion'</code></td>
+</tr>
+<tr>
+<td><code>layouts/guest.blade.php</code></td>
+<td>35</td>
+<td><code>IBBSC Admin</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>layouts/guest.blade.php</code></td>
+<td>48</td>
+<td><code>IBBSC. Todos los derechos reservados.</code></td>
+<td><code>$tenant-&gt;nombre</code></td>
+</tr>
+<tr>
+<td><code>principal/index.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Principal</code></td>
+<td><code>$tenant-&gt;nombre</code></td>
+</tr>
+<tr>
+<td><code>principal/index.blade.php</code></td>
+<td>4</td>
+<td><code>Iglesia Biblica Bautista Santa Cruz</code></td>
+<td><code>$tenant-&gt;nombre</code></td>
+</tr>
+<tr>
+<td><code>principal/index.blade.php</code></td>
+<td>14</td>
+<td><code>Bienvenido a la Iglesia Biblica Bautista Santa Cruz</code></td>
+<td><code>Bienvenido a {{ $tenant-&gt;nombre }}</code></td>
+</tr>
+<tr>
+<td><code>dashboard.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Dashboard</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>recuento/index.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Recuento de Sobres</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>recuento/create.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Agregar Sobre</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>recuento/edit.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Editar Sobre</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>personas/index.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Personas</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>personas/create.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Nueva Persona</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>personas/edit.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Editar Persona</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>personas/show.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Detalles de Persona</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>cultos/index.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Cultos</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>cultos/edit.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Editar Culto</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>cultos/create.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Nuevo Culto</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>promesas/index.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Promesas</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>promesas/edit.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Editar Promesa</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>promesas/create.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Nueva Promesa</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>compromisos/show.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Compromisos</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>asistencia/index.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Asistencia</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>asistencia/create.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Nueva Asistencia</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>asistencia/create_new.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Nueva Asistencia</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>asistencia/edit.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Editar Asistencia</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>asistencia/show.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Detalle Asistencia</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>ingresos-asistencia/index.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Ingresos y Asistencia</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>ingresos-asistencia/ingresos.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Reportes de Ingresos</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>ingresos-asistencia/promesas.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Reporte de Promesas</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>ingresos-asistencia/asistencia.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Reportes de Asistencia</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>admin/usuarios/index.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Gestion de Usuarios</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>admin/usuarios/edit.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Editar Usuario</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>admin/usuarios/create.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Crear Usuario</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>admin/clases/index.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Gestion de Clases</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>admin/clases/edit.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Editar Clase</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>admin/clases/create.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Nueva Clase</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>admin/audit/index.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Auditoria</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+<tr>
+<td><code>mi-perfil/index.blade.php</code></td>
+<td>3</td>
+<td><code>IBBSC - Mi Perfil</code></td>
+<td><code>$tenant-&gt;nombre_corto</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>PDFs con nombre de iglesia quemado:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Archivo PDF</th>
+<th>Linea(s)</th>
+<th>Texto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pdfs/ingresos.blade.php</code></td>
+<td>31, 137</td>
+<td><code>IBBSC - Iglesia Biblica Bautista en Santa Cruz</code></td>
+</tr>
+<tr>
+<td><code>pdfs/recuento-individual.blade.php</code></td>
+<td>49, 309</td>
+<td>Idem</td>
+</tr>
+<tr>
+<td><code>pdfs/promesas.blade.php</code></td>
+<td>42, 112</td>
+<td>Idem</td>
+</tr>
+<tr>
+<td><code>pdfs/asistencia.blade.php</code></td>
+<td>35, 118</td>
+<td>Idem</td>
+</tr>
+<tr>
+<td><code>pdfs/asistencia-culto.blade.php</code></td>
+<td>30, 207</td>
+<td>Idem</td>
+</tr>
+<tr>
+<td><code>pdfs/asistencia-mes.blade.php</code></td>
+<td>27, 172</td>
+<td>Idem</td>
+</tr>
+<tr>
+<td><code>pdfs/reporte-personas.blade.php</code></td>
+<td>6, 669</td>
+<td><code>IBBSC - Sistema de Administracion</code></td>
+</tr>
+<tr>
+<td><code>pdfs/reporte-general.blade.php</code></td>
+<td>5, 404</td>
+<td>Idem</td>
+</tr>
+<tr>
+<td><code>pdfs/reporte-contribuciones.blade.php</code></td>
+<td>5, 273</td>
+<td>Idem</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: ~40 referencias en vistas + ~18 referencias en PDFs = ~58 reemplazos de texto "IBBSC"</strong></p>
+<hr>
+<h3 id="54-redes-sociales-dinamicas">5.4 Redes Sociales Dinamicas </h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Linea(s)</th>
+<th>Referencia actual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>layouts/admin.blade.php</code></td>
+<td>172-186</td>
+<td>Seccion "Siguenos" con Instagram + Facebook quemados</td>
+</tr>
+<tr>
+<td><code>principal/index.blade.php</code></td>
+<td>91-111</td>
+<td>Seccion "Siguenos en Redes Sociales" con Instagram + Facebook quemados</td>
+</tr>
+</tbody>
+</table>
+<p><strong>URLs quemadas:</strong></p>
+<ul>
+<li><code>https://www.instagram.com/ibb_santacruz?utm_source=ig_web_button_share_sheet&amp;igsh=ZDNlZDc0MzIxNw==</code></li>
+<li><code>https://www.facebook.com/iglesia.biblica.bautista.santa.cruz</code></li>
+</ul>
+<p><strong>Solucion:</strong> Campo JSON <code>redes_sociales</code> en tabla <code>tenants</code>:</p>
+<pre data-role="codeBlock" data-info="php" class="language-php php"><code><span class="token comment">// En la vista</span>
+@<span class="token keyword keyword-if">if</span><span class="token punctuation">(</span><span class="token variable">$tenant</span><span class="token operator">-&gt;</span><span class="token property">redes_sociales</span><span class="token punctuation">)</span>
+    @<span class="token keyword keyword-foreach">foreach</span><span class="token punctuation">(</span><span class="token variable">$tenant</span><span class="token operator">-&gt;</span><span class="token property">redes_sociales</span> <span class="token keyword keyword-as">as</span> <span class="token variable">$red</span> <span class="token operator">=&gt;</span> <span class="token variable">$url</span><span class="token punctuation">)</span>
+        @<span class="token keyword keyword-if">if</span><span class="token punctuation">(</span><span class="token variable">$red</span> <span class="token operator">===</span> <span class="token string single-quoted-string">'instagram'</span><span class="token punctuation">)</span>
+            <span class="token operator">&lt;</span>a href<span class="token operator">=</span><span class="token string double-quoted-string">"{{ <span class="token interpolation"><span class="token variable">$url</span></span> }}"</span><span class="token operator">&gt;</span>Instagram<span class="token operator">&lt;</span><span class="token operator">/</span>a<span class="token operator">&gt;</span>
+        @<span class="token keyword keyword-elseif">elseif</span><span class="token punctuation">(</span><span class="token variable">$red</span> <span class="token operator">===</span> <span class="token string single-quoted-string">'facebook'</span><span class="token punctuation">)</span>
+            <span class="token operator">&lt;</span>a href<span class="token operator">=</span><span class="token string double-quoted-string">"{{ <span class="token interpolation"><span class="token variable">$url</span></span> }}"</span><span class="token operator">&gt;</span>Facebook<span class="token operator">&lt;</span><span class="token operator">/</span>a<span class="token operator">&gt;</span>
+        @<span class="token keyword keyword-endif">endif</span>
+    @<span class="token keyword keyword-endforeach">endforeach</span>
+@<span class="token keyword keyword-endif">endif</span>
+</code></pre><hr>
+<h3 id="55-simbolo-de-moneda-dinamico">5.5 Simbolo de Moneda Dinamico </h3>
+<h4 id="inventario-completo-de--en-vistas">Inventario completo de <code>₡</code> en vistas: </h4>
+<p><strong>176 ocurrencias</strong> en los siguientes archivos:</p>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Cant. de <code>₡</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>recuento/index.blade.php</code></td>
+<td>30</td>
+</tr>
+<tr>
+<td><code>recuento/partials/resumen-cerrado.blade.php</code></td>
+<td>19</td>
+</tr>
+<tr>
+<td><code>ingresos-asistencia/ingresos.blade.php</code></td>
+<td>30</td>
+</tr>
+<tr>
+<td><code>ingresos-asistencia/promesas.blade.php</code></td>
+<td>12</td>
+</tr>
+<tr>
+<td><code>ingresos-asistencia/index.blade.php</code></td>
+<td>10</td>
+</tr>
+<tr>
+<td><code>dashboard.blade.php</code></td>
+<td>11</td>
+</tr>
+<tr>
+<td><code>dashboard_old.blade.php</code></td>
+<td>11</td>
+</tr>
+<tr>
+<td><code>recuento/create.blade.php</code></td>
+<td>10</td>
+</tr>
+<tr>
+<td><code>pdfs/reporte-personas.blade.php</code></td>
+<td>13</td>
+</tr>
+<tr>
+<td><code>pdfs/reporte-contribuciones.blade.php</code></td>
+<td>6</td>
+</tr>
+<tr>
+<td><code>compromisos/show.blade.php</code></td>
+<td>7</td>
+</tr>
+<tr>
+<td><code>personas/show.blade.php</code></td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>recuento/edit.blade.php</code></td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>promesas/edit.blade.php</code></td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>promesas/create.blade.php</code></td>
+<td>2</td>
+</tr>
+<tr>
+<td><code>promesas/index.blade.php</code></td>
+<td>2</td>
+</tr>
+<tr>
+<td><code>personas/create.blade.php</code></td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>personas/edit.blade.php</code></td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>mi-perfil/index.blade.php</code></td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>cultos/index.blade.php</code></td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Solucion:</strong> Variable global <code>$moneda</code> disponible en todas las vistas via View Composer:</p>
+<pre data-role="codeBlock" data-info="php" class="language-php php"><code><span class="token comment">// AppServiceProvider o TenantServiceProvider</span>
+<span class="token scope">View<span class="token punctuation">::</span></span><span class="token function">share</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'moneda'</span><span class="token punctuation">,</span> <span class="token function">tenant</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-&gt;</span><span class="token property">moneda_simbolo</span> <span class="token operator">??</span> <span class="token string single-quoted-string">'₡'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// En vistas: cambiar ₡ por {{ $moneda }}</span>
+<span class="token comment">// ANTES: ₡{{ number_format($monto, 2) }}</span>
+<span class="token comment">// DESPUES: {{ $moneda }}{{ number_format($monto, 2) }}</span>
+</code></pre><p>En JavaScript (dashboard charts):</p>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript javascript"><code><span class="token comment">// ANTES: return '₡' + value.toLocaleString();</span>
+<span class="token comment">// DESPUES: return '{{ $moneda }}' + value.toLocaleString();</span>
+</code></pre><hr>
+<h2 id="6-sistema-de-rubroscategorias-dinamicos">6. SISTEMA DE RUBROS/CATEGORIAS DINAMICOS </h2>
+<h3 id="61-archivos-php-con-categorias-quemadas">6.1 Archivos PHP con categorias quemadas </h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Linea(s)</th>
+<th>Categorias</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/Services/CalculoTotalesCultoService.php</code></td>
+<td>16-23, 60-67</td>
+<td>Las 8 categorias como keys de array y en calculo</td>
+</tr>
+<tr>
+<td><code>app/Models/TotalesCulto.php</code></td>
+<td>14-22, 30-38</td>
+<td>Las 8 categorias en <code>$fillable</code> y <code>$casts</code></td>
+</tr>
+<tr>
+<td><code>app/Http/Controllers/DashboardController.php</code></td>
+<td>37-44, 49-55, 61-67, 96</td>
+<td>Totales por categoria, distribucion, filtro diezmo</td>
+</tr>
+<tr>
+<td><code>app/Http/Controllers/PersonaController.php</code></td>
+<td>417, 493-494</td>
+<td>Arrays de categorias para reportes</td>
+</tr>
+<tr>
+<td><code>app/Http/Controllers/PromesasReporteController.php</code></td>
+<td>97-99, 126-133, 166</td>
+<td>Exclusion diezmo/ofrenda, lista de categorias</td>
+</tr>
+<tr>
+<td><code>app/Http/Controllers/IngresosAsistenciaController.php</code></td>
+<td>28-34, 113-120, 135-142, 157-164, 179-186, 263-270, 284-291, 306-313, 350-357, 369-376, 389-396, 438-445, 465-472</td>
+<td>Categorias repetidas ~13 veces en el controlador</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total: ~200+ referencias a nombres de categorias en PHP</strong></p>
+<h3 id="62-archivos-blade-con-categorias-quemadas">6.2 Archivos Blade con categorias quemadas </h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Tipo de quemado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>recuento/create.blade.php</code> (L84-161)</td>
+<td>8 bloques de input con nombre de categoria</td>
+</tr>
+<tr>
+<td><code>recuento/edit.blade.php</code> (L58)</td>
+<td>Array de categorias en PHP inline</td>
+</tr>
+<tr>
+<td><code>recuento/partials/resumen-cerrado.blade.php</code> (L67-74, 83-89, 96-99, 191-197)</td>
+<td>Headers de tabla + variables por categoria</td>
+</tr>
+<tr>
+<td><code>recuento/index.blade.php</code> (L483-495, 709-716, 807-814)</td>
+<td>Totales por categoria x3 secciones</td>
+</tr>
+<tr>
+<td><code>personas/create.blade.php</code> (L110)</td>
+<td>Array de categorias para promesas</td>
+</tr>
+<tr>
+<td><code>personas/edit.blade.php</code> (L similar)</td>
+<td>Idem</td>
+</tr>
+<tr>
+<td><code>personas/index.blade.php</code> (L235, 272)</td>
+<td>Texto descriptivo con nombres de categorias</td>
+</tr>
+<tr>
+<td><code>dashboard.blade.php</code> (L57-176, 294)</td>
+<td>8 stat cards + labels de Chart.js</td>
+</tr>
+<tr>
+<td><code>ingresos-asistencia/ingresos.blade.php</code> (L72-97, 125-134)</td>
+<td>Headers + celdas de tabla</td>
+</tr>
+<tr>
+<td><code>ingresos-asistencia/index.blade.php</code> (L75-103)</td>
+<td>Cards de resumen por categoria</td>
+</tr>
+<tr>
+<td><code>ingresos-asistencia/promesas.blade.php</code></td>
+<td>Filtros por categoria</td>
+</tr>
+<tr>
+<td>Todos los PDFs</td>
+<td>Headers de tabla con nombres de categoria</td>
+</tr>
+</tbody>
+</table>
+<h3 id="63-solucion-para-rubros-dinamicos">6.3 Solucion para rubros dinamicos </h3>
+<h4 id="en-controladores">En controladores: </h4>
+<pre data-role="codeBlock" data-info="php" class="language-php php"><code><span class="token comment">// ANTES (quemado):</span>
+<span class="token variable">$categorias</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string single-quoted-string">'misiones'</span><span class="token punctuation">,</span> <span class="token string single-quoted-string">'seminario'</span><span class="token punctuation">,</span> <span class="token string single-quoted-string">'campa'</span><span class="token punctuation">,</span> <span class="token string single-quoted-string">'construccion'</span><span class="token punctuation">,</span> <span class="token string single-quoted-string">'prestamo'</span><span class="token punctuation">,</span> <span class="token string single-quoted-string">'micro'</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+<span class="token comment">// DESPUES (dinamico):</span>
+<span class="token variable">$categorias</span> <span class="token operator">=</span> <span class="token function">tenant</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-&gt;</span><span class="token function">categories</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-&gt;</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'activa'</span><span class="token punctuation">,</span> <span class="token constant boolean">true</span><span class="token punctuation">)</span><span class="token operator">-&gt;</span><span class="token function">orderBy</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'orden'</span><span class="token punctuation">)</span><span class="token operator">-&gt;</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token variable">$categoriasPromesa</span> <span class="token operator">=</span> <span class="token variable">$categorias</span><span class="token operator">-&gt;</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'excluir_de_promesas'</span><span class="token punctuation">,</span> <span class="token constant boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre><h4 id="en-calculototalescultoservice">En CalculoTotalesCultoService: </h4>
+<pre data-role="codeBlock" data-info="php" class="language-php php"><code><span class="token comment">// ANTES: array fijo de 8 totales</span>
+<span class="token comment">// DESPUES: query dinamica</span>
+<span class="token keyword keyword-public">public</span> <span class="token keyword keyword-function">function</span> <span class="token function-definition function">recalcular</span><span class="token punctuation">(</span><span class="token class-name type-declaration">Culto</span> <span class="token variable">$culto</span><span class="token punctuation">)</span><span class="token punctuation">:</span> <span class="token class-name return-type">TotalesCulto</span>
+<span class="token punctuation">{</span>
+    <span class="token variable">$categorias</span> <span class="token operator">=</span> <span class="token variable">$culto</span><span class="token operator">-&gt;</span><span class="token property">tenant</span><span class="token operator">-&gt;</span><span class="token function">categories</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-&gt;</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'activa'</span><span class="token punctuation">,</span> <span class="token constant boolean">true</span><span class="token punctuation">)</span><span class="token operator">-&gt;</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$totalesPorCategoria</span> <span class="token operator">=</span> <span class="token scope">SobreDetalle<span class="token punctuation">::</span></span><span class="token function">whereHas</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'sobre'</span><span class="token punctuation">,</span> <span class="token keyword keyword-fn">fn</span><span class="token punctuation">(</span><span class="token variable">$q</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token variable">$q</span><span class="token operator">-&gt;</span><span class="token function">where</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'culto_id'</span><span class="token punctuation">,</span> <span class="token variable">$culto</span><span class="token operator">-&gt;</span><span class="token property">id</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token operator">-&gt;</span><span class="token function">selectRaw</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'category_id, SUM(monto) as total'</span><span class="token punctuation">)</span>
+        <span class="token operator">-&gt;</span><span class="token function">groupBy</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'category_id'</span><span class="token punctuation">)</span>
+        <span class="token operator">-&gt;</span><span class="token function">pluck</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'total'</span><span class="token punctuation">,</span> <span class="token string single-quoted-string">'category_id'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token variable">$totales</span> <span class="token operator">=</span> <span class="token scope">TotalesCulto<span class="token punctuation">::</span></span><span class="token function">updateOrCreate</span><span class="token punctuation">(</span>
+        <span class="token punctuation">[</span><span class="token string single-quoted-string">'culto_id'</span> <span class="token operator">=&gt;</span> <span class="token variable">$culto</span><span class="token operator">-&gt;</span><span class="token property">id</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+        <span class="token punctuation">[</span><span class="token string single-quoted-string">'total_suelto'</span> <span class="token operator">=&gt;</span> <span class="token operator">...</span><span class="token punctuation">,</span> <span class="token string single-quoted-string">'total_general'</span> <span class="token operator">=&gt;</span> <span class="token operator">...</span><span class="token punctuation">]</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// Guardar detalles por categoria</span>
+    <span class="token keyword keyword-foreach">foreach</span> <span class="token punctuation">(</span><span class="token variable">$categorias</span> <span class="token keyword keyword-as">as</span> <span class="token variable">$cat</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token scope">TotalesCultoDetalle<span class="token punctuation">::</span></span><span class="token function">updateOrCreate</span><span class="token punctuation">(</span>
+            <span class="token punctuation">[</span><span class="token string single-quoted-string">'totales_culto_id'</span> <span class="token operator">=&gt;</span> <span class="token variable">$totales</span><span class="token operator">-&gt;</span><span class="token property">id</span><span class="token punctuation">,</span> <span class="token string single-quoted-string">'category_id'</span> <span class="token operator">=&gt;</span> <span class="token variable">$cat</span><span class="token operator">-&gt;</span><span class="token property">id</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+            <span class="token punctuation">[</span><span class="token string single-quoted-string">'monto'</span> <span class="token operator">=&gt;</span> <span class="token variable">$totalesPorCategoria</span><span class="token punctuation">[</span><span class="token variable">$cat</span><span class="token operator">-&gt;</span><span class="token property">id</span><span class="token punctuation">]</span> <span class="token operator">??</span> <span class="token number">0</span><span class="token punctuation">]</span>
+        <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre><h4 id="en-vistas-ejemplo-recuentocreatebladephp">En vistas (ejemplo recuento/create.blade.php): </h4>
+<pre data-role="codeBlock" data-info="blade" class="language-blade blade"><code>{{-- ANTES: 8 bloques de input quemados --}}
+
+{{-- DESPUES: loop dinamico --}}
+@foreach($categorias as $categoria)
+&lt;div&gt;
+    &lt;label&gt;{{ $categoria-&gt;nombre }}&lt;/label&gt;
+    &lt;div class="relative"&gt;
+        &lt;span&gt;{{ $moneda }}&lt;/span&gt;
+        &lt;input type="number" name="categorias[{{ $categoria-&gt;id }}]"
+               step="0.01" min="0" value="0"&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+@endforeach
+</code></pre><h4 id="en-dashboard-chartjs">En dashboard (Chart.js): </h4>
+<pre data-role="codeBlock" data-info="javascript" class="language-javascript javascript"><code><span class="token comment">// ANTES: labels quemados</span>
+<span class="token literal-property property">labels</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">'Diezmo'</span><span class="token punctuation">,</span> <span class="token string">'Misiones'</span><span class="token punctuation">,</span> <span class="token string">'Seminario'</span><span class="token punctuation">,</span> <span class="token spread operator">...</span><span class="token punctuation">]</span>
+
+<span class="token comment">// DESPUES: desde PHP</span>
+<span class="token literal-property property">labels</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token operator">!</span><span class="token operator">!</span> <span class="token function">json_encode</span><span class="token punctuation">(</span>$categorias<span class="token operator">-</span><span class="token operator">&gt;</span><span class="token function">pluck</span><span class="token punctuation">(</span><span class="token string">'nombre'</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">!</span><span class="token operator">!</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token literal-property property">data</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token operator">!</span><span class="token operator">!</span> <span class="token function">json_encode</span><span class="token punctuation">(</span>$distribucion<span class="token operator">-</span><span class="token operator">&gt;</span><span class="token function">values</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">!</span><span class="token operator">!</span><span class="token punctuation">}</span>
+</code></pre><hr>
+<h2 id="7-sistema-de-asistencia-dinamica">7. SISTEMA DE ASISTENCIA DINAMICA </h2>
+<h3 id="71-columnas-quemadas-actuales-en-tabla-asistencia">7.1 Columnas quemadas actuales en tabla <code>asistencia</code> </h3>
+<p><strong>Grupo Capilla (8 columnas):</strong></p>
+<ul>
+<li><code>chapel_adultos_hombres</code>, <code>chapel_adultos_mujeres</code></li>
+<li><code>chapel_adultos_mayores_hombres</code>, <code>chapel_adultos_mayores_mujeres</code></li>
+<li><code>chapel_jovenes_masculinos</code>, <code>chapel_jovenes_femeninas</code></li>
+<li><code>chapel_maestros_hombres</code>, <code>chapel_maestros_mujeres</code></li>
+</ul>
+<p><strong>4 grupos de clases (16 columnas, 4 por grupo):</strong></p>
+<ul>
+<li><code>clase_0_1_hombres</code>, <code>clase_0_1_mujeres</code>, <code>clase_0_1_maestros_hombres</code>, <code>clase_0_1_maestros_mujeres</code></li>
+<li><code>clase_2_6_*</code> (x4), <code>clase_7_8_*</code> (x4), <code>clase_9_11_*</code> (x4)</li>
+</ul>
+<p><strong>Salvos, Bautismos, Visitas (18 columnas, 6 por grupo):</strong></p>
+<ul>
+<li><code>salvos_adulto_hombre</code>, <code>salvos_adulto_mujer</code>, <code>salvos_joven_hombre</code>, <code>salvos_joven_mujer</code>, <code>salvos_nino</code>, <code>salvos_nina</code></li>
+<li><code>bautismos_*</code> (x6), <code>visitas_*</code> (x6)</li>
+</ul>
+<p><strong>Total: ~42 columnas quemadas</strong></p>
+<h3 id="72-archivos-afectados">7.2 Archivos afectados </h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Impacto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/Models/Asistencia.php</code></td>
+<td><code>$fillable</code> con ~42 campos</td>
+</tr>
+<tr>
+<td><code>app/Http/Controllers/AsistenciaController.php</code></td>
+<td>Validacion store/update con ~42 campos</td>
+</tr>
+<tr>
+<td><code>asistencia/create.blade.php</code></td>
+<td>~42 selects quemados (~500 lineas)</td>
+</tr>
+<tr>
+<td><code>asistencia/create_new.blade.php</code></td>
+<td>Identico</td>
+</tr>
+<tr>
+<td><code>asistencia/edit.blade.php</code></td>
+<td>Identico</td>
+</tr>
+<tr>
+<td><code>asistencia/show.blade.php</code></td>
+<td>Tabla con todos los campos</td>
+</tr>
+<tr>
+<td>Todos los PDFs de asistencia</td>
+<td>Tablas con columnas fijas</td>
+</tr>
+<tr>
+<td><code>IngresosAsistenciaController.php</code></td>
+<td>Calculos de totales</td>
+</tr>
+</tbody>
+</table>
+<h3 id="73-solucion">7.3 Solucion </h3>
+<p>Los formularios pasan de ~42 campos quemados a loops dinamicos:</p>
+<pre data-role="codeBlock" data-info="blade" class="language-blade blade"><code>@foreach($grupos as $grupo)
+&lt;div class="border rounded-lg"&gt;
+    &lt;button onclick="toggleSection('{{ $grupo-&gt;slug }}')"&gt;
+        &lt;h3&gt;{{ $grupo-&gt;nombre }}&lt;/h3&gt;
+    &lt;/button&gt;
+    &lt;div id="section-{{ $grupo-&gt;slug }}"&gt;
+        @foreach($grupo-&gt;fields as $field)
+        &lt;div&gt;
+            &lt;label&gt;{{ $field-&gt;nombre }}&lt;/label&gt;
+            &lt;select name="fields[{{ $field-&gt;id }}]"&gt;
+                @for($i = 0; $i &lt;= 200; $i++)
+                    &lt;option value="{{ $i }}"&gt;{{ $i }}&lt;/option&gt;
+                @endfor
+            &lt;/select&gt;
+        &lt;/div&gt;
+        @endforeach
+    &lt;/div&gt;
+&lt;/div&gt;
+@endforeach
+</code></pre><hr>
+<h2 id="8-autenticacion-por-dominio-de-email">8. AUTENTICACION POR DOMINIO DE EMAIL </h2>
+<h3 id="81-flujo-de-registrologin">8.1 Flujo de registro/login </h3>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>1. Usuario llega a /login
+2. Ingresa email: juan@ibbla.com
+3. Sistema extrae dominio: "ibbla.com"
+4. Busca en tenant_email_domains WHERE dominio = 'ibbla.com'
+5. Si encuentra → asigna tenant_id al user, redirige a dashboard del tenant
+6. Si dominio es "admin.com" → redirige a panel super admin
+7. Si no encuentra → error "Dominio no registrado. Contacte al administrador."
+</code></pre><h3 id="82-archivos-a-modificar">8.2 Archivos a modificar </h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Cambio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/Http/Controllers/Auth/RegisteredUserController.php</code></td>
+<td>Validar dominio de email, asignar tenant_id</td>
+</tr>
+<tr>
+<td><code>app/Http/Controllers/Auth/AuthenticatedSessionController.php</code></td>
+<td>Resolver tenant al login, setear en sesion</td>
+</tr>
+<tr>
+<td><code>resources/views/auth/login.blade.php</code></td>
+<td>Mostrar branding del tenant si se conoce (o branding generico)</td>
+</tr>
+<tr>
+<td><code>resources/views/auth/register.blade.php</code></td>
+<td>Idem</td>
+</tr>
+</tbody>
+</table>
+<h3 id="83-middleware-nuevo-resolvetenant">8.3 Middleware nuevo: <code>ResolveTenant</code> </h3>
+<pre data-role="codeBlock" data-info="php" class="language-php php"><code><span class="token keyword keyword-class">class</span> <span class="token class-name-definition class-name">ResolveTenant</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword keyword-public">public</span> <span class="token keyword keyword-function">function</span> <span class="token function-definition function">handle</span><span class="token punctuation">(</span><span class="token variable">$request</span><span class="token punctuation">,</span> <span class="token variable">$next</span><span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+        <span class="token keyword keyword-if">if</span> <span class="token punctuation">(</span><span class="token function">auth</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-&gt;</span><span class="token function">check</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            <span class="token variable">$user</span> <span class="token operator">=</span> <span class="token function">auth</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-&gt;</span><span class="token function">user</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword keyword-if">if</span> <span class="token punctuation">(</span><span class="token variable">$user</span><span class="token operator">-&gt;</span><span class="token property">is_super_admin</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                <span class="token comment">// No resolver tenant, dar acceso super admin</span>
+                <span class="token function">app</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-&gt;</span><span class="token function">instance</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'tenant'</span><span class="token punctuation">,</span> <span class="token constant">null</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span> <span class="token keyword keyword-else">else</span> <span class="token punctuation">{</span>
+                <span class="token variable">$tenant</span> <span class="token operator">=</span> <span class="token scope">Tenant<span class="token punctuation">::</span></span><span class="token function">find</span><span class="token punctuation">(</span><span class="token variable">$user</span><span class="token operator">-&gt;</span><span class="token property">tenant_id</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token keyword keyword-if">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token variable">$tenant</span> <span class="token operator">||</span> <span class="token operator">!</span><span class="token variable">$tenant</span><span class="token operator">-&gt;</span><span class="token property">activo</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    <span class="token function">abort</span><span class="token punctuation">(</span><span class="token number">403</span><span class="token punctuation">,</span> <span class="token string single-quoted-string">'Iglesia no activa'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">}</span>
+                <span class="token function">app</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">-&gt;</span><span class="token function">instance</span><span class="token punctuation">(</span><span class="token string single-quoted-string">'tenant'</span><span class="token punctuation">,</span> <span class="token variable">$tenant</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+        <span class="token keyword keyword-return">return</span> <span class="token variable">$next</span><span class="token punctuation">(</span><span class="token variable">$request</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre><hr>
+<h2 id="9-panel-de-super-admin">9. PANEL DE SUPER ADMIN </h2>
+<h3 id="91-nuevas-rutas">9.1 Nuevas rutas </h3>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>/super-admin/                        → Dashboard global
+/super-admin/tenants                 → CRUD de iglesias
+/super-admin/tenants/{id}/edit       → Editar iglesia
+/super-admin/tenants/{id}/branding   → Logo, colores
+/super-admin/tenants/{id}/categories → Rubros
+/super-admin/tenants/{id}/users      → Usuarios de esa iglesia
+/super-admin/tenants/{id}/domains    → Dominios de email
+/super-admin/tenants/create          → Nueva iglesia
+</code></pre><h3 id="92-nuevos-archivos-necesarios">9.2 Nuevos archivos necesarios </h3>
+<table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Archivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Controller</td>
+<td><code>app/Http/Controllers/SuperAdmin/TenantController.php</code></td>
+</tr>
+<tr>
+<td>Controller</td>
+<td><code>app/Http/Controllers/SuperAdmin/DashboardController.php</code></td>
+</tr>
+<tr>
+<td>Middleware</td>
+<td><code>app/Http/Middleware/SuperAdminMiddleware.php</code></td>
+</tr>
+<tr>
+<td>Vista</td>
+<td><code>resources/views/super-admin/layout.blade.php</code></td>
+</tr>
+<tr>
+<td>Vista</td>
+<td><code>resources/views/super-admin/dashboard.blade.php</code></td>
+</tr>
+<tr>
+<td>Vista</td>
+<td><code>resources/views/super-admin/tenants/index.blade.php</code></td>
+</tr>
+<tr>
+<td>Vista</td>
+<td><code>resources/views/super-admin/tenants/create.blade.php</code></td>
+</tr>
+<tr>
+<td>Vista</td>
+<td><code>resources/views/super-admin/tenants/edit.blade.php</code></td>
+</tr>
+<tr>
+<td>Vista</td>
+<td><code>resources/views/super-admin/tenants/branding.blade.php</code></td>
+</tr>
+<tr>
+<td>Vista</td>
+<td><code>resources/views/super-admin/tenants/categories.blade.php</code></td>
+</tr>
+<tr>
+<td>Vista</td>
+<td><code>resources/views/super-admin/tenants/domains.blade.php</code></td>
+</tr>
+<tr>
+<td>Vista</td>
+<td><code>resources/views/super-admin/tenants/users.blade.php</code></td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="10-modificaciones-por-archivo-inventario-completo">10. MODIFICACIONES POR ARCHIVO (INVENTARIO COMPLETO) </h2>
+<h3 id="101-modelos-appmodels">10.1 Modelos (app/Models/) </h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Cambios</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>User.php</code></td>
+<td>Agregar <code>tenant_id</code>, <code>tenant_role_id</code>, <code>is_super_admin</code>. Eliminar metodos <code>isAdmin()</code> etc. basados en ENUM. Nuevo: relacion <code>belongsTo(Tenant)</code>, <code>belongsTo(TenantRole)</code>. Agregar Global Scope de tenant.</td>
+</tr>
+<tr>
+<td><code>Tenant.php</code></td>
+<td><strong>NUEVO</strong>. Relaciones: hasMany Categories, ServiceTypes, DemographicGroups, Users, Roles, EmailDomains. Accessors para logo_url, favicon_url, logoPdfBase64.</td>
+</tr>
+<tr>
+<td><code>TenantCategory.php</code></td>
+<td><strong>NUEVO</strong>. belongsTo Tenant.</td>
+</tr>
+<tr>
+<td><code>TenantServiceType.php</code></td>
+<td><strong>NUEVO</strong>. belongsTo Tenant.</td>
+</tr>
+<tr>
+<td><code>TenantDemographicGroup.php</code></td>
+<td><strong>NUEVO</strong>. belongsTo Tenant, hasMany Fields.</td>
+</tr>
+<tr>
+<td><code>TenantDemographicField.php</code></td>
+<td><strong>NUEVO</strong>. belongsTo Group.</td>
+</tr>
+<tr>
+<td><code>TenantRole.php</code></td>
+<td><strong>NUEVO</strong>. belongsTo Tenant, hasMany Users.</td>
+</tr>
+<tr>
+<td><code>TenantEmailDomain.php</code></td>
+<td><strong>NUEVO</strong>. belongsTo Tenant.</td>
+</tr>
+<tr>
+<td><code>Persona.php</code></td>
+<td>Agregar <code>tenant_id</code>, Global Scope de tenant.</td>
+</tr>
+<tr>
+<td><code>Culto.php</code></td>
+<td>Agregar <code>tenant_id</code>, <code>service_type_id</code>. Eliminar ENUM tipo_culto. Global Scope.</td>
+</tr>
+<tr>
+<td><code>Sobre.php</code></td>
+<td>Sin cambio directo (o agregar tenant_id para queries).</td>
+</tr>
+<tr>
+<td><code>SobreDetalle.php</code></td>
+<td>Cambiar <code>categoria</code> string por <code>category_id</code> FK.</td>
+</tr>
+<tr>
+<td><code>OfrendaSuelta.php</code></td>
+<td>Sin cambio (hereda tenant del culto).</td>
+</tr>
+<tr>
+<td><code>Egreso.php</code></td>
+<td>Sin cambio.</td>
+</tr>
+<tr>
+<td><code>TotalesCulto.php</code></td>
+<td>Eliminar campos de categorias del <code>$fillable</code> y <code>$casts</code>. Nueva relacion hasMany TotalesCultoDetalle.</td>
+</tr>
+<tr>
+<td><code>TotalesCultoDetalle.php</code></td>
+<td><strong>NUEVO</strong>. belongsTo TotalesCulto, belongsTo TenantCategory.</td>
+</tr>
+<tr>
+<td><code>Asistencia.php</code></td>
+<td>Eliminar ~42 campos de <code>$fillable</code>. Nueva relacion hasMany AsistenciaDetalle.</td>
+</tr>
+<tr>
+<td><code>AsistenciaDetalle.php</code></td>
+<td><strong>NUEVO</strong>. belongsTo Asistencia, belongsTo TenantDemographicField.</td>
+</tr>
+<tr>
+<td><code>Promesa.php</code></td>
+<td>Cambiar <code>categoria</code> string por <code>category_id</code> FK.</td>
+</tr>
+<tr>
+<td><code>Compromiso.php</code></td>
+<td>Cambiar <code>categoria</code> string por <code>category_id</code> FK. Modificar constraint UNIQUE.</td>
+</tr>
+<tr>
+<td><code>ClaseAsistencia.php</code></td>
+<td>Agregar <code>tenant_id</code>.</td>
+</tr>
+<tr>
+<td><code>AuditLog.php</code></td>
+<td>Agregar <code>tenant_id</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="102-controladores-apphttpcontrollers">10.2 Controladores (app/Http/Controllers/) </h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Cambios</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DashboardController.php</code></td>
+<td>Reescribir totales para usar TotalesCultoDetalle en vez de columnas fijas. Distribucion dinamica desde categorias del tenant.</td>
+</tr>
+<tr>
+<td><code>RecuentoController.php</code></td>
+<td>Pasar <code>$categorias</code> del tenant a vistas create/edit. Ajustar store/update para guardar por category_id en vez de string.</td>
+</tr>
+<tr>
+<td><code>PersonaController.php</code></td>
+<td>Cargar categorias del tenant. Cambiar arrays quemados por query. Ajustar reportePdf y reporteGeneral.</td>
+</tr>
+<tr>
+<td><code>PromesasReporteController.php</code></td>
+<td>Reemplazar filtros quemados de diezmo/ofrenda por propiedad <code>excluir_de_promesas</code> de la categoria.</td>
+</tr>
+<tr>
+<td><code>AsistenciaController.php</code></td>
+<td>Reescribir store/update para usar AsistenciaDetalle en vez de ~42 campos. Cargar grupos demograficos del tenant.</td>
+</tr>
+<tr>
+<td><code>CultoController.php</code></td>
+<td>Usar ServiceTypes del tenant en vez de ENUM.</td>
+</tr>
+<tr>
+<td><code>IngresosAsistenciaController.php</code></td>
+<td>Reescribir TODAS las queries que referencian categorias quemadas (~13 bloques).</td>
+</tr>
+<tr>
+<td><code>CompromisoController.php</code></td>
+<td>Ajustar para category_id.</td>
+</tr>
+<tr>
+<td><code>MiPerfilController.php</code></td>
+<td>Ajustar para categorias dinamicas.</td>
+</tr>
+<tr>
+<td><code>Auth/RegisteredUserController.php</code></td>
+<td>Resolver tenant por dominio de email.</td>
+</tr>
+<tr>
+<td><code>Auth/AuthenticatedSessionController.php</code></td>
+<td>Resolver tenant al login.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="103-servicios-appservices">10.3 Servicios (app/Services/) </h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Cambios</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CalculoTotalesCultoService.php</code></td>
+<td><strong>Reescritura total.</strong> Cambiar de columnas fijas a TotalesCultoDetalle. Loop por categorias del tenant.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="104-middleware-apphttpmiddleware">10.4 Middleware (app/Http/Middleware/) </h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Cambios</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CheckRole.php</code></td>
+<td>Cambiar de comparar string ENUM a verificar permisos en TenantRole.</td>
+</tr>
+<tr>
+<td><code>ResolveTenant.php</code></td>
+<td><strong>NUEVO.</strong> Resolver tenant del usuario autenticado, setear en app container.</td>
+</tr>
+<tr>
+<td><code>SuperAdminMiddleware.php</code></td>
+<td><strong>NUEVO.</strong> Verificar <code>is_super_admin</code>.</td>
+</tr>
+<tr>
+<td><code>AuditLogMiddleware.php</code></td>
+<td>Agregar <code>tenant_id</code> al log.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="105-vistas---layouts">10.5 Vistas - Layouts </h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Cambios especificos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>layouts/admin.blade.php</code></td>
+<td>L13: titulo dinamico. L16-18: favicon dinamico. L37: logo dinamico. L39: nombre dinamico. L33-143: ~25 clases blue→CSS vars. L172-186: redes sociales dinamicas. L198: logo dinamico. Inyectar CSS vars en <code>&lt;head&gt;</code>.</td>
+</tr>
+<tr>
+<td><code>layouts/guest.blade.php</code></td>
+<td>L8: titulo dinamico. L11-13: favicon dinamico. L33: logo dinamico. L35: nombre dinamico. L48: copyright dinamico. ~4 clases blue.</td>
+</tr>
+<tr>
+<td><code>layouts/app.blade.php</code></td>
+<td>L11-13: favicon dinamico.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="106-vistas---cada-pagina">10.6 Vistas - Cada pagina </h3>
+<p><strong>(Se aplica a TODAS las vistas listadas en la seccion 5.3 para el titulo, mas las siguientes para contenido especifico):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Vista</th>
+<th>Cambios adicionales</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>recuento/create.blade.php</code></td>
+<td>L84-161: 8 inputs quemados → loop @foreach. L86-156: 8x <code>₡</code> → <code>{{ $moneda }}</code>. L168, 215: JS con <code>₡</code>.</td>
+</tr>
+<tr>
+<td><code>recuento/edit.blade.php</code></td>
+<td>L58: array de categorias → foreach. L69, 85, 123: <code>₡</code>.</td>
+</tr>
+<tr>
+<td><code>recuento/index.blade.php</code></td>
+<td>L483-495: totales → loop. L709-716, 807-814: tablas → foreach. 30x <code>₡</code>. 44 clases blue.</td>
+</tr>
+<tr>
+<td><code>recuento/partials/resumen-cerrado.blade.php</code></td>
+<td>L67-74: headers → foreach. L83-99: variables → loop. L191-197: totales → foreach. 19x <code>₡</code>.</td>
+</tr>
+<tr>
+<td><code>dashboard.blade.php</code></td>
+<td>L57-176: 8 stat cards → foreach. L294: labels Chart.js → dinamico. 11x <code>₡</code>.</td>
+</tr>
+<tr>
+<td><code>personas/create.blade.php</code></td>
+<td>L110: array categorias → foreach. 3x <code>₡</code>.</td>
+</tr>
+<tr>
+<td><code>personas/edit.blade.php</code></td>
+<td>Similar a create. 3x <code>₡</code>.</td>
+</tr>
+<tr>
+<td><code>personas/show.blade.php</code></td>
+<td>Promesas por categoria → foreach. 4x <code>₡</code>.</td>
+</tr>
+<tr>
+<td><code>personas/index.blade.php</code></td>
+<td>L235, 272: textos descriptivos → dinamico.</td>
+</tr>
+<tr>
+<td><code>asistencia/create.blade.php</code></td>
+<td>~500 lineas de selects quemados → ~30 lineas con foreach.</td>
+</tr>
+<tr>
+<td><code>asistencia/create_new.blade.php</code></td>
+<td>Identico.</td>
+</tr>
+<tr>
+<td><code>asistencia/edit.blade.php</code></td>
+<td>Identico.</td>
+</tr>
+<tr>
+<td><code>asistencia/show.blade.php</code></td>
+<td>Tabla quemada → foreach.</td>
+</tr>
+<tr>
+<td><code>ingresos-asistencia/ingresos.blade.php</code></td>
+<td>Headers tabla + celdas → foreach. 30x <code>₡</code>.</td>
+</tr>
+<tr>
+<td><code>ingresos-asistencia/index.blade.php</code></td>
+<td>Cards por categoria → foreach. 10x <code>₡</code>.</td>
+</tr>
+<tr>
+<td><code>ingresos-asistencia/promesas.blade.php</code></td>
+<td>Filtros → dinamico. 12x <code>₡</code>.</td>
+</tr>
+<tr>
+<td><code>promesas/create.blade.php</code></td>
+<td>Selector de categoria → opciones dinamicas. 2x <code>₡</code>.</td>
+</tr>
+<tr>
+<td><code>promesas/edit.blade.php</code></td>
+<td>Idem. 3x <code>₡</code>.</td>
+</tr>
+<tr>
+<td><code>compromisos/show.blade.php</code></td>
+<td>Tabla → foreach. 7x <code>₡</code>.</td>
+</tr>
+<tr>
+<td><code>mi-perfil/index.blade.php</code></td>
+<td>Cards → foreach. 4x <code>₡</code>.</td>
+</tr>
+<tr>
+<td><code>principal/index.blade.php</code></td>
+<td>Nombre iglesia, redes sociales → dinamico.</td>
+</tr>
+<tr>
+<td><code>auth/login.blade.php</code></td>
+<td>Logo, colores de pantalla de carga → dinamico.</td>
+</tr>
+<tr>
+<td><code>cultos/create.blade.php</code></td>
+<td>Tipo de culto: ENUM → selector de ServiceTypes.</td>
+</tr>
+<tr>
+<td><code>cultos/edit.blade.php</code></td>
+<td>Idem.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="107-pdfs">10.7 PDFs </h3>
+<p>Cada PDF necesita:</p>
+<ol>
+<li>Recibir <code>$tenant</code> como variable</li>
+<li>Logo → <code>$tenant-&gt;logoPdfBase64()</code></li>
+<li>Nombre → <code>$tenant-&gt;nombre</code></li>
+<li>Colores → variables inline</li>
+<li>Categorias → foreach (donde aplique)</li>
+<li>Moneda → <code>$tenant-&gt;moneda_simbolo</code></li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>PDF</th>
+<th>Cambios</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pdfs/ingresos.blade.php</code></td>
+<td>Logo, nombre, colores, headers de tabla → foreach, moneda</td>
+</tr>
+<tr>
+<td><code>pdfs/recuento-individual.blade.php</code></td>
+<td>Idem</td>
+</tr>
+<tr>
+<td><code>pdfs/promesas.blade.php</code></td>
+<td>Idem</td>
+</tr>
+<tr>
+<td><code>pdfs/promesas-anual.blade.php</code></td>
+<td>Idem</td>
+</tr>
+<tr>
+<td><code>pdfs/asistencia.blade.php</code></td>
+<td>Logo, nombre, colores, campos demograficos → foreach</td>
+</tr>
+<tr>
+<td><code>pdfs/asistencia-culto.blade.php</code></td>
+<td>Idem</td>
+</tr>
+<tr>
+<td><code>pdfs/asistencia-mes.blade.php</code></td>
+<td>Idem</td>
+</tr>
+<tr>
+<td><code>pdfs/reporte-personas.blade.php</code></td>
+<td>Idem + categorias dinamicas</td>
+</tr>
+<tr>
+<td><code>pdfs/reporte-general.blade.php</code></td>
+<td>Idem</td>
+</tr>
+<tr>
+<td><code>pdfs/reporte-contribuciones.blade.php</code></td>
+<td>Idem</td>
+</tr>
+</tbody>
+</table>
+<h3 id="108-configuracion">10.8 Configuracion </h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Cambio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>config/app.php</code></td>
+<td>Timezone y locale se mantienen como fallback, pero tenant los overridea</td>
+</tr>
+<tr>
+<td><code>tailwind.config.js</code></td>
+<td>Sin cambio obligatorio (CSS vars no dependen de Tailwind)</td>
+</tr>
+<tr>
+<td><code>resources/css/app.css</code></td>
+<td>Refactor de ~11 clases con <code>blue-*</code> → CSS vars</td>
+</tr>
+<tr>
+<td><code>bootstrap/app.php</code></td>
+<td>Registrar nuevos middleware: ResolveTenant, SuperAdmin</td>
+</tr>
+<tr>
+<td><code>routes/web.php</code></td>
+<td>Agregar grupo de rutas super-admin. Roles pasan de strings a permisos.</td>
+</tr>
+<tr>
+<td><code>database/seeders/AdminUserSeeder.php</code></td>
+<td>Crear tenant default + domain + categories + roles</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="11-migraciones-necesarias">11. MIGRACIONES NECESARIAS </h2>
+<p>En orden de ejecucion:</p>
+<pre data-role="codeBlock" data-info="" class="language-text"><code>1. create_tenants_table
+2. create_tenant_email_domains_table
+3. create_tenant_categories_table
+4. create_tenant_service_types_table
+5. create_tenant_demographic_groups_table
+6. create_tenant_demographic_fields_table
+7. create_tenant_roles_table
+8. add_tenant_id_to_users_table
+9. add_tenant_id_to_personas_table
+10. add_tenant_id_to_cultos_table
+11. add_service_type_id_to_cultos_table
+12. modify_sobre_detalles_categoria_to_category_id
+13. create_totales_culto_detalle_table
+14. remove_category_columns_from_totales_culto
+15. create_asistencia_detalle_table
+16. remove_demographic_columns_from_asistencia
+17. modify_promesas_categoria_to_category_id
+18. modify_compromisos_categoria_to_category_id
+19. add_tenant_id_to_clases_asistencia_table
+20. add_tenant_id_to_audit_logs_table
+</code></pre><p><strong>Nota critica:</strong> Las migraciones 14 y 16 (eliminar columnas) deben ejecutarse DESPUES de migrar datos existentes a las nuevas tablas pivot. Se necesita un seeder/comando de migracion de datos.</p>
+<hr>
+<h2 id="12-nuevos-archivos-a-crear">12. NUEVOS ARCHIVOS A CREAR </h2>
+<h3 id="modelos-10">Modelos (~10) </h3>
+<ul>
+<li><code>Tenant.php</code>, <code>TenantCategory.php</code>, <code>TenantServiceType.php</code></li>
+<li><code>TenantDemographicGroup.php</code>, <code>TenantDemographicField.php</code></li>
+<li><code>TenantRole.php</code>, <code>TenantEmailDomain.php</code></li>
+<li><code>TotalesCultoDetalle.php</code>, <code>AsistenciaDetalle.php</code></li>
+</ul>
+<h3 id="controladores-3">Controladores (~3) </h3>
+<ul>
+<li><code>SuperAdmin/TenantController.php</code></li>
+<li><code>SuperAdmin/DashboardController.php</code></li>
+<li><code>Tenant/SettingsController.php</code> (para que admin de iglesia edite logo/colores)</li>
+</ul>
+<h3 id="middleware-2">Middleware (~2) </h3>
+<ul>
+<li><code>ResolveTenant.php</code></li>
+<li><code>SuperAdminMiddleware.php</code></li>
+</ul>
+<h3 id="vistas-12">Vistas (~12) </h3>
+<ul>
+<li><code>super-admin/layout.blade.php</code></li>
+<li><code>super-admin/dashboard.blade.php</code></li>
+<li><code>super-admin/tenants/index.blade.php</code></li>
+<li><code>super-admin/tenants/create.blade.php</code></li>
+<li><code>super-admin/tenants/edit.blade.php</code></li>
+<li><code>super-admin/tenants/branding.blade.php</code></li>
+<li><code>super-admin/tenants/categories.blade.php</code></li>
+<li><code>super-admin/tenants/domains.blade.php</code></li>
+<li><code>super-admin/tenants/users.blade.php</code></li>
+<li><code>tenant-settings/branding.blade.php</code> (para admin de iglesia)</li>
+<li><code>tenant-settings/categories.blade.php</code></li>
+<li><code>tenant-settings/general.blade.php</code></li>
+</ul>
+<h3 id="migraciones-20">Migraciones (~20) </h3>
+<p>(Listadas en seccion 11)</p>
+<h3 id="seeders-3">Seeders (~3) </h3>
+<ul>
+<li><code>TenantSeeder.php</code> (crear tenant default con datos de IBBSC)</li>
+<li><code>TenantCategoriesSeeder.php</code> (migrar categorias actuales)</li>
+<li><code>TenantRolesSeeder.php</code> (crear roles default)</li>
+</ul>
+<h3 id="service-providers-1">Service Providers (~1) </h3>
+<ul>
+<li><code>TenantServiceProvider.php</code> (View::share, Global Scopes, helper <code>tenant()</code>)</li>
+</ul>
+<h3 id="traits-1">Traits (~1) </h3>
+<ul>
+<li><code>BelongsToTenant.php</code> (Global Scope reutilizable)</li>
+</ul>
+<hr>
+<h2 id="13-orden-de-implementacion">13. ORDEN DE IMPLEMENTACION </h2>
+<h3 id="fase-1-fundacion-multi-tenant-sin-cambiar-funcionalidad">Fase 1: Fundacion Multi-Tenant (sin cambiar funcionalidad) </h3>
+<ol>
+<li>Crear tabla <code>tenants</code> y modelo</li>
+<li>Crear tabla <code>tenant_email_domains</code></li>
+<li>Agregar <code>tenant_id</code> a <code>users</code>, <code>personas</code>, <code>cultos</code>, etc.</li>
+<li>Crear trait <code>BelongsToTenant</code> con Global Scope</li>
+<li>Crear middleware <code>ResolveTenant</code></li>
+<li>Crear <code>TenantServiceProvider</code> con View::share del tenant</li>
+<li>Crear seeder que cree tenant default con datos de IBBSC</li>
+<li><strong>Test:</strong> App funciona exactamente igual con un solo tenant</li>
+</ol>
+<h3 id="fase-2-branding-dinamico">Fase 2: Branding Dinamico </h3>
+<ol start="9">
+<li>Agregar campos de branding a <code>tenants</code></li>
+<li>Inyectar CSS Custom Properties en layouts</li>
+<li>Refactorear <code>app.css</code> (11 clases)</li>
+<li>Refactorear <code>layouts/admin.blade.php</code> (25 clases + logo + nombre + redes)</li>
+<li>Refactorear <code>layouts/guest.blade.php</code></li>
+<li>Refactorear todas las vistas: titulos (40 archivos, linea 3 de cada uno)</li>
+<li>Refactorear todos los <code>₡</code> → <code>{{ $moneda }}</code> (176 ocurrencias)</li>
+<li>Refactorear logos en PDFs (10 archivos)</li>
+<li>Refactorear colores en PDFs (10 archivos)</li>
+<li>Refactorear nombres en PDFs (10 archivos)</li>
+<li>Refactorear todas las clases <code>blue-*</code> en vistas (459 ocurrencias, 44 archivos)</li>
+<li><strong>Test:</strong> Cambiar colores/logo del tenant, verificar que todo se actualiza</li>
+</ol>
+<h3 id="fase-3-rubros-dinamicos">Fase 3: Rubros Dinamicos </h3>
+<ol start="21">
+<li>Crear tabla <code>tenant_categories</code> y modelo</li>
+<li>Crear tabla <code>totales_culto_detalle</code></li>
+<li>Migrar <code>sobre_detalles.categoria</code> → <code>category_id</code></li>
+<li>Migrar <code>promesas.categoria</code> → <code>category_id</code></li>
+<li>Migrar <code>compromisos.categoria</code> → <code>category_id</code></li>
+<li>Reescribir <code>CalculoTotalesCultoService</code></li>
+<li>Reescribir <code>DashboardController</code></li>
+<li>Reescribir <code>IngresosAsistenciaController</code> (13 bloques)</li>
+<li>Reescribir <code>PersonaController</code> reportes</li>
+<li>Reescribir <code>PromesasReporteController</code></li>
+<li>Refactorear vistas de recuento (create, edit, index, resumen-cerrado)</li>
+<li>Refactorear dashboard.blade.php</li>
+<li>Refactorear todas las vistas de ingresos/reportes</li>
+<li>Refactorear todos los PDFs con categorias</li>
+<li>Eliminar columnas fijas de <code>totales_culto</code></li>
+<li><strong>Test:</strong> Crear/quitar rubros, verificar que flujos completos funcionan</li>
+</ol>
+<h3 id="fase-4-asistencia-dinamica">Fase 4: Asistencia Dinamica </h3>
+<ol start="37">
+<li>Crear tablas <code>tenant_demographic_groups</code>, <code>tenant_demographic_fields</code>, <code>asistencia_detalle</code></li>
+<li>Reescribir <code>AsistenciaController</code></li>
+<li>Reescribir formularios de asistencia (create, edit, show)</li>
+<li>Reescribir PDFs de asistencia</li>
+<li>Eliminar ~42 columnas de tabla <code>asistencia</code></li>
+<li><strong>Test:</strong> Configurar grupos demograficos diferentes, verificar flujos</li>
+</ol>
+<h3 id="fase-5-tipos-de-culto-dinamicos">Fase 5: Tipos de Culto Dinamicos </h3>
+<ol start="43">
+<li>Crear tabla <code>tenant_service_types</code></li>
+<li>Modificar <code>cultos</code> tabla y modelo</li>
+<li>Modificar <code>CultoController</code></li>
+<li>Modificar vistas de cultos (create, edit)</li>
+<li><strong>Test:</strong> Tipos de culto personalizados funcionan</li>
+</ol>
+<h3 id="fase-6-roles-dinamicos">Fase 6: Roles Dinamicos </h3>
+<ol start="48">
+<li>Crear tabla <code>tenant_roles</code></li>
+<li>Modificar <code>User</code> modelo</li>
+<li>Reescribir <code>CheckRole</code> middleware</li>
+<li>Refactorear sidebar (admin.blade.php) para permisos dinamicos</li>
+<li><strong>Test:</strong> Roles personalizados funcionan</li>
+</ol>
+<h3 id="fase-7-panel-super-admin">Fase 7: Panel Super Admin </h3>
+<ol start="53">
+<li>Crear middleware <code>SuperAdminMiddleware</code></li>
+<li>Crear layout y vistas de super admin</li>
+<li>CRUD de tenants</li>
+<li>Gestion de dominios de email</li>
+<li>Gestion de categorias/rubros por tenant</li>
+<li><strong>Test:</strong> Crear nueva iglesia desde panel, verificar aislamiento</li>
+</ol>
+<h3 id="fase-8-auth-por-email-domain">Fase 8: Auth por Email Domain </h3>
+<ol start="59">
+<li>Modificar registro para resolver tenant por dominio</li>
+<li>Modificar login para setear tenant</li>
+<li>Manejar caso "dominio no registrado"</li>
+<li><strong>Test:</strong> Flujo completo de registro → login → vista correcta del tenant</li>
+</ol>
+<hr>
+<h2 id="14-riesgos-y-decisiones-pendientes">14. RIESGOS Y DECISIONES PENDIENTES </h2>
+<h3 id="decisiones-por-tomar">Decisiones por tomar: </h3>
+<ol>
+<li><strong>Paletas de colores</strong>: Custom libre (color picker) vs. paletas predefinidas vs. ambas?</li>
+<li><strong>Migracion de datos existentes</strong>: Migrar datos de IBBSC actual al nuevo schema o empezar limpio?</li>
+<li><strong>Subdominio vs. dominio de email</strong>: Cada iglesia en <code>ibbsc.miapp.com</code> vs. solo por email?</li>
+<li><strong>Limites por plan</strong>: Cuantos usuarios/rubros/etc. puede tener cada iglesia?</li>
+<li><strong>Frecuencias de promesas</strong>: Mantener ENUM o hacer dinamico por tenant?</li>
+<li><strong>Metodos de pago</strong>: Mantener ENUM (efectivo/transferencia) o hacer dinamico?</li>
+</ol>
+<h3 id="riesgos-principales">Riesgos principales: </h3>
+<ol>
+<li><strong>Performance</strong>: Global Scopes agregan WHERE a cada query. Con muchos tenants puede impactar. Mitigacion: indices en <code>tenant_id</code>.</li>
+<li><strong>Aislamiento de datos</strong>: Un bug en el Global Scope podria exponer datos entre iglesias. Mitigacion: tests exhaustivos, middleware de verificacion doble.</li>
+<li><strong>PDFs</strong>: DomPDF no soporta CSS variables. Hay que pasar los colores como valores inline directamente.</li>
+<li><strong>Compatibilidad de colores</strong>: Colores custom pueden verse mal (ej: texto blanco sobre fondo amarillo claro). Mitigacion: paletas predefinidas que garanticen contraste.</li>
+</ol>
+<h3 id="estadisticas-finales-del-refactor">Estadisticas finales del refactor: </h3>
+<table>
+<thead>
+<tr>
+<th>Metrica</th>
+<th>Cantidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Archivos a modificar</td>
+<td>~65</td>
+</tr>
+<tr>
+<td>Archivos nuevos a crear</td>
+<td>~45</td>
+</tr>
+<tr>
+<td>Migraciones nuevas</td>
+<td>~20</td>
+</tr>
+<tr>
+<td>Clases blue-* a reemplazar</td>
+<td>459 en 44 archivos</td>
+</tr>
+<tr>
+<td>Simbolos ₡ a parametrizar</td>
+<td>176</td>
+</tr>
+<tr>
+<td>Textos "IBBSC" a reemplazar</td>
+<td>~58</td>
+</tr>
+<tr>
+<td>Logos a dinamizar</td>
+<td>25</td>
+</tr>
+<tr>
+<td>URLs de redes sociales</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Columnas de BD a eliminar</td>
+<td>~50 (asistencia) + 8 (totales)</td>
+</tr>
+<tr>
+<td>Nuevas tablas</td>
+<td>9</td>
+</tr>
+<tr>
+<td>Nuevos modelos</td>
+<td>~10</td>
+</tr>
+<tr>
+<td>Controladores a reescribir significativamente</td>
+<td>7</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><em>Documento generado el 2026-02-09 por analisis exhaustivo del codebase IBBSCation.</em></p>
+
+      </div>
+      
+      
+    
+    
+    
+    
+    
+    
+  
+    </body></html>

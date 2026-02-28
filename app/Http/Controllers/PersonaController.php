@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Persona;
 use App\Models\Promesa;
 use App\Models\Compromiso;
+use App\Models\ClaseAsistencia;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -16,9 +17,13 @@ class PersonaController extends Controller
     {
         $query = Persona::withCount(['sobres', 'promesas']);
         
-        // Búsqueda por nombre
+        // Búsqueda por nombre o pin
         if ($request->filled('buscar')) {
-            $query->where('nombre', 'like', '%' . $request->buscar . '%');
+            $buscar = $request->buscar;
+            $query->where(function ($q) use ($buscar) {
+                $q->where('nombre', 'like', '%' . $buscar . '%')
+                  ->orWhere('pin', $buscar);
+            });
         }
         
         $personas = $query->paginate(20);
@@ -28,7 +33,9 @@ class PersonaController extends Controller
 
     public function create()
     {
-        return view('personas.create');
+        $categorias = tenant_categories(['excluir_de_promesas' => false]);
+        $clases = ClaseAsistencia::activas()->ordenadas()->get();
+        return view('personas.create', compact('categorias', 'clases'));
     }
 
     public function store(Request $request)
@@ -37,6 +44,10 @@ class PersonaController extends Controller
             'nombre' => 'required|string|max:255',
             'telefono' => 'nullable|string|max:20',
             'correo' => 'nullable|email|max:255|unique:users,email',
+            'fecha_nacimiento' => 'nullable|date',
+            'pin' => 'nullable|string|max:20',
+            'clase_asistencia_id' => 'nullable|exists:clases_asistencia,id',
+            'es_maestro' => 'boolean',
             'password' => 'required_with:correo|nullable|string|min:8',
             'activo' => 'boolean',
             'notas' => 'nullable|string',
@@ -59,6 +70,7 @@ class PersonaController extends Controller
                 'email' => $validated['correo'],
                 'password' => Hash::make($validated['password']),
                 'rol' => 'miembro',
+                'tenant_id' => auth()->user()->tenant_id,
             ]);
         }
 
@@ -67,6 +79,10 @@ class PersonaController extends Controller
             'nombre' => $validated['nombre'],
             'telefono' => $validated['telefono'] ?? null,
             'correo' => $validated['correo'] ?? null,
+            'fecha_nacimiento' => $validated['fecha_nacimiento'] ?? null,
+            'pin' => $validated['pin'] ?? null,
+            'clase_asistencia_id' => $validated['clase_asistencia_id'] ?? null,
+            'es_maestro' => $request->boolean('es_maestro'),
             'password' => !empty($validated['password']) ? Hash::make($validated['password']) : null,
             'user_id' => $user ? $user->id : null,
             'activo' => $validated['activo'] ?? true,
@@ -157,7 +173,9 @@ class PersonaController extends Controller
     public function edit(Persona $persona)
     {
         $persona->load('promesas');
-        return view('personas.edit', compact('persona'));
+        $categorias = tenant_categories(['excluir_de_promesas' => false]);
+        $clases = ClaseAsistencia::activas()->ordenadas()->get();
+        return view('personas.edit', compact('persona', 'categorias', 'clases'));
     }
 
     public function update(Request $request, Persona $persona)
@@ -166,6 +184,10 @@ class PersonaController extends Controller
             'nombre' => 'required|string|max:255',
             'telefono' => 'nullable|string|max:20',
             'correo' => 'nullable|email|unique:users,email,' . ($persona->user_id ?? 'NULL'),
+            'fecha_nacimiento' => 'nullable|date',
+            'pin' => 'nullable|string|max:20',
+            'clase_asistencia_id' => 'nullable|exists:clases_asistencia,id',
+            'es_maestro' => 'boolean',
             'password' => $persona->user_id ? 'nullable|string|min:8' : 'required_with:correo|nullable|string|min:8',
             'activo' => 'boolean',
             'notas' => 'nullable|string',
@@ -191,6 +213,7 @@ class PersonaController extends Controller
                 'email' => $validated['correo'],
                 'password' => Hash::make($validated['password']),
                 'rol' => 'miembro',
+                'tenant_id' => auth()->user()->tenant_id,
             ]);
             $persona->user_id = $user->id;
             $createUser = true;
@@ -221,6 +244,10 @@ class PersonaController extends Controller
             'nombre' => $validated['nombre'],
             'telefono' => $validated['telefono'] ?? null,
             'correo' => $validated['correo'] ?? null,
+            'fecha_nacimiento' => $validated['fecha_nacimiento'] ?? null,
+            'pin' => $validated['pin'] ?? null,
+            'clase_asistencia_id' => $validated['clase_asistencia_id'] ?? null,
+            'es_maestro' => $request->boolean('es_maestro'),
             'activo' => $validated['activo'] ?? true,
             'notas' => $validated['notas'] ?? null,
         ];
@@ -333,12 +360,11 @@ class PersonaController extends Controller
      */
     public function resetearPromesas()
     {
-        // Eliminar todos los compromisos
-        Compromiso::truncate();
-        
-        // Eliminar todas las promesas
-        Promesa::truncate();
-        
+        // Eliminar compromisos y promesas solo de personas del tenant actual
+        $personaIds = Persona::pluck('id');
+        Compromiso::whereIn('persona_id', $personaIds)->delete();
+        Promesa::whereIn('persona_id', $personaIds)->delete();
+
         return redirect()->route('personas.index')
             ->with('success', 'Todas las promesas y compromisos han sido reseteados. Los sobres dados se mantienen como historial.');
     }
@@ -413,8 +439,8 @@ class PersonaController extends Controller
                   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
         $tituloPeriodo = "Enero - {$meses[$mesActual]} {$anioActual}";
 
-        // Categorías fijas en orden
-        $categorias = ['diezmo', 'misiones', 'seminario', 'campa', 'construccion', 'micro'];
+        // Categorías dinámicas del tenant
+        $categorias = tenant_categories()->pluck('slug')->toArray();
 
         // Obtener personas activas con sus sobres del período
         $personas = Persona::where('activo', true)
@@ -490,8 +516,8 @@ class PersonaController extends Controller
         $mesesNombres = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
                         'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
-        // Categorias con subdivision (dado/esperado) - sin diezmo ni ofrenda
-        $categoriasConPromesa = ['misiones', 'seminario', 'campa', 'construccion', 'micro'];
+        // Categorias con subdivision (dado/esperado) - excluir las que tienen excluir_de_promesas
+        $categoriasConPromesa = tenant_categories(['excluir_de_promesas' => false])->pluck('slug')->toArray();
 
         // Obtener personas activas con promesas y sobres
         $personas = Persona::where('activo', true)

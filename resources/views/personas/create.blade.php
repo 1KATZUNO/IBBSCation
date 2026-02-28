@@ -62,6 +62,28 @@
                     </div>
                 </div>
 
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="fecha_nacimiento" class="block text-sm font-medium text-gray-700 mb-2">Fecha de Nacimiento</label>
+                        <input type="date" name="fecha_nacimiento" id="fecha_nacimiento" value="{{ old('fecha_nacimiento') }}"
+                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        @error('fecha_nacimiento')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="pin" class="block text-sm font-medium text-gray-700 mb-2">PIN</label>
+                        <input type="text" name="pin" id="pin" value="{{ old('pin') }}"
+                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                               placeholder="Identificador único">
+                        <p class="mt-1 text-xs text-gray-500">Usado para buscar rápidamente en recuento</p>
+                        @error('pin')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
                 <!-- Contraseña (solo si hay correo) -->
                 <div id="password-section" class="hidden">
                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
@@ -80,6 +102,30 @@
                         @error('password')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="clase_asistencia_id" class="block text-sm font-medium text-gray-700 mb-2">Clase</label>
+                        <select name="clase_asistencia_id" id="clase_asistencia_id"
+                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <option value="">Capilla (Adultos)</option>
+                            @foreach($clases as $clase)
+                                <option value="{{ $clase->id }}" {{ old('clase_asistencia_id') == $clase->id ? 'selected' : '' }}>
+                                    {{ $clase->nombre }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <p class="mt-1 text-xs text-gray-500">Si no se selecciona, pertenece a Capilla</p>
+                    </div>
+
+                    <div class="flex items-end pb-1">
+                        <label class="flex items-center">
+                            <input type="checkbox" name="es_maestro" value="1" {{ old('es_maestro') ? 'checked' : '' }}
+                                   class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            <span class="ml-2 text-sm text-gray-700">Es maestro(a) de esta clase</span>
+                        </label>
                     </div>
                 </div>
 
@@ -106,33 +152,29 @@
                     <p class="text-sm text-gray-600 mb-4">Configure las promesas mensuales de esta persona (excepto diezmo)</p>
                     
                     <div id="promesas-container" class="space-y-4">
-                        @php
-                            $categorias = ['misiones', 'micro', 'construccion', 'seminario', 'campa', 'prestamo'];
-                        @endphp
-                        
-                        @foreach($categorias as $index => $categoria)
+                        @foreach($categorias as $index => $cat)
                         <div class="bg-gray-50 p-4 rounded-lg">
-                            <h4 class="text-sm font-medium text-gray-700 mb-3 capitalize">{{ ucfirst($categoria) }}</h4>
+                            <h4 class="text-sm font-medium text-gray-700 mb-3">{{ $cat->nombre }}</h4>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                                 <div>
                                     <label class="block text-xs text-gray-600 mb-1">Monto</label>
-                                    <input type="number" 
-                                           name="promesas[{{$index}}][monto]" 
-                                           step="0.01" 
-                                           min="0" 
+                                    <input type="number"
+                                           name="promesas[{{$index}}][monto]"
+                                           step="0.01"
+                                           min="0"
                                            value="{{ old('promesas.'.$index.'.monto', 0) }}"
                                            class="w-full rounded-md border-gray-300 text-sm">
                                 </div>
                                 <div>
                                     <label class="block text-xs text-gray-600 mb-1">Frecuencia</label>
-                                    <select name="promesas[{{$index}}][frecuencia]" 
+                                    <select name="promesas[{{$index}}][frecuencia]"
                                             class="w-full rounded-md border-gray-300 text-sm">
                                         <option value="semanal" {{ old('promesas.'.$index.'.frecuencia') == 'semanal' ? 'selected' : '' }}>Semanal</option>
                                         <option value="quincenal" {{ old('promesas.'.$index.'.frecuencia') == 'quincenal' ? 'selected' : '' }}>Quincenal</option>
                                         <option value="mensual" {{ old('promesas.'.$index.'.frecuencia', 'mensual') == 'mensual' ? 'selected' : '' }}>Mensual</option>
                                     </select>
                                 </div>
-                                <input type="hidden" name="promesas[{{$index}}][categoria]" value="{{$categoria}}">
+                                <input type="hidden" name="promesas[{{$index}}][categoria]" value="{{ $cat->slug }}">
                                 <div class="flex items-end">
                                     <p class="text-xs text-gray-500">
                                         <span class="font-medium">Ejemplo:</span><br>

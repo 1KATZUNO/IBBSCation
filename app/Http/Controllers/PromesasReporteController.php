@@ -6,6 +6,7 @@ use App\Models\Persona;
 use App\Models\Promesa;
 use App\Models\SobreDetalle;
 use App\Models\Compromiso;
+use App\Models\ClaseAsistencia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -23,6 +24,9 @@ class PromesasReporteController extends Controller
         $añoActual = date('Y');
         $añosDisponibles = range($añoActual - 2, $añoActual);
 
+        // Categorías dinámicas del tenant (para el dropdown de filtro)
+        $categoriasDisponibles = tenant_categories(['excluir_de_promesas' => false]);
+
         // Si mes = 'todos', calcular total de todo el año
         if ($mes === 'todos') {
             $totales = $this->calcularTotalesAnuales($año, $categoria);
@@ -31,7 +35,7 @@ class PromesasReporteController extends Controller
             $totales = $this->calcularTotales($año, $mes, $categoria);
         }
 
-        return view('ingresos-asistencia.promesas', compact('totales', 'añosDisponibles', 'año', 'mes', 'categoria'));
+        return view('ingresos-asistencia.promesas', compact('totales', 'añosDisponibles', 'año', 'mes', 'categoria', 'categoriasDisponibles'));
     }
 
     public function pdfPromesas(Request $request)
@@ -78,6 +82,140 @@ class PromesasReporteController extends Controller
         return $pdf->download('reporte_promesas_anual_' . $año . '.pdf');
     }
 
+    public function porClase(Request $request)
+    {
+        $año = $request->get('año', date('Y'));
+        $mes = $request->get('mes', date('m'));
+        $claseId = $request->get('clase_id', null);
+
+        $añoActual = date('Y');
+        $añosDisponibles = range($añoActual - 2, $añoActual);
+        $clasesDisponibles = ClaseAsistencia::activas()->ordenadas()->get();
+        $categoriasDisponibles = tenant_categories(['excluir_de_promesas' => false]);
+
+        $totales = null;
+        $claseNombre = 'Capilla (Adultos)';
+
+        if ($claseId !== null) {
+            if ($claseId === 'capilla') {
+                $personaIds = Persona::where('activo', true)
+                    ->whereNull('clase_asistencia_id')
+                    ->pluck('id')
+                    ->toArray();
+                $claseNombre = 'Capilla (Adultos)';
+            } else {
+                $clase = ClaseAsistencia::find($claseId);
+                if ($clase) {
+                    $personaIds = Persona::where('activo', true)
+                        ->where('clase_asistencia_id', $claseId)
+                        ->pluck('id')
+                        ->toArray();
+                    $claseNombre = $clase->nombre;
+                } else {
+                    $personaIds = [];
+                }
+            }
+
+            if ($mes === 'todos') {
+                $totales = $this->calcularTotalesPorClase($año, null, $personaIds);
+            } else {
+                $totales = $this->calcularTotalesPorClase($año, $mes, $personaIds);
+            }
+        }
+
+        return view('ingresos-asistencia.promesas-por-clase', compact(
+            'totales', 'añosDisponibles', 'año', 'mes', 'claseId',
+            'clasesDisponibles', 'categoriasDisponibles', 'claseNombre'
+        ));
+    }
+
+    private function calcularTotalesPorClase($año, $mes, array $personaIds)
+    {
+        $personas = Persona::whereIn('id', $personaIds)->with('promesas')->get();
+
+        $totalesPorCategoria = [];
+        $grandTotal = ['prometido' => 0, 'dado' => 0, 'faltante' => 0, 'profit' => 0];
+
+        $categoriasExcluidas = tenant_categories(['excluir_de_promesas' => true])
+            ->pluck('slug')->map(fn($s) => strtolower($s))->toArray();
+
+        foreach ($personas as $persona) {
+            foreach ($persona->promesas as $promesa) {
+                if (in_array(strtolower($promesa->categoria), $categoriasExcluidas)) continue;
+
+                $cat = $promesa->categoria;
+                if (!isset($totalesPorCategoria[$cat])) {
+                    $totalesPorCategoria[$cat] = [
+                        'categoria' => ucfirst($cat),
+                        'total_prometido' => 0,
+                        'total_dado' => 0,
+                        'faltante' => 0,
+                        'profit' => 0,
+                    ];
+                }
+
+                if ($mes) {
+                    $montoPrometido = $this->calcularMontoPrometidoMes($promesa, $año, $mes);
+                } else {
+                    $montoPrometido = 0;
+                    for ($m = 1; $m <= 12; $m++) {
+                        $montoPrometido += $this->calcularMontoPrometidoMes($promesa, $año, $m);
+                    }
+                }
+                $totalesPorCategoria[$cat]['total_prometido'] += $montoPrometido;
+            }
+        }
+
+        $categoriasPromesa = tenant_categories(['excluir_de_promesas' => false])->pluck('slug')->toArray();
+
+        foreach ($categoriasPromesa as $cat) {
+            $query = SobreDetalle::whereHas('sobre', function($q) use ($año, $mes, $personaIds) {
+                $q->whereYear('created_at', $año)
+                  ->whereIn('persona_id', $personaIds);
+                if ($mes) {
+                    $q->whereMonth('created_at', $mes);
+                }
+            })->where('categoria', $cat);
+
+            $montoDado = $query->sum('monto');
+
+            if ($montoDado > 0 && !isset($totalesPorCategoria[$cat])) {
+                $totalesPorCategoria[$cat] = [
+                    'categoria' => ucfirst($cat),
+                    'total_prometido' => 0,
+                    'total_dado' => 0,
+                    'faltante' => 0,
+                    'profit' => 0,
+                ];
+            }
+
+            if (isset($totalesPorCategoria[$cat])) {
+                $totalesPorCategoria[$cat]['total_dado'] = $montoDado;
+            }
+        }
+
+        foreach ($totalesPorCategoria as $cat => $datos) {
+            if (in_array(strtolower($cat), $categoriasExcluidas)) {
+                unset($totalesPorCategoria[$cat]);
+                continue;
+            }
+            $saldo = $datos['total_dado'] - $datos['total_prometido'];
+            $totalesPorCategoria[$cat]['faltante'] = $saldo < 0 ? abs($saldo) : 0;
+            $totalesPorCategoria[$cat]['profit'] = $saldo >= 0 ? $saldo : 0;
+
+            $grandTotal['prometido'] += $datos['total_prometido'];
+            $grandTotal['dado'] += $datos['total_dado'];
+            $grandTotal['faltante'] += $totalesPorCategoria[$cat]['faltante'];
+            $grandTotal['profit'] += $totalesPorCategoria[$cat]['profit'];
+        }
+
+        return [
+            'categorias' => array_values($totalesPorCategoria),
+            'grand_total' => $grandTotal,
+            'total_personas' => count($personaIds),
+        ];
+    }
+
     private function calcularTotales($año, $mes, $categoria = null)
     {
         // Obtener todas las personas activas con promesas
@@ -94,9 +232,10 @@ class PromesasReporteController extends Controller
         // PASO 1: Calcular montos prometidos por categoría
         foreach ($personas as $persona) {
             foreach ($persona->promesas as $promesa) {
-                // Excluir diezmo y ofrenda_especial de promesas/compromisos
+                // Excluir categorías marcadas como excluir_de_promesas
                 $catLower = strtolower($promesa->categoria);
-                if (in_array($catLower, ['diezmo', 'ofrenda_especial'])) {
+                $categoriasExcluidas = tenant_categories(['excluir_de_promesas' => true])->pluck('slug')->map(fn($s) => strtolower($s))->toArray();
+                if (in_array($catLower, $categoriasExcluidas)) {
                     continue;
                 }
                 // Filtrar por categoría si se especificó
@@ -123,14 +262,12 @@ class PromesasReporteController extends Controller
         }
 
         // PASO 2: Calcular TODOS los montos dados en el mes (incluyendo anónimos)
-        // Excluir diezmo y ofrenda_especial del cálculo de promesas
-        $categorias = $categoria ? [$categoria] : ['misiones', 'seminario', 'campa', 'construccion', 'prestamo', 'micro'];
+        $categoriasPromesa = tenant_categories(['excluir_de_promesas' => false])->pluck('slug')->toArray();
+        $categorias = $categoria ? [$categoria] : $categoriasPromesa;
         // Sanear cuando piden una categoría excluida
-        if ($categoria && in_array(strtolower($categoria), ['diezmo', 'ofrenda_especial'])) {
+        $categoriasExcluidasSlugs = tenant_categories(['excluir_de_promesas' => true])->pluck('slug')->map(fn($s) => strtolower($s))->toArray();
+        if ($categoria && in_array(strtolower($categoria), $categoriasExcluidasSlugs)) {
             $categorias = [];
-        }
-        // Si se solicitó específicamente la categoría 'diezmo', devolver sin datos en promesas
-        if ($categoria && strtolower($categoria) === 'diezmo') {
             $totalesPorCategoria = [];
         }
         
@@ -163,7 +300,7 @@ class PromesasReporteController extends Controller
         // PASO 3: Calcular faltante y profit POR CATEGORÍA
         foreach ($totalesPorCategoria as $cat => $datos) {
             $catKey = strtolower($cat);
-            if (in_array($catKey, ['diezmo', 'ofrenda_especial'])) {
+            if (in_array($catKey, $categoriasExcluidasSlugs)) {
                 unset($totalesPorCategoria[$cat]);
                 continue;
             }

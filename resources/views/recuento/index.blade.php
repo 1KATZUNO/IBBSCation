@@ -948,7 +948,7 @@ function cerrarModal() {
 
 <!-- Modal para Dinero Suelto -->
 <div id="modalSuelto" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div class="relative top-4 sm:top-20 mx-4 sm:mx-auto p-5 border w-full max-w-sm sm:max-w-md shadow-lg rounded-md bg-white">
         <div class="mt-3">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Agregar Dinero Suelto</h3>
             <form action="{{ route('recuento.store-suelto') }}" method="POST">
@@ -986,7 +986,7 @@ function cerrarModal() {
 
 <!-- Modal para Editar Dinero Suelto -->
 <div id="modalEditarSuelto" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div class="relative top-4 sm:top-20 mx-4 sm:mx-auto p-5 border w-full max-w-sm sm:max-w-md shadow-lg rounded-md bg-white">
         <div class="mt-3">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Editar Dinero Suelto</h3>
             <form id="formEditarSuelto" method="POST">
@@ -1166,7 +1166,7 @@ document.addEventListener('click', function(event) {
 
 <!-- Modal: Eliminar Sobre -->
 <div id="modalEliminarSobre" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div class="relative top-4 sm:top-20 mx-4 sm:mx-auto p-5 border w-full max-w-sm sm:max-w-md shadow-lg rounded-md bg-white">
         <div class="mt-3">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-red-900">⚠️ Eliminar Sobre</h3>
@@ -1201,7 +1201,7 @@ document.addEventListener('click', function(event) {
 
 <!-- Modal: Eliminar Dinero Suelto -->
 <div id="modalEliminarSuelto" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div class="relative top-4 sm:top-20 mx-4 sm:mx-auto p-5 border w-full max-w-sm sm:max-w-md shadow-lg rounded-md bg-white">
         <div class="mt-3">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-red-900">⚠️ Eliminar Dinero Suelto</h3>
@@ -1236,7 +1236,7 @@ document.addEventListener('click', function(event) {
 
 <!-- Modal para Egreso -->
 <div id="modalEgreso" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div class="relative top-4 sm:top-20 mx-4 sm:mx-auto p-5 border w-full max-w-sm sm:max-w-md shadow-lg rounded-md bg-white">
         <div class="mt-3">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Agregar Egreso</h3>
             <form action="{{ route('recuento.store-egreso') }}" method="POST">
@@ -1274,7 +1274,7 @@ document.addEventListener('click', function(event) {
 
 <!-- Modal para Editar Egreso -->
 <div id="modalEditarEgreso" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div class="relative top-4 sm:top-20 mx-4 sm:mx-auto p-5 border w-full max-w-sm sm:max-w-md shadow-lg rounded-md bg-white">
         <div class="mt-3">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Editar Egreso</h3>
             <form id="formEditarEgreso" method="POST">
@@ -1312,7 +1312,7 @@ document.addEventListener('click', function(event) {
 
 <!-- Modal: Eliminar Egreso -->
 <div id="modalEliminarEgreso" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div class="relative top-4 sm:top-20 mx-4 sm:mx-auto p-5 border w-full max-w-sm sm:max-w-md shadow-lg rounded-md bg-white">
         <div class="mt-3">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-red-900">⚠️ Eliminar Egreso</h3>
@@ -1347,7 +1347,7 @@ document.addEventListener('click', function(event) {
 
 <!-- Modal: Eliminar Culto -->
 <div id="modalEliminarCulto" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div class="relative top-4 sm:top-20 mx-4 sm:mx-auto p-5 border w-full max-w-sm sm:max-w-md shadow-lg rounded-md bg-white">
         <div class="mt-3">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-red-900">⚠️ Eliminar Culto</h3>
@@ -1385,7 +1385,7 @@ document.addEventListener('click', function(event) {
 
 <!-- Modal: Cerrar Culto -->
 <div id="modalCerrarCulto" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div class="relative top-4 sm:top-20 mx-4 sm:mx-auto p-5 border w-full max-w-sm sm:max-w-md shadow-lg rounded-md bg-white">
         <div class="mt-3">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-orange-900">🔒 Cerrar Culto</h3>

@@ -53,13 +53,9 @@
                     <select name="categoria" id="categoria" 
                             class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         <option value="">Todas las categorías</option>
-                        <option value="diezmo" {{ $categoria == 'diezmo' ? 'selected' : '' }}>Diezmo</option>
-                        <option value="misiones" {{ $categoria == 'misiones' ? 'selected' : '' }}>Misiones</option>
-                        <option value="seminario" {{ $categoria == 'seminario' ? 'selected' : '' }}>Seminario</option>
-                        <option value="campa" {{ $categoria == 'campa' ? 'selected' : '' }}>Campamento</option>
-                        <option value="construccion" {{ $categoria == 'construccion' ? 'selected' : '' }}>Construcción</option>
-                        <option value="prestamo" {{ $categoria == 'prestamo' ? 'selected' : '' }}>Préstamo</option>
-                        <option value="micro" {{ $categoria == 'micro' ? 'selected' : '' }}>Micro</option>
+                        @foreach($categoriasDisponibles as $cat)
+                        <option value="{{ $cat->slug }}" {{ $categoria == $cat->slug ? 'selected' : '' }}>{{ $cat->nombre }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="flex items-end">
@@ -93,8 +89,15 @@
     }
     </script>
 
-    <!-- Botón de Descarga PDF -->
-    <div class="flex justify-end gap-3">
+    <!-- Botones de acción -->
+    <div class="flex justify-end gap-3 flex-wrap">
+        <a href="{{ route('ingresos-asistencia.promesas-por-clase', ['año' => $año, 'mes' => $mes]) }}"
+           class="px-6 py-3 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors font-semibold flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+            Promesas por Clase
+        </a>
         <a href="{{ route('ingresos-asistencia.pdf-promesas-anual', ['año' => $año, 'categoria' => $categoria]) }}" 
            class="px-6 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors font-semibold flex items-center gap-2" target="_blank">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">

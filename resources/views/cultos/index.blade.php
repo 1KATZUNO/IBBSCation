@@ -35,7 +35,7 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm">
                         <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                            {{ ucfirst($culto->tipo_culto) }}
+                            {{ $culto->tipo_nombre }}
                         </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
@@ -51,7 +51,7 @@
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <a href="{{ route('cultos.show', $culto) }}" class="text-green-600 hover:text-green-900 mr-3">Ver</a>
                         <a href="{{ route('cultos.edit', $culto) }}" class="text-blue-600 hover:text-blue-900 mr-3">Editar</a>
-                        <button type="button" onclick="mostrarModalEliminar({{ $culto->id }}, '{{ $culto->fecha->format('d/m/Y') }} - {{ ucfirst($culto->tipo_culto) }}')" class="text-red-600 hover:text-red-900">
+                        <button type="button" onclick="mostrarModalEliminar({{ $culto->id }}, '{{ $culto->fecha->format('d/m/Y') }} - {{ $culto->tipo_nombre }}')" class="text-red-600 hover:text-red-900">
                             Eliminar
                         </button>
                         <form id="form-eliminar-{{ $culto->id }}" action="{{ route('cultos.destroy', $culto) }}" method="POST" class="hidden">
@@ -79,7 +79,7 @@
 
 <!-- Modal: Confirmar Eliminación -->
 <div id="modalEliminar" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div class="relative top-4 sm:top-20 mx-4 sm:mx-auto p-5 border w-full max-w-sm sm:max-w-md shadow-lg rounded-md bg-white">
         <div class="mt-3">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-red-900">⚠️ Eliminar Culto</h3>
