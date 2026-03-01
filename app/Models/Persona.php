@@ -6,7 +6,7 @@ use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\ClaseAsistencia;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Persona extends Model
 {
@@ -24,13 +24,10 @@ class Persona extends Model
         'tenant_id',
         'fecha_nacimiento',
         'pin',
-        'clase_asistencia_id',
-        'es_maestro',
     ];
 
     protected $casts = [
         'activo' => 'boolean',
-        'es_maestro' => 'boolean',
         'fecha_nacimiento' => 'date',
     ];
 
@@ -58,8 +55,18 @@ class Persona extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function claseAsistencia(): BelongsTo
+    public function clasesAsistencia(): BelongsToMany
     {
-        return $this->belongsTo(ClaseAsistencia::class);
+        return $this->belongsToMany(ClaseAsistencia::class, 'clase_persona')
+            ->withPivot('es_maestro')
+            ->withTimestamps();
+    }
+
+    public function esMaestroEn($claseId): bool
+    {
+        return $this->clasesAsistencia()
+            ->wherePivot('clase_asistencia_id', $claseId)
+            ->wherePivot('es_maestro', true)
+            ->exists();
     }
 }

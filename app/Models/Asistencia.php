@@ -64,6 +64,11 @@ class Asistencia extends Model
         return $this->hasMany(AsistenciaClaseDetalle::class);
     }
 
+    public function registrosEspeciales(): HasMany
+    {
+        return $this->hasMany(RegistroEspecial::class);
+    }
+
     public function detalleClase(string $slug): ?AsistenciaClaseDetalle
     {
         return $this->detallesClases->first(function ($detalle) use ($slug) {

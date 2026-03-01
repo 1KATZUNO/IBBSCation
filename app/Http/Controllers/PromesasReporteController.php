@@ -98,17 +98,18 @@ class PromesasReporteController extends Controller
 
         if ($claseId !== null) {
             if ($claseId === 'capilla') {
+                // Personas that have no class assigned (capilla = adults)
                 $personaIds = Persona::where('activo', true)
-                    ->whereNull('clase_asistencia_id')
+                    ->whereDoesntHave('clasesAsistencia')
                     ->pluck('id')
                     ->toArray();
                 $claseNombre = 'Capilla (Adultos)';
             } else {
                 $clase = ClaseAsistencia::find($claseId);
                 if ($clase) {
-                    $personaIds = Persona::where('activo', true)
-                        ->where('clase_asistencia_id', $claseId)
-                        ->pluck('id')
+                    $personaIds = $clase->personas()
+                        ->where('activo', true)
+                        ->pluck('personas.id')
                         ->toArray();
                     $claseNombre = $clase->nombre;
                 } else {

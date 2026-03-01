@@ -195,4 +195,20 @@ Route::middleware(['auth', 'super_admin'])->prefix('super-admin')->name('super-a
     Route::post('tenants/{tenant}/toggle', [SATenantController::class, 'toggle'])->name('tenants.toggle');
 });
 
+// Asistencia App (React SPA)
+Route::get('/app/asistencia', fn() => view('asistencia-app.shell'));
+
+Route::post('/asistencia-app/login', [App\Http\Controllers\AsistenciaAppController::class, 'login']);
+
+Route::middleware(['auth'])->prefix('asistencia-app')->group(function () {
+    Route::get('/user', [App\Http\Controllers\AsistenciaAppController::class, 'user']);
+    Route::get('/cultos', [App\Http\Controllers\AsistenciaAppController::class, 'cultos']);
+    Route::get('/cultos/{culto}/resumen', [App\Http\Controllers\AsistenciaAppController::class, 'resumenCulto']);
+    Route::get('/clases', [App\Http\Controllers\AsistenciaAppController::class, 'clases']);
+    Route::get('/clases/{clase}/cumpleaneros', [App\Http\Controllers\AsistenciaAppController::class, 'cumpleaneros']);
+    Route::post('/asistencia/clase', [App\Http\Controllers\AsistenciaAppController::class, 'guardarAsistenciaClase']);
+    Route::post('/asistencia/capilla', [App\Http\Controllers\AsistenciaAppController::class, 'guardarAsistenciaCapilla']);
+    Route::post('/personas/quick-add', [App\Http\Controllers\AsistenciaAppController::class, 'quickAddPersona']);
+});
+
 require __DIR__.'/auth.php';

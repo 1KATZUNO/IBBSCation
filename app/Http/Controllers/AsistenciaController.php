@@ -19,12 +19,19 @@ class AsistenciaController extends Controller
 
     private function getMaestrosPorClase()
     {
-        return Persona::where('activo', true)
-            ->where('es_maestro', true)
-            ->whereNotNull('clase_asistencia_id')
-            ->orderBy('nombre')
-            ->get()
-            ->groupBy('clase_asistencia_id');
+        $clases = ClaseAsistencia::activas()->regulares()->ordenadas()
+            ->with(['maestros' => function ($q) {
+                $q->where('activo', true)->orderBy('nombre');
+            }])
+            ->get();
+
+        $result = collect();
+        foreach ($clases as $clase) {
+            if ($clase->maestros->isNotEmpty()) {
+                $result[$clase->id] = $clase->maestros;
+            }
+        }
+        return $result;
     }
 
     private function buildClaseValidationRules($clases): array
