@@ -171,11 +171,13 @@ class PromesasReporteController extends Controller
 
         foreach ($categoriasPromesa as $cat) {
             $query = SobreDetalle::whereHas('sobre', function($q) use ($año, $mes, $personaIds) {
-                $q->whereYear('created_at', $año)
-                  ->whereIn('persona_id', $personaIds);
-                if ($mes) {
-                    $q->whereMonth('created_at', $mes);
-                }
+                $q->whereIn('persona_id', $personaIds)
+                  ->whereHas('culto', function($cq) use ($año, $mes) {
+                      $cq->whereYear('fecha', $año);
+                      if ($mes) {
+                          $cq->whereMonth('fecha', $mes);
+                      }
+                  });
             })->where('categoria', $cat);
 
             $montoDado = $query->sum('monto');
@@ -275,8 +277,10 @@ class PromesasReporteController extends Controller
         foreach ($categorias as $cat) {
             // Obtener TODOS los sobres del mes en esta categoría (con o sin persona)
             $montoDadoTotal = SobreDetalle::whereHas('sobre', function($query) use ($año, $mes) {
-                    $query->whereYear('created_at', $año)
-                          ->whereMonth('created_at', $mes);
+                    $query->whereHas('culto', function($q) use ($año, $mes) {
+                        $q->whereYear('fecha', $año)
+                          ->whereMonth('fecha', $mes);
+                    });
                 })
                 ->where('categoria', $cat)
                 ->sum('monto');

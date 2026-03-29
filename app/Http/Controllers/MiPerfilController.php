@@ -26,7 +26,10 @@ class MiPerfilController extends Controller
                 ->whereHas('detalles', function ($query) use ($promesa) {
                     $query->where('categoria', $promesa->categoria);
                 })
-                ->whereMonth('created_at', Carbon::now()->month)
+                ->whereHas('culto', function ($query) {
+                    $query->whereMonth('fecha', Carbon::now()->month)
+                          ->whereYear('fecha', Carbon::now()->year);
+                })
                 ->get()
                 ->sum(function ($sobre) use ($promesa) {
                     return $sobre->detalles()

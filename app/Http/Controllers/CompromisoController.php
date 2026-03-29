@@ -133,8 +133,10 @@ class CompromisoController extends Controller
     {
         return SobreDetalle::whereHas('sobre', function($query) use ($persona, $año, $mes) {
                 $query->where('persona_id', $persona->id)
-                      ->whereYear('created_at', $año)
-                      ->whereMonth('created_at', $mes);
+                      ->whereHas('culto', function($q) use ($año, $mes) {
+                          $q->whereYear('fecha', $año)
+                            ->whereMonth('fecha', $mes);
+                      });
             })
             ->where('categoria', $categoria)
             ->sum('monto');
