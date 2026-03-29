@@ -72,6 +72,7 @@ class RecuentoController extends Controller
             'persona_id' => 'nullable|exists:personas,id',
             'metodo_pago' => 'required|in:efectivo,transferencia',
             'comprobante_numero' => 'nullable|string|max:100',
+            'moneda' => 'nullable|in:CRC,USD',
             'notas' => 'nullable|string',
             'detalles' => 'required|array',
             'detalles.*.categoria' => 'required|string',
@@ -94,12 +95,28 @@ class RecuentoController extends Controller
         // Calcular total declarado
         $totalDeclarado = collect($validated['detalles'])->sum('monto');
 
+        // Moneda y tipo de cambio
+        $moneda = $validated['moneda'] ?? 'CRC';
+        $tipoCambioVenta = null;
+        $tipoCambioId = null;
+
+        if ($moneda === 'USD') {
+            $tipoCambio = \App\Models\TipoCambio::hoy();
+            if ($tipoCambio) {
+                $tipoCambioVenta = $tipoCambio->venta;
+                $tipoCambioId = $tipoCambio->id;
+            }
+        }
+
         $sobre = Sobre::create([
             'culto_id' => $validated['culto_id'],
             'persona_id' => $validated['persona_id'] ?? null,
             'metodo_pago' => $validated['metodo_pago'],
             'comprobante_numero' => $validated['comprobante_numero'] ?? null,
             'total_declarado' => $totalDeclarado,
+            'moneda' => $moneda,
+            'tipo_cambio_venta' => $tipoCambioVenta,
+            'tipo_cambio_id' => $tipoCambioId,
             'notas' => $validated['notas'] ?? null,
         ]);
 

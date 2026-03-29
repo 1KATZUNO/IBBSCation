@@ -17,12 +17,29 @@ class Sobre extends Model
         'metodo_pago',
         'comprobante_numero',
         'total_declarado',
+        'moneda',
+        'tipo_cambio_venta',
+        'tipo_cambio_id',
         'notas',
     ];
 
     protected $casts = [
         'total_declarado' => 'decimal:2',
+        'tipo_cambio_venta' => 'decimal:4',
     ];
+
+    public function getTotalDeclaradoCrcAttribute(): float
+    {
+        if ($this->moneda === 'USD' && $this->tipo_cambio_venta > 0) {
+            return round($this->total_declarado * $this->tipo_cambio_venta, 2);
+        }
+        return (float) $this->total_declarado;
+    }
+
+    public function getMontoCrcAttribute(): float
+    {
+        return $this->getTotalDeclaradoCrcAttribute();
+    }
 
     public function culto(): BelongsTo
     {

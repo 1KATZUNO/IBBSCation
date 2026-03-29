@@ -11,11 +11,32 @@ use App\Http\Controllers\CultoController;
 use App\Http\Controllers\IngresosAsistenciaController;
 use App\Http\Controllers\SuperAdmin\DashboardController as SADashboardController;
 use App\Http\Controllers\SuperAdmin\TenantController as SATenantController;
+use App\Services\BccrExchangeRateService;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
+// API interna - Tipo de cambio
+Route::middleware(['auth'])->get('/api/tipo-cambio', function (BccrExchangeRateService $service) {
+    $tipoCambio = $service->obtenerHoy();
+
+    if (! $tipoCambio) {
+        return response()->json([
+            'disponible' => false,
+            'mensaje' => 'No hay tipo de cambio disponible.',
+        ]);
+    }
+
+    return response()->json([
+        'disponible' => true,
+        'fecha' => $tipoCambio->fecha->format('Y-m-d'),
+        'compra' => (float) $tipoCambio->compra,
+        'venta' => (float) $tipoCambio->venta,
+        'source' => $tipoCambio->source,
+    ]);
+})->name('api.tipo-cambio');
 
 // Principal - Para todos los usuarios autenticados
 Route::middleware(['auth'])->group(function () {
