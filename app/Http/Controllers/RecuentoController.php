@@ -94,6 +94,17 @@ class RecuentoController extends Controller
                 ->with('error', 'No se pueden agregar sobres a un culto cerrado.');
         }
 
+        // Prevenir duplicados: verificar si ya existe un sobre idéntico creado en los últimos 30 segundos
+        $duplicado = Sobre::where('culto_id', $validated['culto_id'])
+            ->where('persona_id', $validated['persona_id'] ?? null)
+            ->where('created_at', '>=', now()->subSeconds(30))
+            ->exists();
+
+        if ($duplicado) {
+            return redirect()->route('recuento.index', ['culto_id' => $culto->id])
+                ->with('warning', 'Ya se registró un sobre para esta persona en este culto hace unos segundos. Verifique que no sea duplicado.');
+        }
+
         // Calcular total declarado
         $totalDeclarado = collect($validated['detalles'])->sum('monto');
 
