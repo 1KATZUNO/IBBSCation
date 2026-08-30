@@ -3,7 +3,7 @@
     $tenantColors = $currentTenant ? $currentTenant->colors : \App\Models\Tenant::COLOR_THEMES['blue'];
     $tenantName = $currentTenant ? $currentTenant->siglas : 'Admin';
     $tenantFullName = $currentTenant ? $currentTenant->nombre : 'Sistema de Administracion';
-    $tenantLogo = $currentTenant ? $currentTenant->logo_url : asset('images/Logo.png');
+    $tenantLogo = $currentTenant ? $currentTenant->logo_url : asset('images/Logo_IBBSC_2026.png');
     $tenantSocial = $currentTenant && $currentTenant->redes_sociales ? $currentTenant->redes_sociales : [];
 @endphp
 <!DOCTYPE html>

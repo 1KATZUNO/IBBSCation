@@ -90,8 +90,8 @@ Route::middleware(['auth', 'role:admin,tesorero'])->group(function () {
         // Firmas del recuento
         Route::post('/firmas/{culto}', function (\Illuminate\Http\Request $request, \App\Models\Culto $culto) {
             $data = $request->validate([
-                'firma_pastor' => 'nullable|string|max:255',
-                'firma_pastor_imagen' => 'nullable|string',
+                'firma_depositante' => 'nullable|string|max:255',
+                'firma_depositante_imagen' => 'nullable|string',
                 'firmas_tesoreros' => 'nullable|array',
                 'firmas_tesoreros.*.nombre' => 'nullable|string|max:255',
                 'firmas_tesoreros.*.imagen' => 'nullable|string',
@@ -115,8 +115,8 @@ Route::middleware(['auth', 'role:admin,tesorero'])->group(function () {
             }
 
             $culto->update([
-                'firma_pastor' => $data['firma_pastor'] ?? null,
-                'firma_pastor_imagen' => $data['firma_pastor_imagen'] ?? null,
+                'firma_depositante' => $data['firma_depositante'] ?? null,
+                'firma_depositante_imagen' => $data['firma_depositante_imagen'] ?? null,
                 'firmas_tesoreros' => $tesoreros,
                 'firmas_tesoreros_imagenes' => $tesorerosImagenes,
             ]);

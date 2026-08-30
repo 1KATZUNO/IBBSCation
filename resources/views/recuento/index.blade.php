@@ -100,26 +100,30 @@
         <form method="POST" action="{{ route('recuento.firmas.update', $cultoSeleccionado->id) }}" class="space-y-4" id="firmasForm">
             @csrf
 
-            <!-- Pastor -->
-            <div class="border rounded-lg p-4 bg-gray-50">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Pastor</label>
+            <!-- Recibido por / deposita en banco -->
+            <div class="border rounded-lg p-4 bg-emerald-50 border-emerald-200">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Recibido por (deposita en banco)</label>
+                <p class="text-xs text-gray-600 mb-3">
+                    Quien firma confirma que recibió el efectivo detallado en este recuento
+                    y que realizará el depósito bancario.
+                </p>
                 <div class="flex flex-wrap gap-3 items-center">
-                    <input type="text" name="firma_pastor" id="firma_pastor_nombre"
-                           value="{{ old('firma_pastor', $cultoSeleccionado->firma_pastor) }}"
-                           class="flex-1 min-w-[200px] rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                           placeholder="Nombre del pastor">
-                    <input type="hidden" name="firma_pastor_imagen" id="firma_pastor_imagen"
-                           value="{{ old('firma_pastor_imagen', $cultoSeleccionado->firma_pastor_imagen) }}">
-                    <button type="button" onclick="abrirModalFirma('pastor', document.getElementById('firma_pastor_nombre').value || 'Pastor')"
+                    <input type="text" name="firma_depositante" id="firma_depositante_nombre"
+                           value="{{ old('firma_depositante', $cultoSeleccionado->firma_depositante) }}"
+                           class="flex-1 min-w-[200px] rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
+                           placeholder="Nombre de quien recibe y deposita">
+                    <input type="hidden" name="firma_depositante_imagen" id="firma_depositante_imagen"
+                           value="{{ old('firma_depositante_imagen', $cultoSeleccionado->firma_depositante_imagen) }}">
+                    <button type="button" onclick="abrirModalFirma('depositante', document.getElementById('firma_depositante_nombre').value || 'Recibido por')"
                             class="px-4 py-2 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
                         </svg>
                         Firmar
                     </button>
-                    <div id="preview_pastor" class="w-24 h-12 border rounded bg-white flex items-center justify-center overflow-hidden">
-                        @if($cultoSeleccionado->firma_pastor_imagen)
-                            <img src="{{ $cultoSeleccionado->firma_pastor_imagen }}" class="max-w-full max-h-full object-contain">
+                    <div id="preview_depositante" class="w-24 h-12 border rounded bg-white flex items-center justify-center overflow-hidden">
+                        @if($cultoSeleccionado->firma_depositante_imagen)
+                            <img src="{{ $cultoSeleccionado->firma_depositante_imagen }}" class="max-w-full max-h-full object-contain">
                         @else
                             <span class="text-xs text-gray-400">Sin firma</span>
                         @endif
@@ -267,7 +271,7 @@
         let canvas, ctx;
         let isDrawing = false;
         let lastX = 0, lastY = 0;
-        let currentSignerType = null; // 'pastor' o 'tesorero'
+        let currentSignerType = null; // 'depositante' o 'tesorero'
         let currentTesoreroRow = null;
         let tesoreroIndex = {{ count($tesorerosImagenes) > 0 ? count($tesorerosImagenes) : 1 }};
 
@@ -380,7 +384,7 @@
                 limpiarCanvas();
 
                 // Cargar firma existente si hay
-                const existingSignature = document.getElementById('firma_pastor_imagen').value;
+                const existingSignature = document.getElementById('firma_depositante_imagen').value;
                 if (existingSignature) {
                     loadSignatureToCanvas(existingSignature);
                 }
@@ -425,9 +429,9 @@
         function guardarFirma() {
             const dataUrl = canvas.toDataURL('image/png');
 
-            if (currentSignerType === 'pastor') {
-                document.getElementById('firma_pastor_imagen').value = dataUrl;
-                document.getElementById('preview_pastor').innerHTML =
+            if (currentSignerType === 'depositante') {
+                document.getElementById('firma_depositante_imagen').value = dataUrl;
+                document.getElementById('preview_depositante').innerHTML =
                     `<img src="${dataUrl}" class="max-w-full max-h-full object-contain">`;
             } else if (currentSignerType === 'tesorero' && currentTesoreroRow) {
                 currentTesoreroRow.querySelector('.tesorero-imagen').value = dataUrl;

@@ -221,8 +221,8 @@
 
     <!-- Firmas -->
     @php
-        $pastor = $culto->firma_pastor ?? '';
-        $pastorImagen = $culto->firma_pastor_imagen ?? '';
+        $depositante = $culto->firma_depositante ?? '';
+        $depositanteImagen = $culto->firma_depositante_imagen ?? '';
         $tesorerosImagenes = $culto->firmas_tesoreros_imagenes ?? [];
         // Fallback a nombres antiguos si no hay imágenes
         if (empty($tesorerosImagenes)) {
@@ -249,17 +249,21 @@
                 @endforeach
                 <td style="width:{{ 100 / (count($tesorerosImagenes) + 1) }}%; text-align:center; vertical-align:bottom; padding:10px;">
                     <div style="min-height:60px; display:flex; align-items:flex-end; justify-content:center;">
-                        @if(!empty($pastorImagen))
-                            <img src="{{ $pastorImagen }}" style="max-height:50px; max-width:120px;">
+                        @if(!empty($depositanteImagen))
+                            <img src="{{ $depositanteImagen }}" style="max-height:50px; max-width:120px;">
                         @endif
                     </div>
                     <div style="border-top:1px solid #000; padding-top:8px; margin-top:5px;">
-                        <div style="font-size:10px; font-weight:bold;">{{ $pastor ?: 'Pastor' }}</div>
-                        <div style="font-size:8px; color:#6b7280;">Pastor</div>
+                        <div style="font-size:10px; font-weight:bold;">{{ $depositante ?: 'Recibido por' }}</div>
+                        <div style="font-size:8px; color:#6b7280;">Recibido por &middot; deposita en banco</div>
                     </div>
                 </td>
             </tr>
         </table>
+        <p style="margin-top:10px; font-size:8px; color:#6b7280; text-align:center; line-height:1.4;">
+            Quien firma como &laquo;Recibido por&raquo; confirma que recibi&oacute; el efectivo detallado en este
+            recuento y que realizar&aacute; el dep&oacute;sito bancario correspondiente.
+        </p>
     </div>
 
     <div class="footer">

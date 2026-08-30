@@ -8,9 +8,9 @@
         <title>Iniciar Sesion - Sistema de Administracion</title>
 
         <!-- Favicon -->
-        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/Logo_ANGEDA_azul.png') }}">
-        <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/Logo_ANGEDA_azul.png') }}">
-        <link rel="shortcut icon" href="{{ asset('images/Logo_ANGEDA_azul.png') }}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon_IBBSC.png') }}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon_IBBSC.png') }}">
+        <link rel="shortcut icon" href="{{ asset('images/favicon_IBBSC.png') }}">
 
         <!-- Google Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,7 +31,7 @@
             <!-- Logo y Titulo -->
             <div class="mb-8 text-center animate-fade-in">
                 <div class="inline-block p-4">
-                    <img src="{{ asset('images/Logo_ANGEDA_azul.png') }}" alt="Logo" class="w-20 h-20 mx-auto mb-4 drop-shadow-lg">
+                    <img src="{{ asset('images/Logo_IBBSC_2026.png') }}" alt="Logo" class="w-20 h-20 mx-auto mb-4 drop-shadow-lg">
                     <h1 class="text-2xl font-bold text-white">Sistema Admin</h1>
                     <p class="text-cyan-200 font-medium mt-1 text-sm">Administracion de Iglesia</p>
                 </div>
