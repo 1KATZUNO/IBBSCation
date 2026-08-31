@@ -123,6 +123,27 @@
         </div>
     </div>
 
+    {{-- Aportes en categorias sin promesa: no computan contra ningun
+         compromiso, pero antes no se veian en ninguna parte y parecia que
+         faltaba plata. --}}
+    @if(!empty($aportesSinPromesa))
+    <div class="bg-amber-50 border border-amber-200 rounded-lg p-6">
+        <h3 class="text-lg font-semibold text-gray-900">Aportes sin promesa asociada — {{ $año }}</h3>
+        <p class="text-sm text-gray-600 mt-1">
+            La persona aportó en estas categorías sin tener una promesa registrada.
+            No cuentan contra ningún compromiso.
+        </p>
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            @foreach($aportesSinPromesa as $ap)
+            <div class="flex items-center justify-between bg-white rounded-md px-4 py-3 border border-amber-100">
+                <span class="text-sm text-gray-800">{{ $ap['nombre'] }}</span>
+                <span class="text-sm font-semibold text-gray-900">₡{{ number_format($ap['total'], 2) }}</span>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
     <!-- Historial de Meses Anteriores -->
     @if($historial->count() > 1)
     <div class="bg-white rounded-lg shadow overflow-hidden">

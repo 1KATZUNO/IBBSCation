@@ -98,24 +98,49 @@ class CalculoPromesasService
         $resultado = collect();
 
         foreach ($persona->promesas as $promesa) {
-            $prometido = $this->montoPrometidoMes($promesa, $año, $mes);
+            $clave = [
+                'persona_id' => $persona->id,
+                'categoria' => $promesa->categoria,
+                'año' => $año,
+                'mes' => $mes,
+            ];
+
             $dado = $this->montoDado($persona->id, $promesa->categoria, $año, $mes);
 
-            $compromiso = Compromiso::updateOrCreate(
-                [
-                    'persona_id' => $persona->id,
-                    'categoria' => $promesa->categoria,
-                    'año' => $año,
-                    'mes' => $mes,
-                ],
-                [
-                    'monto_prometido' => $prometido,
+            // Una promesa no se debe antes de estar vigente: exigirla generaba
+            // deuda inexistente en los meses previos a su alta.
+            //
+            // No se borra la fila sin mas: si la persona SI aporto en ese mes
+            // hay que seguir mostrandolo (con vigente_desde sembrado desde
+            // created_at hay casos de aportes anteriores al alta, porque editar
+            // una persona recreaba sus promesas). Se conserva el aporte con
+            // prometido = 0, y solo se elimina la fila si no hubo movimiento.
+            if (! $promesa->vigenteEn($año, $mes)) {
+                if ($dado <= 0) {
+                    Compromiso::where($clave)->delete();
+
+                    continue;
+                }
+
+                $resultado->push(Compromiso::updateOrCreate($clave, [
+                    'monto_prometido' => 0,
                     'monto_dado' => $dado,
-                    // Cada mes es independiente: no se arrastra saldo previo.
                     'saldo_anterior' => 0,
-                    'saldo_actual' => $dado - $prometido,
-                ]
-            );
+                    'saldo_actual' => $dado,
+                ]));
+
+                continue;
+            }
+
+            $prometido = $this->montoPrometidoMes($promesa, $año, $mes);
+
+            $compromiso = Compromiso::updateOrCreate($clave, [
+                'monto_prometido' => $prometido,
+                'monto_dado' => $dado,
+                // Cada mes es independiente: no se arrastra saldo previo.
+                'saldo_anterior' => 0,
+                'saldo_actual' => $dado - $prometido,
+            ]);
 
             $resultado->push($compromiso);
         }
@@ -124,11 +149,77 @@ class CalculoPromesasService
     }
 
     /**
+     * Aportes de la persona en categorias donde NO tiene promesa registrada.
+     *
+     * Esa plata no aparecia por ningun lado en la vista individual: la persona
+     * daba y no lo veia, lo que se leia como que el sistema "perdia" montos.
+     * Se excluyen las categorias marcadas como excluidas de promesas (diezmo,
+     * ofrenda especial), que por diseño nunca se prometen.
+     *
+     * @return array<int, array{categoria:string, nombre:string, total:float}>
+     */
+    public function aportesSinPromesa(Persona $persona, int $año, ?int $mes = null): array
+    {
+        $conPromesa = $persona->promesas->pluck('categoria')
+            ->map(fn ($c) => strtolower($c))->all();
+
+        $categorias = tenant_categories();
+        $excluidas = $categorias->where('excluir_de_promesas', true)
+            ->pluck('slug')->map(fn ($s) => strtolower($s))->all();
+        $nombres = $categorias->pluck('nombre', 'slug')->all();
+
+        $filas = SobreDetalle::selectRaw('categoria, SUM(monto) as total')
+            ->whereHas('sobre', function ($q) use ($persona, $año, $mes) {
+                $q->where('persona_id', $persona->id)
+                    ->whereHas('culto', function ($q2) use ($año, $mes) {
+                        $q2->whereYear('fecha', $año);
+                        if ($mes) {
+                            $q2->whereMonth('fecha', $mes);
+                        }
+                    });
+            })
+            ->groupBy('categoria')
+            ->get();
+
+        $out = [];
+        foreach ($filas as $f) {
+            $slug = strtolower($f->categoria);
+            if (in_array($slug, $conPromesa, true) || in_array($slug, $excluidas, true)) {
+                continue;
+            }
+            if ((float) $f->total <= 0) {
+                continue;
+            }
+            $out[] = [
+                'categoria' => $slug,
+                'nombre' => $nombres[$f->categoria] ?? ucfirst($slug),
+                'total' => (float) $f->total,
+            ];
+        }
+
+        usort($out, fn ($a, $b) => $b['total'] <=> $a['total']);
+
+        return $out;
+    }
+
+    /**
      * Sincroniza todos los meses en que la persona tuvo actividad (o tiene
      * promesas vigentes), desde su primer aporte/creacion hasta hoy.
      */
     public function sincronizarHistorial(Persona $persona): int
     {
+        if (! $persona->relationLoaded('promesas')) {
+            $persona->load('promesas');
+        }
+
+        // Limpia compromisos de promesas que ya no existen (categoria eliminada
+        // de la persona): sincronizar() solo recorre las promesas vigentes, asi
+        // que esas filas quedarian huerfanas para siempre.
+        $categoriasVigentes = $persona->promesas->pluck('categoria')->all();
+        Compromiso::where('persona_id', $persona->id)
+            ->whereNotIn('categoria', $categoriasVigentes ?: [''])
+            ->delete();
+
         $desde = $this->primerMesRelevante($persona);
         $hasta = Carbon::now()->startOfMonth();
 

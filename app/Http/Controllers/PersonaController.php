@@ -57,6 +57,7 @@ class PersonaController extends Controller
             'promesas.*.categoria' => 'required|string',
             'promesas.*.monto' => 'required|numeric|min:0',
             'promesas.*.frecuencia' => 'required|in:semanal,quincenal,mensual',
+            'promesas.*.vigente_desde_mes' => 'nullable|date_format:Y-m',
         ], [
             'correo.unique' => 'Este correo electrónico ya está registrado en el sistema. Por favor, usa otro correo.',
             'correo.email' => 'El formato del correo electrónico no es válido.',
@@ -102,17 +103,34 @@ class PersonaController extends Controller
             $persona->clasesAsistencia()->sync($syncData);
         }
 
-        // Guardar promesas si existen
+        // Guardar promesas si existen. vigente_desde marca desde que mes se
+        // cobra: sin esto el recalculo de compromisos exigiria meses anteriores.
         if ($request->has('promesas')) {
             foreach ($request->promesas as $promesaData) {
                 if (!empty($promesaData['monto']) && $promesaData['monto'] > 0) {
-                    $persona->promesas()->create($promesaData);
+                    $persona->promesas()->create($promesaData + [
+                        'vigente_desde' => $this->resolverVigenteDesde($promesaData),
+                    ]);
                 }
             }
         }
 
         return redirect()->route('personas.index')
             ->with('success', 'Persona registrada correctamente.' . ($user ? ' Se creó acceso como miembro.' : ''));
+    }
+
+    /**
+     * Mes desde el que se cobra la promesa. El formulario manda 'YYYY-MM';
+     * si viene vacio se asume el mes en curso (no meses anteriores, que era
+     * justamente lo que generaba deuda inexistente al recalcular).
+     */
+    private function resolverVigenteDesde(array $promesaData): string
+    {
+        if (!empty($promesaData['vigente_desde_mes'])) {
+            return $promesaData['vigente_desde_mes'] . '-01';
+        }
+
+        return now()->startOfMonth()->toDateString();
     }
 
     public function show(Request $request, Persona $persona)
@@ -156,28 +174,28 @@ class PersonaController extends Controller
             ->orderBy('año', 'desc')
             ->pluck('año');
         
-        // Calcular cumplimiento de promesas
-        $promesasConEstatus = $persona->promesas->map(function ($promesa) use ($persona) {
-            $montoPagado = $persona->sobres()
-                ->whereHas('detalles', function ($query) use ($promesa) {
-                    $query->where('categoria', $promesa->categoria);
-                })
-                ->whereHas('culto', function ($query) {
-                    $query->whereMonth('fecha', Carbon::now()->month)
-                          ->whereYear('fecha', Carbon::now()->year);
-                })
-                ->get()
-                ->sum(function ($sobre) use ($promesa) {
-                    return $sobre->detalles()
-                        ->where('categoria', $promesa->categoria)
-                        ->sum('monto');
-                });
+        // Calcular cumplimiento de promesas.
+        // Lo esperado sale del servicio (ajustado por frecuencia): antes se
+        // comparaba contra promesa->monto crudo, asi que una promesa semanal se
+        // daba por cumplida con el monto de una sola semana.
+        $servicioPromesas = app(\App\Services\CalculoPromesasService::class);
+        $añoActual = (int) Carbon::now()->year;
+        $mesActual = (int) Carbon::now()->month;
+
+        $promesasConEstatus = $persona->promesas->map(function ($promesa) use ($persona, $servicioPromesas, $añoActual, $mesActual) {
+            $montoPagado = $servicioPromesas->montoDado(
+                $persona->id, $promesa->categoria, $añoActual, $mesActual
+            );
+            $montoEsperado = $promesa->vigenteEn($añoActual, $mesActual)
+                ? $servicioPromesas->montoPrometidoMes($promesa, $añoActual, $mesActual)
+                : 0.0;
 
             return [
                 'promesa' => $promesa,
+                'esperado' => $montoEsperado,
                 'pagado' => $montoPagado,
-                'faltante' => max(0, $promesa->monto - $montoPagado),
-                'cumplido' => $montoPagado >= $promesa->monto,
+                'faltante' => max(0, $montoEsperado - $montoPagado),
+                'cumplido' => $montoPagado >= $montoEsperado,
             ];
         });
 
@@ -213,6 +231,7 @@ class PersonaController extends Controller
             'promesas.*.categoria' => 'required|string',
             'promesas.*.monto' => 'required|numeric|min:0',
             'promesas.*.frecuencia' => 'required|in:semanal,quincenal,mensual',
+            'promesas.*.vigente_desde_mes' => 'nullable|date_format:Y-m',
         ], [
             'correo.unique' => 'Este correo electrónico ya está registrado en el sistema. Por favor, usa otro correo.',
             'correo.email' => 'El formato del correo electrónico no es válido.',
@@ -286,15 +305,51 @@ class PersonaController extends Controller
         }
         $persona->clasesAsistencia()->sync($syncData);
 
-        // Sincronizar promesas
-        $persona->promesas()->delete(); // Eliminar promesas anteriores
+        // Sincronizar promesas.
+        // Antes se hacia delete() + create() de todas: eso reseteaba created_at
+        // y, con el nuevo vigente_desde, habria movido la fecha desde la que se
+        // cobra cada promesa en cada edicion de la persona. Ahora se actualiza
+        // por categoria y solo se borra lo que el usuario efectivamente quito.
+        $categoriasEnviadas = [];
         if ($request->has('promesas')) {
             foreach ($request->promesas as $promesaData) {
-                if (!empty($promesaData['monto']) && $promesaData['monto'] > 0) {
-                    $persona->promesas()->create($promesaData);
+                if (empty($promesaData['monto']) || $promesaData['monto'] <= 0) {
+                    continue;
+                }
+
+                $categoriasEnviadas[] = $promesaData['categoria'];
+
+                $promesa = $persona->promesas()
+                    ->where('categoria', $promesaData['categoria'])
+                    ->first();
+
+                if ($promesa) {
+                    // La promesa sigue siendo la misma: se conserva su
+                    // vigente_desde salvo que el formulario mande uno nuevo.
+                    $cambios = [
+                        'monto' => $promesaData['monto'],
+                        'frecuencia' => $promesaData['frecuencia'],
+                    ];
+                    if (!empty($promesaData['vigente_desde_mes'])) {
+                        $cambios['vigente_desde'] = $promesaData['vigente_desde_mes'].'-01';
+                    }
+                    $promesa->update($cambios);
+                } else {
+                    $persona->promesas()->create($promesaData + [
+                        'vigente_desde' => $this->resolverVigenteDesde($promesaData),
+                    ]);
                 }
             }
         }
+
+        $persona->promesas()
+            ->whereNotIn('categoria', $categoriasEnviadas ?: [''])
+            ->delete();
+
+        // Los compromisos derivan de las promesas: si cambiaron, hay que
+        // recalcular para que no queden filas de promesas ya eliminadas.
+        $persona->load('promesas');
+        app(\App\Services\CalculoPromesasService::class)->sincronizarHistorial($persona);
 
         return redirect()->route('personas.index')
             ->with('success', 'Persona actualizada correctamente.' . 

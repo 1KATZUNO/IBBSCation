@@ -73,11 +73,17 @@
                         <div class="flex items-center justify-between mb-3">
                             <div>
                                 <h4 class="font-semibold text-gray-900 capitalize">{{ $item['promesa']->categoria }}</h4>
-                                <p class="text-sm text-gray-600">{{ ucfirst($item['promesa']->frecuencia) }}</p>
+                                <p class="text-sm text-gray-600">
+                                    {{ ucfirst($item['promesa']->frecuencia) }}
+                                    &middot; ₡{{ number_format($item['promesa']->monto, 2) }} por vez
+                                </p>
                             </div>
                             <div class="text-right">
                                 <p class="text-2xl font-bold text-gray-900">₡{{ number_format($item['pagado'], 2) }}</p>
-                                <p class="text-sm text-gray-600">de ₡{{ number_format($item['promesa']->monto, 2) }}</p>
+                                {{-- Antes mostraba el monto crudo de la promesa. Lo correcto es
+                                     lo esperado del mes: una promesa semanal de 1.000 espera
+                                     1.000 x domingos del mes, no 1.000. --}}
+                                <p class="text-sm text-gray-600">de ₡{{ number_format($item['esperado'], 2) }} este mes</p>
                             </div>
                         </div>
                         
@@ -109,6 +115,26 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
                     </svg>
                     <p class="mt-4 text-gray-600">No tienes promesas registradas</p>
+                </div>
+            @endif
+
+            {{-- Aportes en categorias sin promesa: antes esta plata no aparecia
+                 en ninguna parte del perfil y parecia que el sistema la perdia. --}}
+            @if(!empty($aportesSinPromesa))
+                <div class="mt-6 border border-amber-200 bg-amber-50 rounded-lg p-4">
+                    <h4 class="font-semibold text-gray-900">Otros aportes de este año</h4>
+                    <p class="text-sm text-gray-600 mt-1">
+                        Diste en estas categorías sin tener una promesa registrada, así que no
+                        cuentan contra ninguna promesa, pero quedaron registrados.
+                    </p>
+                    <div class="mt-3 space-y-2">
+                        @foreach($aportesSinPromesa as $ap)
+                        <div class="flex items-center justify-between bg-white rounded-md px-3 py-2 border border-amber-100">
+                            <span class="text-sm text-gray-800">{{ $ap['nombre'] }}</span>
+                            <span class="text-sm font-semibold text-gray-900">₡{{ number_format($ap['total'], 2) }}</span>
+                        </div>
+                        @endforeach
+                    </div>
                 </div>
             @endif
         </div>

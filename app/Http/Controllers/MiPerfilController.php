@@ -19,32 +19,39 @@ class MiPerfilController extends Controller
         }
 
         $persona->load(['sobres.detalles', 'promesas', 'compromisos']);
-        
-        // Calcular cumplimiento de promesas del mes actual
-        $promesasConEstatus = $persona->promesas->map(function ($promesa) use ($persona) {
-            $montoPagado = $persona->sobres()
-                ->whereHas('detalles', function ($query) use ($promesa) {
-                    $query->where('categoria', $promesa->categoria);
-                })
-                ->whereHas('culto', function ($query) {
-                    $query->whereMonth('fecha', Carbon::now()->month)
-                          ->whereYear('fecha', Carbon::now()->year);
-                })
-                ->get()
-                ->sum(function ($sobre) use ($promesa) {
-                    return $sobre->detalles()
-                        ->where('categoria', $promesa->categoria)
-                        ->sum('monto');
-                });
+
+        $servicioPromesas = app(\App\Services\CalculoPromesasService::class);
+        $año = (int) Carbon::now()->year;
+        $mes = (int) Carbon::now()->month;
+
+        // Los compromisos del miembro se derivan de sus promesas y sobres. Se
+        // resincronizan al entrar para que no vea meses viejos con datos
+        // desactualizados (antes solo se recalculaba desde la vista de admin).
+        $servicioPromesas->sincronizarHistorial($persona);
+
+        // Calcular cumplimiento de promesas del mes actual.
+        // Lo esperado va ajustado por frecuencia: antes se comparaba contra
+        // promesa->monto crudo, asi que una promesa semanal aparecia cumplida
+        // con el aporte de una sola semana.
+        $promesasConEstatus = $persona->promesas->map(function ($promesa) use ($persona, $servicioPromesas, $año, $mes) {
+            $montoPagado = $servicioPromesas->montoDado($persona->id, $promesa->categoria, $año, $mes);
+            $montoEsperado = $promesa->vigenteEn($año, $mes)
+                ? $servicioPromesas->montoPrometidoMes($promesa, $año, $mes)
+                : 0.0;
 
             return [
                 'promesa' => $promesa,
+                'esperado' => $montoEsperado,
                 'pagado' => $montoPagado,
-                'faltante' => max(0, $promesa->monto - $montoPagado),
-                'cumplido' => $montoPagado >= $promesa->monto,
-                'porcentaje' => $promesa->monto > 0 ? min(100, ($montoPagado / $promesa->monto) * 100) : 0,
+                'faltante' => max(0, $montoEsperado - $montoPagado),
+                'cumplido' => $montoPagado >= $montoEsperado,
+                'porcentaje' => $montoEsperado > 0 ? min(100, ($montoPagado / $montoEsperado) * 100) : 100,
             ];
         });
+
+        // Aportes en categorias donde no hay promesa registrada: sin esto el
+        // miembro daba plata y no la veia en ningun lado de su perfil.
+        $aportesSinPromesa = $servicioPromesas->aportesSinPromesa($persona, $año);
 
         // Obtener compromisos con saldo negativo (deudas)
         $compromisos = $persona->compromisos()
@@ -58,6 +65,6 @@ class MiPerfilController extends Controller
                 return $compromiso;
             });
 
-        return view('mi-perfil.index', compact('persona', 'promesasConEstatus', 'compromisos'));
+        return view('mi-perfil.index', compact('persona', 'promesasConEstatus', 'compromisos', 'aportesSinPromesa'));
     }
 }

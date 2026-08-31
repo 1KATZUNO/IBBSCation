@@ -45,8 +45,12 @@ class CompromisoController extends Controller
             'saldo_total' => $compromisos->sum('saldo_actual'),
         ];
 
+        // Plata que la persona aporto en categorias sin promesa: no computa
+        // contra ningun compromiso, y antes no se veia en ninguna parte.
+        $aportesSinPromesa = $this->promesas->aportesSinPromesa($persona, $año);
+
         return view('compromisos.show', compact(
-            'persona', 'compromisos', 'año', 'mes', 'historial', 'resumenTotal'
+            'persona', 'compromisos', 'año', 'mes', 'historial', 'resumenTotal', 'aportesSinPromesa'
         ));
     }
 

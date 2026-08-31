@@ -219,10 +219,20 @@
                                     </select>
                                 </div>
                                 <input type="hidden" name="promesas[{{$index}}][categoria]" value="{{ $cat->slug }}">
-                                <div class="flex items-end">
+                                <div>
+                                    {{-- Desde que mes se le cobra. Sin esto el recalculo
+                                         exigia meses anteriores al alta de la promesa. --}}
+                                    <label class="block text-xs text-gray-600 mb-1">Vigente desde</label>
+                                    <input type="month"
+                                           name="promesas[{{$index}}][vigente_desde_mes]"
+                                           value="{{ old('promesas.'.$index.'.vigente_desde_mes', optional($promesaExistente->vigente_desde ?? null)->format('Y-m')) }}"
+                                           class="w-full rounded-md border-gray-300 text-sm">
+                                    <p class="text-[11px] text-gray-500 mt-1">Si se deja vacío, el mes actual.</p>
+                                </div>
+                                <div class="flex items-end md:col-span-3">
                                     <p class="text-xs text-gray-500">
-                                        <span class="font-medium">Ejemplo:</span><br>
-                                        ₡100 semanal = ~₡400-500/mes
+                                        <span class="font-medium">Ejemplo:</span>
+                                        ₡100 semanal = ~₡400-500/mes según los domingos del mes
                                     </p>
                                 </div>
                             </div>
