@@ -120,8 +120,11 @@
             @foreach($culto->sobres->filter(fn($s) => !$transferenciasOnly || $s->metodo_pago === 'transferencia') as $sobre)
             @php
                 $detallesPorCategoria = $sobre->detalles->keyBy('categoria');
-                $totalGeneral += $sobre->total_declarado;
-                if ($sobre->metodo_pago === 'transferencia') { $totalTransferencias += $sobre->total_declarado; } else { $totalEfectivo += $sobre->total_declarado; }
+                // Se usa el accesor *_crc para que los sobres en USD queden
+                // convertidos, igual que en la vista web del recuento.
+                $montoSobre = $sobre->total_declarado_crc;
+                $totalGeneral += $montoSobre;
+                if ($sobre->metodo_pago === 'transferencia') { $totalTransferencias += $montoSobre; } else { $totalEfectivo += $montoSobre; }
             @endphp
             <tr class="sobre-row">
                 @if(!$transferenciasOnly)
@@ -138,13 +141,20 @@
                 @foreach($categories as $cat)
                 <td class="text-right">{{ number_format($detallesPorCategoria->get($cat->slug)->monto ?? 0, 2) }}</td>
                 @endforeach
-                <td class="text-right subtotal">{{ number_format($sobre->total_declarado, 2) }}</td>
+                <td class="text-right subtotal">{{ number_format($montoSobre, 2) }}</td>
             </tr>
             @endforeach
 
             @if(!$transferenciasOnly)
                 @foreach($culto->ofrendasSueltas as $ofrenda)
-                @php $totalGeneral += $ofrenda->monto; @endphp
+                @php
+                    // El dinero suelto es efectivo: antes solo sumaba al total
+                    // general, por eso "Total Efectivo + Total Transferencias"
+                    // no daba el "Total General" del encabezado.
+                    $montoSuelto = $ofrenda->monto_crc;
+                    $totalGeneral += $montoSuelto;
+                    $totalEfectivo += $montoSuelto;
+                @endphp
                 <tr class="suelto-row">
                     <td class="text-center">-</td>
                     <td>
@@ -159,11 +169,16 @@
                     @foreach($categories as $cat)
                     <td class="text-right">-</td>
                     @endforeach
-                    <td class="text-right subtotal">{{ number_format($ofrenda->monto, 2) }}</td>
+                    <td class="text-right subtotal">{{ number_format($montoSuelto, 2) }}</td>
                 </tr>
                 @endforeach
                 @foreach($culto->egresos as $egreso)
-                @php $totalGeneral -= $egreso->monto; @endphp
+                @php
+                    // Los egresos salen del efectivo, no de las transferencias.
+                    $montoEgreso = $egreso->monto_crc;
+                    $totalGeneral -= $montoEgreso;
+                    $totalEfectivo -= $montoEgreso;
+                @endphp
                 <tr class="egreso-row">
                     <td class="text-center">-</td>
                     <td>
@@ -178,7 +193,7 @@
                     @foreach($categories as $cat)
                     <td class="text-right">-</td>
                     @endforeach
-                    <td class="text-right subtotal">-{{ number_format($egreso->monto, 2) }}</td>
+                    <td class="text-right subtotal">-{{ number_format($montoEgreso, 2) }}</td>
                 </tr>
                 @endforeach
             @endif
