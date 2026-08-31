@@ -15,9 +15,14 @@ class RecuentoController extends Controller
 {
     protected $calculoService;
 
-    public function __construct(CalculoTotalesCultoService $calculoService)
-    {
+    protected $promesasService;
+
+    public function __construct(
+        CalculoTotalesCultoService $calculoService,
+        \App\Services\CalculoPromesasService $promesasService
+    ) {
         $this->calculoService = $calculoService;
+        $this->promesasService = $promesasService;
     }
 
     public function index(Request $request)
@@ -166,6 +171,8 @@ class RecuentoController extends Controller
 
         // Recalcular totales del culto
         $this->calculoService->recalcular($sobre->culto);
+        // Mantener al dia los compromisos de la persona del sobre.
+        $this->promesasService->sincronizarCulto($sobre->culto, $sobre->persona_id);
 
         return redirect()->route('recuento.index', ['culto_id' => $validated['culto_id']])
             ->with('success', 'Sobre registrado correctamente.');
@@ -256,6 +263,8 @@ class RecuentoController extends Controller
 
         // Recalcular totales
         $this->calculoService->recalcular($sobre->culto);
+        // El sobre pudo cambiar de persona: sincronizar todo el culto.
+        $this->promesasService->sincronizarCulto($sobre->culto);
 
         return redirect()->route('recuento.index', ['culto_id' => $sobre->culto_id])
             ->with('success', 'Sobre actualizado correctamente.');
@@ -280,12 +289,15 @@ class RecuentoController extends Controller
         $metodo = $sobre->metodo_pago;
         $comprobante = $sobre->comprobante_numero;
         $totalDeclarado = $sobre->total_declarado;
+        // Guardar antes de borrar: se necesita para resincronizar sus compromisos.
+        $personaIdEliminada = $sobre->persona_id;
         $sobre->delete();
 
         // Recalcular totales
         $culto = Culto::find($cultoId);
         if ($culto) {
             $this->calculoService->recalcular($culto);
+            $this->promesasService->sincronizarCulto($culto, $personaIdEliminada ?? null);
         }
 
         // Auditoría

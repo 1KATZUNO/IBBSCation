@@ -19,14 +19,25 @@
 
             <div class="mb-6">
                 <label for="persona_id" class="block text-sm font-medium text-gray-700 mb-2">Persona (opcional)</label>
-                <select name="persona_id" id="persona_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                    <option value="">-- Anónimo --</option>
-                    @foreach($personas as $persona)
-                        <option value="{{ $persona->id }}" {{ old('persona_id', $sobre->persona_id) == $persona->id ? 'selected' : '' }}>
-                            {{ $persona->nombre }}{{ $persona->pin ? ' (PIN: '.$persona->pin.')' : '' }}
-                        </option>
-                    @endforeach
-                </select>
+                {{-- Mismo buscador que en "Agregar Sobre": antes aca solo habia
+                     la lista desplegable y con ~90 personas costaba encontrar. --}}
+                <div class="space-y-2">
+                    <div class="relative">
+                        <input type="text" id="buscarPersona" placeholder="Buscar por nombre o PIN..."
+                               autocomplete="off"
+                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <div id="resultadosBusqueda"
+                             class="hidden absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto"></div>
+                    </div>
+                    <select name="persona_id" id="persona_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="">-- Anónimo --</option>
+                        @foreach($personas as $persona)
+                            <option value="{{ $persona->id }}" data-pin="{{ $persona->pin ?? '' }}" {{ old('persona_id', $sobre->persona_id) == $persona->id ? 'selected' : '' }}>
+                                {{ $persona->nombre }}{{ $persona->pin ? ' (PIN: '.$persona->pin.')' : '' }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
                 @error('persona_id')
                     <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
@@ -125,6 +136,65 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // --- Buscador de personas por nombre o PIN (igual que en Agregar Sobre) ---
+        const buscarInput = document.getElementById('buscarPersona');
+        const resultadosDiv = document.getElementById('resultadosBusqueda');
+        const personaSelect = document.getElementById('persona_id');
+
+        if (buscarInput && resultadosDiv && personaSelect) {
+            // Precargar el nombre de la persona ya asignada al sobre.
+            if (personaSelect.value) {
+                const sel = personaSelect.options[personaSelect.selectedIndex];
+                if (sel) buscarInput.value = sel.text.trim();
+            }
+
+            buscarInput.addEventListener('input', function() {
+                const busqueda = this.value.toLowerCase().trim();
+                if (busqueda.length < 1) {
+                    resultadosDiv.classList.add('hidden');
+                    return;
+                }
+
+                const opciones = Array.from(personaSelect.options).slice(1);
+                const resultados = opciones.filter(function(option) {
+                    const pin = (option.dataset.pin || '').toLowerCase();
+                    const nombre = option.text.toLowerCase();
+                    return nombre.includes(busqueda) || (pin && pin === busqueda);
+                });
+
+                if (resultados.length > 0) {
+                    resultadosDiv.innerHTML = resultados.map(function(option) {
+                        return '<div class="px-4 py-2 hover:bg-blue-50 cursor-pointer resultado-item" data-id="'
+                            + option.value + '">' + option.text.trim() + '</div>';
+                    }).join('');
+                    resultadosDiv.classList.remove('hidden');
+
+                    resultadosDiv.querySelectorAll('.resultado-item').forEach(function(item) {
+                        item.addEventListener('click', function() {
+                            personaSelect.value = this.dataset.id;
+                            buscarInput.value = this.textContent.trim();
+                            resultadosDiv.classList.add('hidden');
+                        });
+                    });
+                } else {
+                    resultadosDiv.innerHTML = '<div class="px-4 py-2 text-gray-500">No se encontraron resultados</div>';
+                    resultadosDiv.classList.remove('hidden');
+                }
+            });
+
+            // Si cambia el select a mano, reflejarlo en el buscador.
+            personaSelect.addEventListener('change', function() {
+                const sel = this.options[this.selectedIndex];
+                buscarInput.value = this.value && sel ? sel.text.trim() : '';
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!buscarInput.contains(e.target) && !resultadosDiv.contains(e.target)) {
+                    resultadosDiv.classList.add('hidden');
+                }
+            });
+        }
+
         // Prevenir doble envío del formulario
         const sobreForm = document.getElementById('sobreForm');
         let isSubmitting = false;

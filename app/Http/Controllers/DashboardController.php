@@ -75,6 +75,7 @@ class DashboardController extends Controller
         // Promesas cumplidas vs pendientes - use dynamic exclusion
         $categoriasExcluidas = $categories->where('excluir_de_promesas', true)->pluck('slug')->map(fn($s) => strtolower($s))->toArray();
         $personas = Persona::with(['promesas', 'sobres.detalles'])->get();
+        $servicioPromesas = app(\App\Services\CalculoPromesasService::class);
 
         $promesasStatus = [
             'cumplidas' => 0,
@@ -101,7 +102,13 @@ class DashboardController extends Controller
                             ->sum('monto');
                     });
 
-                if ($montoPagado >= $promesa->monto) {
+                // Lo esperado depende de la frecuencia (quincenal x2, semanal x
+                // domingos del mes). Antes se comparaba contra promesa->monto
+                // crudo, por eso el dashboard marcaba como cumplidas promesas
+                // que el reporte contaba como pendientes.
+                $montoEsperado = $servicioPromesas->montoPrometidoMes($promesa, (int) $año, (int) $mes);
+
+                if ($montoPagado >= $montoEsperado) {
                     $promesasStatus['cumplidas']++;
                 } else {
                     $promesasStatus['pendientes']++;

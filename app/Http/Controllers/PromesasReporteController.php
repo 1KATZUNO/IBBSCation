@@ -334,35 +334,15 @@ class PromesasReporteController extends Controller
     }
 
     /**
-     * Calcula el monto prometido en un mes específico según la frecuencia
+     * Calcula el monto prometido en un mes especifico segun la frecuencia.
+     *
+     * La formula vive en CalculoPromesasService para que el reporte, el
+     * dashboard y la pantalla de compromisos usen exactamente la misma.
      */
     private function calcularMontoPrometidoMes($promesa, $año, $mes): float
     {
-        $fechaMes = Carbon::create($año, $mes, 1);
-        
-        switch ($promesa->frecuencia) {
-            case 'semanal':
-                // Contar domingos en el mes
-                $domingos = 0;
-                $fecha = $fechaMes->copy()->startOfMonth();
-                $finMes = $fechaMes->copy()->endOfMonth();
-                
-                while ($fecha->lte($finMes)) {
-                    if ($fecha->dayOfWeek === Carbon::SUNDAY) {
-                        $domingos++;
-                    }
-                    $fecha->addDay();
-                }
-                
-                return $promesa->monto * $domingos;
-                
-            case 'quincenal':
-                return $promesa->monto * 2;
-                
-            case 'mensual':
-            default:
-                return $promesa->monto;
-        }
+        return app(\App\Services\CalculoPromesasService::class)
+            ->montoPrometidoMes($promesa, (int) $año, (int) $mes);
     }
 
     /**

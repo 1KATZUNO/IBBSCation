@@ -636,7 +636,10 @@
     </div>
 
     <!-- Tabla Resumen por Culto -->
-    @if($sobres->count() > 0)
+    {{-- Antes la condicion exigia que hubiera sobres: si el culto solo tenia
+         dinero suelto (o solo egresos) no se mostraba ningun total ni la fila
+         del suelto, y parecia que el suelto no se sumaba. --}}
+    @if($sobres->count() > 0 || $ofrendasSueltas->count() > 0 || $egresos->count() > 0)
     @php
         // Sobres por método de pago (convertir USD a CRC)
         $sobresEfectivo = $sobres->where('metodo_pago', 'efectivo')->sum(function($s) {
@@ -670,7 +673,7 @@
         <div class="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
             <p class="text-sm text-gray-600">Total Transferencias</p>
             <p class="text-2xl font-bold text-blue-600">₡{{ number_format($totalTransferencias, 2) }}</p>
-            <p class="text-xs text-gray-500 mt-1">Sobres + Suelto</p>
+            <p class="text-xs text-gray-500 mt-1">Sobres por transferencia</p>
         </div>
         <div class="bg-white rounded-lg shadow p-4 border-l-4 border-purple-500">
             <p class="text-sm text-gray-600">Total General</p>

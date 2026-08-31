@@ -28,11 +28,14 @@
 <!-- Resumen Estadístico -->
 @if($culto->totales)
 @php
-    // Calcular totales por método de pago
-    $sobresEfectivo = $sobres->where('metodo_pago', 'efectivo')->sum('total_declarado');
-    $sobresTransferencias = $sobres->where('metodo_pago', 'transferencia')->sum('total_declarado');
-    $totalSuelto = $ofrendasSueltas->sum('monto');
-    $totalEgresosCerrado = $culto->egresos->sum('monto');
+    // Calcular totales por metodo de pago.
+    // Se usan los accesores *_crc para que los montos en USD queden
+    // convertidos, igual que en la vista del culto abierto (antes esta vista
+    // sumaba los montos crudos y no cuadraba con la otra).
+    $sobresEfectivo = $sobres->where('metodo_pago', 'efectivo')->sum(fn($s) => $s->total_declarado_crc);
+    $sobresTransferencias = $sobres->where('metodo_pago', 'transferencia')->sum(fn($s) => $s->total_declarado_crc);
+    $totalSuelto = $ofrendasSueltas->sum(fn($o) => $o->monto_crc);
+    $totalEgresosCerrado = $culto->egresos->sum(fn($e) => $e->monto_crc);
     $totalEfectivoCerrado = $sobresEfectivo + $totalSuelto - $totalEgresosCerrado;
     $totalTransferenciasCerrado = $sobresTransferencias;
 @endphp

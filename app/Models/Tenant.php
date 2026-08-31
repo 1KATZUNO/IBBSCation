@@ -97,9 +97,14 @@ class Tenant extends Model
 
     public function getLogoUrlAttribute(): string
     {
-        return $this->logo_path
-            ? Storage::url($this->logo_path)
-            : asset('images/Logo.png');
+        // Verificar que el archivo exista de verdad: si el tenant tiene un
+        // logo_path apuntando a un archivo borrado, Storage::url() igual
+        // devolvia una URL y el navegador mostraba la imagen rota.
+        if ($this->logo_path && Storage::disk('public')->exists($this->logo_path)) {
+            return Storage::url($this->logo_path);
+        }
+
+        return asset('images/Logo_IBBSC_2026.png');
     }
 
     public function getFaviconUrlAttribute(): string

@@ -18,7 +18,7 @@
     @stack('styles')
 </head>
 <body class="font-sans antialiased bg-gray-50 overflow-hidden">
-    <div class="flex h-screen overflow-hidden relative z-10">
+    <div class="flex overflow-hidden relative z-10" style="height:100vh; height:100dvh;">
         <!-- Sidebar - Slate color scheme -->
         <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-slate-800 text-white transform transition-transform duration-300 ease-out -translate-x-full lg:translate-x-0 lg:static lg:inset-0 flex flex-col shadow-xl">
             <div class="flex items-center justify-between h-20 px-6 border-b border-slate-700 flex-shrink-0">

@@ -35,9 +35,11 @@ if (!function_exists('tenant_pdf_data')) {
         } elseif ($t && $t->logo_path && file_exists(storage_path('app/public/' . $t->logo_path))) {
             $logoFile = storage_path('app/public/' . $t->logo_path);
         } else {
-            $logoFile = public_path('images/Logo2.png');
+            // El logo va sobre un circulo de color en el encabezado del PDF,
+            // asi que el logo blanco es el que corresponde aca.
+            $logoFile = public_path('images/Logo_IBBSC_2026.png');
         }
-        $tenantLogoBase64 = base64_encode(file_get_contents($logoFile));
+        $tenantLogoBase64 = is_file($logoFile) ? base64_encode(file_get_contents($logoFile)) : '';
 
         return compact('tenantNombre', 'tenantSiglas', 'tenantColor', 'tenantLogoBase64');
     }
