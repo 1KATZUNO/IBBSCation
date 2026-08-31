@@ -33,23 +33,35 @@ class CalculoTotalesCultoService
                 $cantidadTransferencias++;
             }
 
+            // Los montos se guardan en colones. Si el sobre esta en USD hay que
+            // convertir cada detalle con su tipo de cambio: antes se sumaba el
+            // monto crudo, asi que un sobre de $10 quedaba registrado como 10
+            // colones y el total del culto no cuadraba con lo que mostraban
+            // las vistas (que si convierten).
+            $tc = ($sobre->moneda === 'USD' && $sobre->tipo_cambio_venta > 0)
+                ? (float) $sobre->tipo_cambio_venta
+                : 1.0;
+
             foreach ($sobre->detalles as $detalle) {
                 $slug = strtolower($detalle->categoria);
-                $categoriaTotales[$slug] = ($categoriaTotales[$slug] ?? 0) + $detalle->monto;
+                $monto = $tc === 1.0
+                    ? (float) $detalle->monto
+                    : round((float) $detalle->monto * $tc, 2);
+                $categoriaTotales[$slug] = ($categoriaTotales[$slug] ?? 0) + $monto;
             }
         }
 
         // Suelto
         $totalSuelto = 0;
         foreach ($ofrendasSueltas as $ofrenda) {
-            $totalSuelto += $ofrenda->monto;
+            $totalSuelto += $ofrenda->monto_crc;
         }
 
         // Egresos
         $totalEgresos = 0;
         $egresos = $culto->egresos ?? collect();
         foreach ($egresos as $egreso) {
-            $totalEgresos += $egreso->monto;
+            $totalEgresos += $egreso->monto_crc;
         }
 
         // Total general = sum of all categories + suelto - egresos
