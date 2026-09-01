@@ -4,59 +4,62 @@
     <meta charset="UTF-8">
     <title>Resumen de Ingresos</title>
     <style>
-        @page { size: A4 portrait; margin: 16mm; }
-        body { font-family: 'DejaVu Sans', sans-serif; font-size: 10px; margin: 0; padding: 0; color: #1f2937; }
+        @page { size: A4 landscape; margin: 13mm; }
+        body { font-family: 'DejaVu Sans', sans-serif; font-size: 9.5px; margin: 0; padding: 0; color: #1f2937; }
 
         /* DomPDF no soporta flexbox: el encabezado se arma con tabla */
-        .header { width: 100%; border-bottom: 3px solid {{ $tenantColor }}; padding-bottom: 10px; margin-bottom: 4px; }
+        .header { width: 100%; border-bottom: 3px solid {{ $tenantColor }}; padding-bottom: 8px; }
         .header td { vertical-align: middle; border: none; padding: 0; }
-        .logo-wrap { background-color: {{ $tenantColor }}; border-radius: 50%; width: 62px; height: 62px; text-align: center; }
-        .logo-wrap img { width: 44px; height: 44px; margin-top: 9px; }
-        .h-titulo { font-size: 17px; font-weight: bold; color: #111827; }
-        .h-sub { font-size: 11px; color: {{ $tenantColor }}; margin-top: 2px; }
-        .h-meta { font-size: 8.5px; color: #6b7280; }
+        .logo-wrap { background-color: {{ $tenantColor }}; border-radius: 50%; width: 54px; height: 54px; text-align: center; }
+        .logo-wrap img { width: 38px; height: 38px; margin-top: 8px; }
+        .h-titulo { font-size: 15px; font-weight: bold; color: #111827; }
+        .h-sub { font-size: 10.5px; color: {{ $tenantColor }}; margin-top: 2px; }
+        .h-meta { font-size: 8px; color: #6b7280; }
 
-        .periodo { background: #f3f4f6; border-radius: 5px; padding: 8px 12px; margin: 14px 0 16px; font-size: 10px; }
+        .periodo { background: #f3f4f6; border-radius: 5px; padding: 6px 11px; margin: 11px 0 12px; font-size: 9.5px; }
 
         /* Tarjetas de totales */
-        .cards { width: 100%; border-collapse: separate; border-spacing: 7px 0; margin-bottom: 4px; }
-        .card { border-radius: 7px; padding: 14px 10px; text-align: center; }
-        .card .lbl { font-size: 8px; text-transform: uppercase; letter-spacing: 0.8px; }
-        .card .val { font-size: 19px; font-weight: bold; margin-top: 6px; }
-        .card .hint { font-size: 7.5px; margin-top: 4px; opacity: 0.75; }
+        .cards { width: 100%; border-collapse: separate; border-spacing: 7px 0; margin-bottom: 6px; }
+        .card { border-radius: 7px; padding: 11px 8px; text-align: center; }
+        .card .lbl { font-size: 7.5px; text-transform: uppercase; letter-spacing: 0.7px; }
+        .card .val { font-size: 17px; font-weight: bold; margin-top: 5px; }
+        .card .hint { font-size: 7px; margin-top: 3px; opacity: 0.75; }
         .c-general { background: #1e1b4b; color: #ffffff; }
         .c-efectivo { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
         .c-transfer { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
 
-        h3 { font-size: 11px; color: #374151; margin: 20px 0 7px; }
+        h3 { font-size: 10.5px; color: #374151; margin: 14px 0 6px; }
 
-        table.desglose { width: 100%; border-collapse: collapse; }
-        table.desglose th { background: {{ $tenantColor }}; color: #fff; font-size: 8.5px; text-transform: uppercase;
-                            padding: 6px 8px; text-align: left; }
-        table.desglose td { border: 1px solid #e5e7eb; padding: 6px 8px; font-size: 9.5px; }
-        table.desglose td.num { text-align: right; }
-        .fila-sub { background: #f9fafb; font-weight: bold; }
-        .fila-total { background: #eef2ff; font-weight: bold; font-size: 10.5px; }
+        table.detalle { width: 100%; border-collapse: collapse; }
+        table.detalle th { background: {{ $tenantColor }}; color: #fff; font-size: 7.5px; text-transform: uppercase;
+                           padding: 5px 4px; text-align: right; }
+        table.detalle th.izq { text-align: left; }
+        table.detalle td { border: 1px solid #e5e7eb; padding: 5px 4px; font-size: 8.5px; text-align: right; }
+        table.detalle td.izq { text-align: left; }
+        table.detalle tbody tr:nth-child(even) { background: #fafafa; }
+        .pill { background: #dbeafe; color: #1e40af; border-radius: 8px; padding: 1px 6px; font-size: 7.5px; }
+        .fila-total td { background: #eef2ff; font-weight: bold; font-size: 9.5px; border-top: 2px solid {{ $tenantColor }}; }
         .neg { color: #dc2626; }
+        .cero { color: #9ca3af; }
 
         /* Firmas */
-        .firmas { width: 100%; border-collapse: collapse; margin-top: 34px; }
-        .firmas td { width: 33%; text-align: center; vertical-align: bottom; padding: 0 10px; border: none; }
-        .firma-img { height: 46px; }
-        .firma-img img { max-height: 44px; max-width: 130px; }
-        .firma-linea { border-top: 1px solid #374151; padding-top: 6px; margin-top: 4px; }
-        .firma-nombre { font-size: 9.5px; font-weight: bold; }
-        .firma-rol { font-size: 7.5px; color: #6b7280; }
+        .firmas { width: 100%; border-collapse: collapse; margin-top: 26px; }
+        .firmas td { text-align: center; vertical-align: bottom; padding: 0 14px; border: none; }
+        .firma-img { height: 40px; }
+        .firma-img img { max-height: 38px; max-width: 120px; }
+        .firma-linea { border-top: 1px solid #374151; padding-top: 5px; margin-top: 4px; }
+        .firma-nombre { font-size: 9px; font-weight: bold; }
+        .firma-rol { font-size: 7px; color: #6b7280; }
 
-        .leyenda { margin-top: 14px; font-size: 7.5px; color: #6b7280; text-align: center; line-height: 1.5; }
-        .footer { position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 7.5px; color: #9ca3af;
-                  border-top: 1px solid #e5e7eb; padding-top: 6px; }
+        .leyenda { margin-top: 11px; font-size: 7px; color: #6b7280; text-align: center; line-height: 1.5; }
+        .footer { position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 7px; color: #9ca3af;
+                  border-top: 1px solid #e5e7eb; padding-top: 5px; }
     </style>
 </head>
 <body>
     <table class="header">
         <tr>
-            <td style="width: 74px;">
+            <td style="width: 66px;">
                 <div class="logo-wrap">
                     <img src="data:image/png;base64,{{ $tenantLogoBase64 }}" alt="Logo">
                 </div>
@@ -67,7 +70,7 @@
             </td>
             <td style="text-align: right;">
                 <div class="h-meta">Generado</div>
-                <div class="h-meta" style="font-size: 9.5px; color: #374151;">{{ now()->format('d/m/Y H:i') }}</div>
+                <div class="h-meta" style="font-size: 9px; color: #374151;">{{ now()->format('d/m/Y H:i') }}</div>
             </td>
         </tr>
     </table>
@@ -75,7 +78,7 @@
     <div class="periodo">
         <strong>Período:</strong> {{ $periodoTexto }}
         &nbsp;&nbsp;|&nbsp;&nbsp;
-        <strong>Cultos incluidos:</strong> {{ $cantidadCultos }}
+        <strong>Cultos:</strong> {{ $cantidadCultos }}
         &nbsp;&nbsp;|&nbsp;&nbsp;
         <strong>Sobres:</strong> {{ $cantidadSobres }}
     </div>
@@ -100,45 +103,72 @@
         </tr>
     </table>
 
-    <h3>Desglose</h3>
-    <table class="desglose">
+    <h3>Detalle de Ingresos</h3>
+    <table class="detalle">
         <thead>
             <tr>
-                <th>Concepto</th>
-                <th style="text-align: right; width: 34%;">Monto</th>
+                <th class="izq">Fecha</th>
+                <th class="izq">Tipo</th>
+                @foreach($categories as $cat)
+                <th>{{ $cat->nombre }}</th>
+                @endforeach
+                <th>Suelto</th>
+                @if($hayEgresos)
+                <th>Egresos</th>
+                @endif
+                <th>Total</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>Sobres en efectivo</td>
-                <td class="num">₡{{ number_format($sobresEfectivo, 2) }}</td>
-            </tr>
-            <tr>
-                <td>Dinero suelto</td>
-                <td class="num">₡{{ number_format($totalSuelto, 2) }}</td>
-            </tr>
-            <tr>
-                <td>Egresos</td>
-                <td class="num {{ $totalEgresos > 0 ? 'neg' : '' }}">
-                    {{ $totalEgresos > 0 ? '−' : '' }}₡{{ number_format($totalEgresos, 2) }}
-                </td>
-            </tr>
-            <tr class="fila-sub">
-                <td>Subtotal efectivo</td>
-                <td class="num">₡{{ number_format($totalEfectivo, 2) }}</td>
-            </tr>
-            <tr>
-                <td>Sobres por transferencia</td>
-                <td class="num">₡{{ number_format($sobresTransferencias, 2) }}</td>
-            </tr>
-            <tr class="fila-sub">
-                <td>Subtotal transferencias</td>
-                <td class="num">₡{{ number_format($totalTransferencias, 2) }}</td>
-            </tr>
+            @php
+                $tot = [];
+                foreach ($categories as $cat) { $tot[$cat->slug] = 0; }
+                $totSuelto = 0; $totEgr = 0; $totFila = 0;
+            @endphp
+
+            @forelse($registros as $r)
+                @php
+                    foreach ($categories as $cat) { $tot[$cat->slug] += $r[$cat->slug] ?? 0; }
+                    $totSuelto += $r['suelto'];
+                    $totEgr += $r['egresos'];
+                    $totFila += $r['total'];
+                @endphp
+                <tr>
+                    <td class="izq">{{ $r['fecha'] }}</td>
+                    <td class="izq"><span class="pill">{{ $r['tipo'] }}</span></td>
+                    @foreach($categories as $cat)
+                    @php $v = $r[$cat->slug] ?? 0; @endphp
+                    <td class="{{ $v == 0 ? 'cero' : '' }}">₡{{ number_format($v, 2) }}</td>
+                    @endforeach
+                    <td class="{{ $r['suelto'] == 0 ? 'cero' : '' }}">₡{{ number_format($r['suelto'], 2) }}</td>
+                    @if($hayEgresos)
+                    <td class="{{ $r['egresos'] > 0 ? 'neg' : 'cero' }}">
+                        {{ $r['egresos'] > 0 ? '−' : '' }}₡{{ number_format($r['egresos'], 2) }}
+                    </td>
+                    @endif
+                    <td><strong>₡{{ number_format($r['total'], 2) }}</strong></td>
+                </tr>
+            @empty
+                <tr>
+                    <td class="izq" colspan="{{ count($categories) + ($hayEgresos ? 5 : 4) }}">
+                        No hay cultos registrados en el período seleccionado.
+                    </td>
+                </tr>
+            @endforelse
+
+            @if(count($registros) > 0)
             <tr class="fila-total">
-                <td>TOTAL GENERAL</td>
-                <td class="num">₡{{ number_format($totalGeneral, 2) }}</td>
+                <td class="izq" colspan="2">TOTALES</td>
+                @foreach($categories as $cat)
+                <td>₡{{ number_format($tot[$cat->slug], 2) }}</td>
+                @endforeach
+                <td>₡{{ number_format($totSuelto, 2) }}</td>
+                @if($hayEgresos)
+                <td class="neg">−₡{{ number_format($totEgr, 2) }}</td>
+                @endif
+                <td>₡{{ number_format($totFila, 2) }}</td>
             </tr>
+            @endif
         </tbody>
     </table>
 
@@ -146,7 +176,7 @@
     <table class="firmas">
         <tr>
             @foreach($firmas as $f)
-            <td>
+            <td style="width: {{ intdiv(100, max(count($firmas), 1)) }}%;">
                 <div class="firma-img">
                     @if(!empty($f['imagen']))
                         <img src="{{ $f['imagen'] }}" alt="">

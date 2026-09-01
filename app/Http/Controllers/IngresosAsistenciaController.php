@@ -293,7 +293,8 @@ class IngresosAsistenciaController extends Controller
      */
     public function pdfResumen(Request $request)
     {
-        $query = Culto::with(['sobres', 'ofrendasSueltas', 'egresos'])->orderBy('fecha', 'asc');
+        $categories = tenant_categories();
+        $query = Culto::with(['sobres.detalles', 'ofrendasSueltas', 'egresos'])->orderBy('fecha', 'asc');
 
         if ($request->filled('fecha_inicio')) {
             $query->where('fecha', '>=', $request->fecha_inicio);
@@ -309,23 +310,58 @@ class IngresosAsistenciaController extends Controller
         $totalSuelto = 0.0;
         $totalEgresos = 0.0;
         $cantidadSobres = 0;
+        $registros = [];
 
         foreach ($cultos as $culto) {
+            $porCategoria = [];
+            foreach ($categories as $cat) {
+                $porCategoria[$cat->slug] = 0.0;
+            }
+
             foreach ($culto->sobres as $sobre) {
                 $cantidadSobres++;
+
                 if ($sobre->metodo_pago === 'transferencia') {
                     $sobresTransferencias += $sobre->total_declarado_crc;
                 } else {
                     $sobresEfectivo += $sobre->total_declarado_crc;
                 }
+
+                // Mismo tipo de cambio que usa el accesor del sobre, para que
+                // las columnas sumen exactamente lo que muestran las tarjetas.
+                $tc = ($sobre->moneda === 'USD' && $sobre->tipo_cambio_venta > 0)
+                    ? (float) $sobre->tipo_cambio_venta
+                    : 1.0;
+
+                foreach ($sobre->detalles as $detalle) {
+                    $slug = strtolower($detalle->categoria);
+                    if (! array_key_exists($slug, $porCategoria)) {
+                        continue;
+                    }
+                    $porCategoria[$slug] += $tc === 1.0
+                        ? (float) $detalle->monto
+                        : round((float) $detalle->monto * $tc, 2);
+                }
             }
-            $totalSuelto += $culto->ofrendasSueltas->sum(fn ($o) => $o->monto_crc);
-            $totalEgresos += $culto->egresos->sum(fn ($e) => $e->monto_crc);
+
+            $sueltoCulto = (float) $culto->ofrendasSueltas->sum(fn ($o) => $o->monto_crc);
+            $egresosCulto = (float) $culto->egresos->sum(fn ($e) => $e->monto_crc);
+            $totalSuelto += $sueltoCulto;
+            $totalEgresos += $egresosCulto;
+
+            $registros[] = $porCategoria + [
+                'fecha' => $culto->fecha->format('d/m/Y'),
+                'tipo' => $culto->tipo_nombre,
+                'suelto' => $sueltoCulto,
+                'egresos' => $egresosCulto,
+                'total' => array_sum($porCategoria) + $sueltoCulto - $egresosCulto,
+            ];
         }
 
         $totalEfectivo = $sobresEfectivo + $totalSuelto - $totalEgresos;
         $totalTransferencias = $sobresTransferencias;
         $totalGeneral = $totalEfectivo + $totalTransferencias;
+        $hayEgresos = $totalEgresos > 0;
 
         // Texto del periodo a partir de lo que el usuario filtro.
         if ($request->filled('fecha_inicio') && $request->filled('fecha_fin')) {
@@ -378,6 +414,9 @@ class IngresosAsistenciaController extends Controller
             'periodoTexto' => $periodoTexto,
             'cantidadCultos' => $cultos->count(),
             'cantidadSobres' => $cantidadSobres,
+            'categories' => $categories,
+            'registros' => $registros,
+            'hayEgresos' => $hayEgresos,
             'sobresEfectivo' => $sobresEfectivo,
             'sobresTransferencias' => $sobresTransferencias,
             'totalSuelto' => $totalSuelto,
@@ -386,7 +425,7 @@ class IngresosAsistenciaController extends Controller
             'totalTransferencias' => $totalTransferencias,
             'totalGeneral' => $totalGeneral,
             'firmas' => $firmas,
-        ] + tenant_pdf_data())->setPaper('a4', 'portrait');
+        ] + tenant_pdf_data())->setPaper('a4', 'landscape');
 
         $sufijo = $request->filled('fecha_inicio')
             ? Carbon::parse($request->fecha_inicio)->format('Y-m-d')
