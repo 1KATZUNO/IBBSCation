@@ -59,8 +59,15 @@
 
 <!-- Tabla Resumen Detallado -->
 <div class="bg-white rounded-lg shadow overflow-hidden">
-    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between gap-3">
         <h4 class="text-lg font-semibold text-gray-900">Resumen Detallado por Categorías</h4>
+        @if($isAdmin)
+        {{-- El admin puede agregar un sobre que aparecio despues del cierre --}}
+        <a href="{{ route('recuento.create', ['culto_id' => $culto->id]) }}"
+           class="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 whitespace-nowrap">
+            + Agregar Sobre
+        </a>
+        @endif
     </div>
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">

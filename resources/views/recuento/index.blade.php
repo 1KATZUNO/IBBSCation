@@ -29,7 +29,7 @@
                     <option value="">-- Seleccione un culto --</option>
                     @foreach($cultos as $culto)
                         <option value="{{ $culto->id }}" {{ request('culto_id') == $culto->id ? 'selected' : '' }}>
-                            {{ $culto->fecha->format('d/m/Y') }} - {{ $culto->tipo_nombre }}
+                            {{ $culto->fecha->format('d/m/Y') }} - {{ $culto->tipo_nombre }}{{ $culto->cerrado ? ' (cerrado)' : '' }}
                         </option>
                     @endforeach
                 </select>
@@ -65,6 +65,13 @@
                     Cerrar Culto
                 </button>
                 @else
+                {{-- Culto cerrado: el administrador puede agregar sobres que
+                     aparecieron despues del cierre (queda en la bitacora). --}}
+                @if($puedeCorregirCerrado)
+                <a href="{{ route('recuento.create', ['culto_id' => $cultoSeleccionado->id]) }}" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-center">
+                    + Agregar Sobre
+                </a>
+                @endif
                 <a href="{{ route('ingresos-asistencia.pdf-recuento-individual', $cultoSeleccionado->id) }}" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -478,7 +485,13 @@
             row.remove();
         }
     </script>
-    
+    @endif
+
+    {{-- Las firmas y el cierre solo aplican a cultos abiertos; el resumen y
+         las tablas tambien se muestran cuando el administrador entra a un
+         culto cerrado para agregar un sobre que aparecio despues. --}}
+    @if($cultoSeleccionado && (!$cultoSeleccionado->cerrado || $puedeCorregirCerrado))
+
     <!-- Resumen del Culto -->
     @if($cultoSeleccionado->totales)
     <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
@@ -570,7 +583,7 @@
                             <!-- Desktop actions -->
                             <div class="hidden sm:flex sm:items-center sm:justify-end sm:gap-3">
                                 <a href="{{ route('recuento.edit', $sobre) }}" class="text-blue-600 hover:text-blue-900">Editar</a>
-                                @if(in_array(auth()->user()->rol, ['admin', 'tesorero']))
+                                @if(!$cultoSeleccionado->cerrado && in_array(auth()->user()->rol, ['admin', 'tesorero']))
                                 <button type="button" onclick="mostrarModalEliminarSobre({{ $sobre->id }}, {{ $sobre->numero_sobre }})" class="text-red-600 hover:text-red-900">
                                     Eliminar
                                 </button>
@@ -595,7 +608,7 @@
                                                 Editar
                                             </span>
                                         </a>
-                                        @if(in_array(auth()->user()->rol, ['admin', 'tesorero']))
+                                        @if(!$cultoSeleccionado->cerrado && in_array(auth()->user()->rol, ['admin', 'tesorero']))
                                         <button type="button" onclick="mostrarModalEliminarSobre({{ $sobre->id }}, {{ $sobre->numero_sobre }}); toggleSobreDropdown({{ $sobre->id }})" class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-red-50">
                                             <span class="flex items-center gap-2">
                                                 <svg class="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
@@ -609,7 +622,7 @@
                                 </div>
                             </div>
                             
-                            @if(in_array(auth()->user()->rol, ['admin', 'tesorero']))
+                            @if(!$cultoSeleccionado->cerrado && in_array(auth()->user()->rol, ['admin', 'tesorero']))
                             <form id="form-eliminar-sobre-{{ $sobre->id }}" action="{{ route('recuento.destroy', $sobre) }}" method="POST" class="hidden">
                                 @csrf
                                 @method('DELETE')
@@ -764,11 +777,13 @@
                                     @endif
                                 </div>
                                 <div class="flex gap-2 ml-2">
+                                    @if(!$cultoSeleccionado->cerrado)
                                     <button onclick="editarSuelto({{ $ofrenda->id }}, {{ $ofrenda->monto }}, '{{ $ofrenda->descripcion }}')"
                                             class="text-blue-600 hover:text-blue-900 text-xs">
                                         Editar
                                     </button>
-                                    @if(in_array(auth()->user()->rol, ['admin', 'tesorero']))
+                                    @endif
+                                    @if(!$cultoSeleccionado->cerrado && in_array(auth()->user()->rol, ['admin', 'tesorero']))
                                     <button type="button" onclick="mostrarModalEliminarSuelto({{ $ofrenda->id }}, '{{ $ofrenda->descripcion }}')" class="text-red-600 hover:text-red-900 text-xs">
                                         Eliminar
                                     </button>
@@ -810,11 +825,13 @@
                                     @endif
                                 </div>
                                 <div class="flex gap-2 ml-2">
+                                    @if(!$cultoSeleccionado->cerrado)
                                     <button onclick="editarEgreso({{ $egreso->id }}, {{ $egreso->monto }}, '{{ $egreso->descripcion }}')"
                                             class="text-blue-600 hover:text-blue-900 text-xs">
                                         Editar
                                     </button>
-                                    @if(in_array(auth()->user()->rol, ['admin', 'tesorero']))
+                                    @endif
+                                    @if(!$cultoSeleccionado->cerrado && in_array(auth()->user()->rol, ['admin', 'tesorero']))
                                     <button type="button" onclick="mostrarModalEliminarEgreso({{ $egreso->id }}, '{{ $egreso->descripcion }}')" class="text-red-600 hover:text-red-900 text-xs">
                                         Eliminar
                                     </button>

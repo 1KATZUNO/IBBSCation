@@ -30,8 +30,12 @@ class RecuentoController extends Controller
         $cultoId = $request->get('culto_id');
         $verCerrado = $request->has('ver_cerrado');
         
-        // Traer cultos no cerrados para el selector
-        $cultos = Culto::where('cerrado', false)->orderBy('fecha', 'desc')->get();
+        // El selector trae los cultos abiertos; al administrador se le suman los
+        // cerrados, que son los que puede corregir si aparece un sobre despues.
+        $cultos = Culto::query()
+            ->when(! $this->puedeCorregirCerrado(), fn ($q) => $q->where('cerrado', false))
+            ->orderBy('fecha', 'desc')
+            ->get();
         
         // Traer cultos cerrados para la lista de solo lectura
         $cultosCerrados = Culto::where('cerrado', true)
@@ -58,14 +62,37 @@ class RecuentoController extends Controller
             : collect();
 
         $categorias = tenant_categories(['es_ofrenda_suelta' => false]);
+        $puedeCorregirCerrado = $this->puedeCorregirCerrado();
 
-        return view('recuento.index', compact('sobres', 'cultos', 'cultoSeleccionado', 'ofrendasSueltas', 'egresos', 'cultosCerrados', 'categorias'));
+        return view('recuento.index', compact('sobres', 'cultos', 'cultoSeleccionado', 'ofrendasSueltas', 'egresos', 'cultosCerrados', 'categorias', 'puedeCorregirCerrado'));
+    }
+
+    /**
+     * Un culto cerrado ya tiene el recuento firmado, pero a veces aparecen
+     * sobres despues (boletas traspapeladas, un sobre que no se digito ese
+     * dia). El administrador puede corregirlo sin tener que reabrir el culto;
+     * cualquier otro rol no.
+     */
+    protected function puedeCorregirCerrado(): bool
+    {
+        $user = auth()->user();
+        if (! $user) {
+            return false;
+        }
+
+        return method_exists($user, 'isAdmin') ? $user->isAdmin() : $user->rol === 'admin';
     }
 
     public function create(Request $request)
     {
         $cultoId = $request->get('culto_id');
         $culto = $cultoId ? Culto::findOrFail($cultoId) : null;
+
+        if ($culto && $culto->cerrado && ! $this->puedeCorregirCerrado()) {
+            return redirect()->route('recuento.index', ['culto_id' => $culto->id])
+                ->with('error', 'No se pueden agregar sobres a un culto cerrado.');
+        }
+
         $personas = Persona::where('activo', true)->get();
         $categorias = tenant_categories(['es_ofrenda_suelta' => false]);
 
@@ -92,9 +119,9 @@ class RecuentoController extends Controller
             ]);
         }
 
-        // Verificar que el culto no esté cerrado
+        // Un culto cerrado solo lo puede tocar el administrador
         $culto = Culto::findOrFail($validated['culto_id']);
-        if ($culto->cerrado) {
+        if ($culto->cerrado && ! $this->puedeCorregirCerrado()) {
             return redirect()->route('recuento.index', ['culto_id' => $culto->id])
                 ->with('error', 'No se pueden agregar sobres a un culto cerrado.');
         }
@@ -148,9 +175,12 @@ class RecuentoController extends Controller
             'user_agent' => substr($request->userAgent() ?? '', 0, 255),
             'method' => 'POST',
             'route' => 'recuento.store',
-            'action' => 'Agregar Sobre',
+            // Se distingue en la bitacora: agregar a un culto ya firmado no es
+            // lo mismo que digitarlo el mismo dia.
+            'action' => $culto->cerrado ? 'Agregar Sobre a culto cerrado' : 'Agregar Sobre',
             'details' => json_encode([
                 'culto_id' => $sobre->culto_id,
+                'culto_cerrado' => (bool) $culto->cerrado,
                 'sobre_id' => $sobre->id,
                 'metodo_pago' => $sobre->metodo_pago,
                 'comprobante_numero' => $sobre->comprobante_numero,
@@ -175,14 +205,14 @@ class RecuentoController extends Controller
         $this->promesasService->sincronizarCulto($sobre->culto, $sobre->persona_id);
 
         return redirect()->route('recuento.index', ['culto_id' => $validated['culto_id']])
-            ->with('success', 'Sobre registrado correctamente.');
+            ->with('success', $culto->cerrado
+                ? 'Sobre agregado al culto cerrado. Los totales se recalcularon y quedo registrado en la bitacora.'
+                : 'Sobre registrado correctamente.');
     }
 
     public function edit(Sobre $sobre)
     {
-        $user = auth()->user();
-        $isAdmin = $user && method_exists($user, 'isAdmin') ? $user->isAdmin() : ($user && $user->rol === 'admin');
-        if ($sobre->culto->cerrado && !$isAdmin) {
+        if ($sobre->culto->cerrado && ! $this->puedeCorregirCerrado()) {
             return redirect()->route('recuento.index', ['culto_id' => $sobre->culto_id])
                 ->with('error', 'No se puede editar un sobre de un culto cerrado.');
         }
@@ -196,9 +226,7 @@ class RecuentoController extends Controller
 
     public function update(Request $request, Sobre $sobre)
     {
-        $user = auth()->user();
-        $isAdmin = $user && method_exists($user, 'isAdmin') ? $user->isAdmin() : ($user && $user->rol === 'admin');
-        if ($sobre->culto->cerrado && !$isAdmin) {
+        if ($sobre->culto->cerrado && ! $this->puedeCorregirCerrado()) {
             return redirect()->route('recuento.index', ['culto_id' => $sobre->culto_id])
                 ->with('error', 'No se puede editar un sobre de un culto cerrado.');
         }
