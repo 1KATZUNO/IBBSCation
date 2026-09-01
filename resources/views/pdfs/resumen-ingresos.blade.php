@@ -183,7 +183,9 @@
                     @endif
                 </div>
                 <div class="firma-linea">
-                    <div class="firma-nombre">{{ $f['nombre'] ?: '&nbsp;' }}</div>
+                    {{-- El espacio en blanco va fuera de {{ }}: Blade escapa el
+                         contenido y la entidad se imprimia literal como texto. --}}
+                    <div class="firma-nombre">@if($f['nombre']){{ $f['nombre'] }}@else&nbsp;@endif</div>
                     <div class="firma-rol">{{ $f['rol'] }}</div>
                 </div>
             </td>
