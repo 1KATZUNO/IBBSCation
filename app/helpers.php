@@ -25,8 +25,12 @@ if (!function_exists('tenant_pdf_data')) {
     function tenant_pdf_data(): array
     {
         $t = tenant();
-        $tenantNombre = $t ? $t->nombre : 'Sistema de Administracion';
-        $tenantSiglas = $t ? $t->siglas : 'Admin';
+        // En esta instalacion la tabla tenants esta vacia y los usuarios no
+        // tienen tenant_id, asi que siempre se cae al fallback. Antes decia
+        // "Admin - Sistema de Administracion" en el encabezado de todos los
+        // PDF; ahora se toma de la config para que salga el nombre real.
+        $tenantNombre = $t ? $t->nombre : config('iglesia.nombre');
+        $tenantSiglas = $t ? $t->siglas : config('iglesia.siglas');
         $tenantColor = $t ? ($t->colors['600'] ?? '#3b82f6') : '#3b82f6';
 
         $logoFile = null;

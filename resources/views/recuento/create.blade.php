@@ -15,7 +15,7 @@
             <div class="mb-6 p-4 bg-blue-50 rounded-lg">
                 <p class="text-sm text-gray-600">Culto seleccionado:</p>
                 <p class="text-lg font-semibold text-blue-900">
-                    {{ $culto->fecha->format('d/m/Y') }} - {{ ucfirst($culto->tipo_culto) }}
+                    {{ $culto->fecha->format('d/m/Y') }} - {{ $culto->tipo_nombre }}
                 </p>
             </div>
             @endif

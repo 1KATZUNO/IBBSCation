@@ -10,7 +10,7 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
             <div>
                 <h2 class="text-2xl font-bold text-gray-800">{{ $asistencia->culto->fecha->format('d/m/Y') }}</h2>
-                <p class="text-gray-600">{{ ucfirst($asistencia->culto->tipo_culto) }}</p>
+                <p class="text-gray-600">{{ $asistencia->culto->tipo_nombre }}</p>
                 @if($asistencia->cerrado)
                     <span class="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium mt-2">
                         <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">

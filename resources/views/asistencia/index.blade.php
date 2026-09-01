@@ -88,7 +88,7 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm">
                         <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                            {{ ucfirst($culto->tipo_culto) }}
+                            {{ $culto->tipo_nombre }}
                         </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm">
@@ -225,7 +225,7 @@
                     <div class="flex items-start justify-between mb-3">
                         <div>
                             <h3 class="text-lg font-bold text-gray-800">{{ $asistencia->culto->fecha->format('d/m/Y') }}</h3>
-                            <p class="text-sm text-gray-600">{{ ucfirst($asistencia->culto->tipo_culto) }}</p>
+                            <p class="text-sm text-gray-600">{{ $asistencia->culto->tipo_nombre }}</p>
                         </div>
                         <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">
                             <svg class="w-3 h-3 inline" fill="currentColor" viewBox="0 0 20 20">

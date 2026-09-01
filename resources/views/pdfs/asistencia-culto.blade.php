@@ -37,7 +37,7 @@
     
     <div class="info">
         <p><strong>Fecha:</strong> {{ $culto->fecha->format('d/m/Y') }}</p>
-        <p><strong>Tipo de Culto:</strong> {{ ucfirst($culto->tipo_culto) }}</p>
+        <p><strong>Tipo de Culto:</strong> {{ $culto->tipo_nombre }}</p>
         <p><strong>Total Asistencia:</strong> {{ $culto->asistencia->total_asistencia }}</p>
         <p><strong>Total Capilla:</strong> {{ $culto->asistencia->getTotalCapilla() }} | <strong>Total Niños:</strong> {{ $culto->asistencia->getTotalNinos() }} | <strong>Salvos:</strong> {{ $culto->asistencia->getTotalSalvos() }} | <strong>Bautismos:</strong> {{ $culto->asistencia->getTotalBautismos() }} | <strong>Visitas:</strong> {{ $culto->asistencia->getTotalVisitas() }}</p>
     </div>

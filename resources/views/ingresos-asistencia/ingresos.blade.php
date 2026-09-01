@@ -37,17 +37,27 @@
         </form>
     </div>
 
-    <!-- Botón de Descarga PDF -->
-    <div class="flex justify-end">
-        <a href="{{ route('ingresos-asistencia.pdf-ingresos', ['tipo_reporte' => request('tipo_reporte', 'culto'), 'fecha_inicio' => request('fecha_inicio'), 'fecha_fin' => request('fecha_fin')]) }}" 
-           class="px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors font-semibold" target="_blank">
+    <!-- Botones de Descarga PDF -->
+    <div class="flex flex-wrap justify-end gap-2">
+        {{-- Resumen de una pagina: solo general, efectivo y transferencias, con firmas --}}
+        <a href="{{ route('ingresos-asistencia.pdf-resumen', ['fecha_inicio' => request('fecha_inicio'), 'fecha_fin' => request('fecha_fin')]) }}"
+           target="_blank"
+           class="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-colors font-semibold">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            Resumen (PDF)
+        </a>
+        <a href="{{ route('ingresos-asistencia.pdf-ingresos', ['tipo_reporte' => request('tipo_reporte', 'culto'), 'fecha_inicio' => request('fecha_inicio'), 'fecha_fin' => request('fecha_fin')]) }}"
+           class="inline-flex items-center px-6 py-3 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors font-semibold" target="_blank">
             Descargar PDF Completo
         </a>
-            <a href="{{ route('ingresos-asistencia.pdf-ingresos-transferencias', ['tipo_reporte' => request('tipo_reporte', 'culto'), 'fecha_inicio' => request('fecha_inicio'), 'fecha_fin' => request('fecha_fin')]) }}" 
-                target="_blank"
-                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors ml-2">
-                Solo Transferencias (PDF)
-            </a>
+        <a href="{{ route('ingresos-asistencia.pdf-ingresos-transferencias', ['tipo_reporte' => request('tipo_reporte', 'culto'), 'fecha_inicio' => request('fecha_inicio'), 'fecha_fin' => request('fecha_fin')]) }}"
+            target="_blank"
+            class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+            Solo Transferencias (PDF)
+        </a>
     </div>
 
     <!-- Tabla de Ingresos -->

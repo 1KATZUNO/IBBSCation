@@ -29,7 +29,7 @@
                     <option value="">-- Seleccione un culto --</option>
                     @foreach($cultos as $culto)
                         <option value="{{ $culto->id }}" {{ request('culto_id') == $culto->id ? 'selected' : '' }}>
-                            {{ $culto->fecha->format('d/m/Y') }} - {{ ucfirst($culto->tipo_culto) }}
+                            {{ $culto->fecha->format('d/m/Y') }} - {{ $culto->tipo_nombre }}
                         </option>
                     @endforeach
                 </select>
@@ -872,7 +872,7 @@
                     <div class="flex items-start justify-between mb-3">
                         <div>
                             <h3 class="text-lg font-bold text-gray-800">{{ $cultoCerrado->fecha->format('d/m/Y') }}</h3>
-                            <p class="text-sm text-gray-600">{{ ucfirst($cultoCerrado->tipo_culto) }}</p>
+                            <p class="text-sm text-gray-600">{{ $cultoCerrado->tipo_nombre }}</p>
                         </div>
                         <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-medium">
                             <svg class="w-3 h-3 inline" fill="currentColor" viewBox="0 0 20 20">

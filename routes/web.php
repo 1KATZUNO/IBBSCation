@@ -129,6 +129,7 @@ Route::middleware(['auth', 'role:admin,tesorero'])->group(function () {
     Route::get('/ingresos-asistencia', [IngresosAsistenciaController::class, 'index'])->name('ingresos-asistencia.index');
     Route::get('/ingresos-asistencia/ingresos', [IngresosAsistenciaController::class, 'ingresos'])->name('ingresos-asistencia.ingresos');
     Route::get('/ingresos-asistencia/pdf-ingresos', [IngresosAsistenciaController::class, 'pdfIngresos'])->name('ingresos-asistencia.pdf-ingresos');
+    Route::get('/ingresos-asistencia/pdf-resumen', [IngresosAsistenciaController::class, 'pdfResumen'])->name('ingresos-asistencia.pdf-resumen');
     Route::get('/ingresos-asistencia/pdf-ingresos-transferencias', [IngresosAsistenciaController::class, 'pdfIngresosTransferencias'])->name('ingresos-asistencia.pdf-ingresos-transferencias');
     Route::get('/ingresos-asistencia/pdf-recuento/{culto}', [IngresosAsistenciaController::class, 'pdfRecuentoIndividual'])->name('ingresos-asistencia.pdf-recuento-individual');
     Route::get('/ingresos-asistencia/pdf-recuento-transferencias/{culto}', [IngresosAsistenciaController::class, 'pdfRecuentoTransferencias'])->name('ingresos-asistencia.pdf-recuento-transferencias');

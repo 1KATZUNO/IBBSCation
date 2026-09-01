@@ -13,7 +13,7 @@
             <div class="mb-6">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Culto</label>
                 <p class="text-lg font-semibold text-gray-900">
-                    {{ $asistencia->culto->fecha->format('d/m/Y') }} - {{ ucfirst($asistencia->culto->tipo_culto) }}
+                    {{ $asistencia->culto->fecha->format('d/m/Y') }} - {{ $asistencia->culto->tipo_nombre }}
                 </p>
             </div>
 

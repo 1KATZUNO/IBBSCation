@@ -151,14 +151,14 @@ class IngresosAsistenciaController extends Controller
                     $registros[] = $this->buildRegistroFromTotales($t, $slugs, [
                         'culto_id' => $culto->id,
                         'fecha' => $culto->fecha->format('d/m/Y'),
-                        'tipo' => ucfirst($culto->tipo_culto),
+                        'tipo' => $culto->tipo_nombre,
                     ]);
                 } else {
                     // Calcular en vivo desde sobres y suelto para cultos sin totales
                     $row = [
                         'culto_id' => $culto->id,
                         'fecha' => $culto->fecha->format('d/m/Y'),
-                        'tipo' => ucfirst($culto->tipo_culto),
+                        'tipo' => $culto->tipo_nombre,
                     ];
                     foreach ($slugs as $slug) {
                         $row[$slug] = $culto->sobres->flatMap->detalles->where('categoria', $slug)->sum('monto');
@@ -257,7 +257,7 @@ class IngresosAsistenciaController extends Controller
             foreach ($cultos as $culto) {
                 $registros[] = $this->buildRegistroFromTotales($culto->totales, $slugs, [
                     'fecha' => $culto->fecha->format('d/m/Y'),
-                    'tipo' => ucfirst($culto->tipo_culto),
+                    'tipo' => $culto->tipo_nombre,
                 ]);
             }
         } elseif ($tipoReporte == 'semana') {
@@ -283,6 +283,118 @@ class IngresosAsistenciaController extends Controller
         return $pdf->download('ingresos_' . $tipoReporte . '_' . now()->format('Y-m-d') . '.pdf');
     }
 
+    /**
+     * PDF de una sola pagina con el resumen del rango: total general, total
+     * efectivo y total transferencias, mas el desglose y las firmas.
+     *
+     * Usa los mismos criterios que la pantalla de recuento: los montos se
+     * convierten a colones con los accesores *_crc, el dinero suelto entra al
+     * efectivo y los egresos se le restan.
+     */
+    public function pdfResumen(Request $request)
+    {
+        $query = Culto::with(['sobres', 'ofrendasSueltas', 'egresos'])->orderBy('fecha', 'asc');
+
+        if ($request->filled('fecha_inicio')) {
+            $query->where('fecha', '>=', $request->fecha_inicio);
+        }
+        if ($request->filled('fecha_fin')) {
+            $query->where('fecha', '<=', $request->fecha_fin);
+        }
+
+        $cultos = $query->get();
+
+        $sobresEfectivo = 0.0;
+        $sobresTransferencias = 0.0;
+        $totalSuelto = 0.0;
+        $totalEgresos = 0.0;
+        $cantidadSobres = 0;
+
+        foreach ($cultos as $culto) {
+            foreach ($culto->sobres as $sobre) {
+                $cantidadSobres++;
+                if ($sobre->metodo_pago === 'transferencia') {
+                    $sobresTransferencias += $sobre->total_declarado_crc;
+                } else {
+                    $sobresEfectivo += $sobre->total_declarado_crc;
+                }
+            }
+            $totalSuelto += $culto->ofrendasSueltas->sum(fn ($o) => $o->monto_crc);
+            $totalEgresos += $culto->egresos->sum(fn ($e) => $e->monto_crc);
+        }
+
+        $totalEfectivo = $sobresEfectivo + $totalSuelto - $totalEgresos;
+        $totalTransferencias = $sobresTransferencias;
+        $totalGeneral = $totalEfectivo + $totalTransferencias;
+
+        // Texto del periodo a partir de lo que el usuario filtro.
+        if ($request->filled('fecha_inicio') && $request->filled('fecha_fin')) {
+            $periodoTexto = Carbon::parse($request->fecha_inicio)->format('d/m/Y')
+                .' al '.Carbon::parse($request->fecha_fin)->format('d/m/Y');
+        } elseif ($request->filled('fecha_inicio')) {
+            $periodoTexto = 'Desde el '.Carbon::parse($request->fecha_inicio)->format('d/m/Y');
+        } elseif ($request->filled('fecha_fin')) {
+            $periodoTexto = 'Hasta el '.Carbon::parse($request->fecha_fin)->format('d/m/Y');
+        } else {
+            $periodoTexto = $cultos->isNotEmpty()
+                ? $cultos->first()->fecha->format('d/m/Y').' al '.$cultos->last()->fecha->format('d/m/Y')
+                : 'Todos los registros';
+        }
+
+        // Firmas: si el rango cubre un unico culto se usan las suyas; si abarca
+        // varios se dejan las lineas en blanco para firmar el resumen a mano.
+        $firmas = [];
+        if ($cultos->count() === 1) {
+            $culto = $cultos->first();
+            foreach (($culto->firmas_tesoreros_imagenes ?? []) as $t) {
+                $firmas[] = [
+                    'nombre' => $t['nombre'] ?? '',
+                    'imagen' => $t['imagen'] ?? '',
+                    'rol' => 'Tesorero',
+                ];
+            }
+            if (empty($firmas)) {
+                foreach (($culto->firmas_tesoreros ?? []) as $n) {
+                    $firmas[] = ['nombre' => $n, 'imagen' => '', 'rol' => 'Tesorero'];
+                }
+            }
+            $firmas[] = [
+                'nombre' => $culto->firma_depositante ?? '',
+                'imagen' => $culto->firma_depositante_imagen ?? '',
+                'rol' => 'Recibido por · deposita en banco',
+            ];
+        }
+
+        // Rango de varios cultos (o culto sin firmas): lineas en blanco.
+        if (empty($firmas)) {
+            $firmas = [
+                ['nombre' => '', 'imagen' => '', 'rol' => 'Tesorero'],
+                ['nombre' => '', 'imagen' => '', 'rol' => 'Tesorero'],
+                ['nombre' => '', 'imagen' => '', 'rol' => 'Recibido por · deposita en banco'],
+            ];
+        }
+
+        $pdf = Pdf::loadView('pdfs.resumen-ingresos', [
+            'periodoTexto' => $periodoTexto,
+            'cantidadCultos' => $cultos->count(),
+            'cantidadSobres' => $cantidadSobres,
+            'sobresEfectivo' => $sobresEfectivo,
+            'sobresTransferencias' => $sobresTransferencias,
+            'totalSuelto' => $totalSuelto,
+            'totalEgresos' => $totalEgresos,
+            'totalEfectivo' => $totalEfectivo,
+            'totalTransferencias' => $totalTransferencias,
+            'totalGeneral' => $totalGeneral,
+            'firmas' => $firmas,
+        ] + tenant_pdf_data())->setPaper('a4', 'portrait');
+
+        $sufijo = $request->filled('fecha_inicio')
+            ? Carbon::parse($request->fecha_inicio)->format('Y-m-d')
+            : now()->format('Y-m-d');
+
+        return $pdf->download('resumen_ingresos_'.$sufijo.'.pdf');
+    }
+
     public function pdfIngresosTransferencias(Request $request)
     {
         $categories = tenant_categories();
@@ -305,7 +417,7 @@ class IngresosAsistenciaController extends Controller
             foreach ($cultos as $culto) {
                 $registros[] = $this->buildRegistroFromSobres($culto->sobres ?? collect(), $slugs, [
                     'fecha' => $culto->fecha->format('d/m/Y'),
-                    'tipo' => ucfirst($culto->tipo_culto),
+                    'tipo' => $culto->tipo_nombre,
                 ]);
             }
         } elseif ($tipoReporte == 'semana') {

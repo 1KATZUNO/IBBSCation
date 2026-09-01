@@ -50,7 +50,7 @@
         </div>
         <div class="header-text">
             <h1>{{ $tenantSiglas }} - {{ $tenantNombre }}</h1>
-            <h2>Recuento de Sobres - {{ $culto->fecha->format('d/m/Y') }} - {{ ucfirst($culto->tipo_culto) }}</h2>
+            <h2>Recuento de Sobres - {{ $culto->fecha->format('d/m/Y') }} - {{ $culto->tipo_nombre }}</h2>
         </div>
     </div>
     

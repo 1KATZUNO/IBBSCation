@@ -16,7 +16,7 @@
                     <option value="">-- Seleccione un culto --</option>
                     @foreach($cultos as $culto)
                         <option value="{{ $culto->id }}" {{ old('culto_id', request('culto_id')) == $culto->id ? 'selected' : '' }}>
-                            {{ $culto->fecha->format('d/m/Y') }} - {{ ucfirst($culto->tipo_culto) }}
+                            {{ $culto->fecha->format('d/m/Y') }} - {{ $culto->tipo_nombre }}
                         </option>
                     @endforeach
                 </select>

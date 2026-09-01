@@ -73,7 +73,7 @@
             @endphp
             <tr>
                 <td>{{ $culto->fecha->locale('es')->isoFormat('dddd D [de] MMMM, YYYY') }}</td>
-                <td>{{ ucfirst($culto->tipo_culto) }}</td>
+                <td>{{ $culto->tipo_nombre }}</td>
                 <td class="total">{{ $culto->asistencia->total_asistencia }}</td>
                 <td style="text-align: center;">{{ $hombres }}</td>
                 <td style="text-align: center;">{{ $mujeres }}</td>
