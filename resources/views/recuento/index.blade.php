@@ -18,6 +18,14 @@
     </div>
     @endif
 
+    {{-- Este aviso existia en el controlador pero ninguna vista lo pintaba: el
+         sobre no se guardaba y la pantalla no decia nada. --}}
+    @if(session('warning'))
+    <div class="bg-amber-100 border border-amber-400 text-amber-800 px-4 py-3 rounded relative" role="alert">
+        <span class="block sm:inline">{{ session('warning') }}</span>
+    </div>
+    @endif
+
     <!-- Filtro por Culto -->
     <div class="bg-white rounded-lg shadow p-6">
         <form method="GET" action="{{ route('recuento.index') }}" class="flex items-end gap-4">

@@ -126,19 +126,28 @@ class RecuentoController extends Controller
                 ->with('error', 'No se pueden agregar sobres a un culto cerrado.');
         }
 
-        // Prevenir duplicados: verificar si ya existe un sobre idéntico creado en los últimos 30 segundos
+        // Calcular total declarado
+        $totalDeclarado = collect($validated['detalles'])->sum('monto');
+
+        // Evitar el doble envio del formulario. Antes bastaba con que existiera
+        // cualquier sobre de esa persona en ese culto en los ultimos 30
+        // segundos, lo que bloqueaba dos sobres distintos de la misma persona
+        // y molestaba al digitar sobres viejos de corrido. Ahora tienen que
+        // coincidir tambien el monto y el metodo de pago, que es lo que
+        // realmente identifica un envio repetido.
         $duplicado = Sobre::where('culto_id', $validated['culto_id'])
             ->where('persona_id', $validated['persona_id'] ?? null)
-            ->where('created_at', '>=', now()->subSeconds(30))
+            ->where('total_declarado', $totalDeclarado)
+            ->where('metodo_pago', $validated['metodo_pago'])
+            ->where('created_at', '>=', now()->subSeconds(10))
             ->exists();
 
         if ($duplicado) {
             return redirect()->route('recuento.index', ['culto_id' => $culto->id])
-                ->with('warning', 'Ya se registró un sobre para esta persona en este culto hace unos segundos. Verifique que no sea duplicado.');
+                ->with('warning', 'No se guardo: hace unos segundos se registro un sobre igual '
+                    . '(misma persona, mismo monto y mismo metodo de pago) en este culto. '
+                    . 'Si de verdad son dos sobres distintos, vuelva a intentarlo en unos segundos.');
         }
-
-        // Calcular total declarado
-        $totalDeclarado = collect($validated['detalles'])->sum('monto');
 
         // Moneda y tipo de cambio
         $moneda = $validated['moneda'] ?? 'CRC';
