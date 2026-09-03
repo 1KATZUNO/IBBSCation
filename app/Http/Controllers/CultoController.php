@@ -51,18 +51,15 @@ class CultoController extends Controller
             ->with('success', 'Culto registrado correctamente.');
     }
 
+    /**
+     * Ver un culto es la misma pantalla del recuento con ese culto elegido.
+     * Antes se armaba aca una segunda copia de los datos de la vista, y cada
+     * variable nueva que pedia recuento.index (egresos, categorias) quedaba
+     * sin pasar y reventaba. Se redirige para tener una sola fuente.
+     */
     public function show(Culto $culto)
     {
-        $sobres = $culto->sobres()->with(['persona', 'detalles'])->get();
-        $ofrendasSueltas = $culto->ofrendasSueltas;
-
-        return view('recuento.index', [
-            'sobres' => $sobres,
-            'cultos' => Culto::where('cerrado', false)->orderBy('fecha', 'desc')->get(),
-            'cultoSeleccionado' => $culto,
-            'ofrendasSueltas' => $ofrendasSueltas,
-            'cultosCerrados' => Culto::where('cerrado', true)->with('totales')->orderBy('cerrado_at', 'desc')->get()
-        ]);
+        return redirect()->route('recuento.index', ['culto_id' => $culto->id]);
     }
 
     public function edit(Culto $culto)
