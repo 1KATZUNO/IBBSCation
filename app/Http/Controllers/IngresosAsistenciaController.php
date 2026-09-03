@@ -291,6 +291,49 @@ class IngresosAsistenciaController extends Controller
      * convierten a colones con los accesores *_crc, el dinero suelto entra al
      * efectivo y los egresos se le restan.
      */
+    /**
+     * Firmas de tesoreros de un culto, siempre como lista de ['nombre','imagen'].
+     *
+     * Las columnas guardan JSON y no siempre llegan casteadas a arreglo, asi
+     * que se acepta cualquiera de las dos formas. Se prefiere la version con
+     * imagen; si esa esta vacia se cae a la lista de solo nombres, que es lo
+     * que quedo guardado en los cultos mas viejos.
+     */
+    protected function firmasTesorerosDe(Culto $culto): array
+    {
+        $comoArreglo = function ($valor) {
+            if (is_array($valor)) {
+                return $valor;
+            }
+            if (is_string($valor) && $valor !== '') {
+                $decodificado = json_decode($valor, true);
+                return is_array($decodificado) ? $decodificado : [];
+            }
+
+            return [];
+        };
+
+        $firmas = [];
+        foreach ($comoArreglo($culto->firmas_tesoreros_imagenes) as $t) {
+            $nombre = trim((string) (is_array($t) ? ($t['nombre'] ?? '') : $t));
+            $imagen = is_array($t) ? (string) ($t['imagen'] ?? '') : '';
+            if ($nombre !== '' || $imagen !== '') {
+                $firmas[] = ['nombre' => $nombre, 'imagen' => $imagen];
+            }
+        }
+
+        if (empty($firmas)) {
+            foreach ($comoArreglo($culto->firmas_tesoreros) as $n) {
+                $nombre = trim((string) $n);
+                if ($nombre !== '') {
+                    $firmas[] = ['nombre' => $nombre, 'imagen' => ''];
+                }
+            }
+        }
+
+        return $firmas;
+    }
+
     public function pdfResumen(Request $request)
     {
         $categories = tenant_categories();
@@ -377,38 +420,53 @@ class IngresosAsistenciaController extends Controller
                 : 'Todos los registros';
         }
 
-        // Firmas: si el rango cubre un unico culto se usan las suyas; si abarca
-        // varios se dejan las lineas en blanco para firmar el resumen a mano.
-        $firmas = [];
-        if ($cultos->count() === 1) {
-            $culto = $cultos->first();
-            foreach (($culto->firmas_tesoreros_imagenes ?? []) as $t) {
-                $firmas[] = [
-                    'nombre' => $t['nombre'] ?? '',
-                    'imagen' => $t['imagen'] ?? '',
+        // Firmas: se recogen las de todos los cultos del rango, no solo las de
+        // uno. Antes solo salian si el rango cubria exactamente un culto, y
+        // como los domingos tienen dos (AM y PM) hasta eligiendo un solo dia
+        // el resumen salia con las lineas en blanco.
+        $bloques = [];
+        $porCulto = [];
+        $variosCultos = $cultos->count() > 1;
+
+        foreach ($cultos as $c) {
+            $etiqueta = $c->fecha->format('d/m/Y') . ' · ' . $c->tipo_nombre;
+
+            foreach ($this->firmasTesorerosDe($c) as $t) {
+                $bloques[] = [
+                    'nombre' => $t['nombre'],
+                    'imagen' => $t['imagen'],
                     'rol' => 'Tesorero',
+                    'detalle' => $variosCultos ? $etiqueta : '',
                 ];
+                $porCulto[$etiqueta][] = $t['nombre'] !== '' ? $t['nombre'] : '(firma sin nombre)';
             }
-            if (empty($firmas)) {
-                foreach (($culto->firmas_tesoreros ?? []) as $n) {
-                    $firmas[] = ['nombre' => $n, 'imagen' => '', 'rol' => 'Tesorero'];
-                }
+
+            $dep = trim((string) ($c->firma_depositante ?? ''));
+            $depImg = (string) ($c->firma_depositante_imagen ?? '');
+            if ($dep !== '' || $depImg !== '') {
+                $bloques[] = [
+                    'nombre' => $dep,
+                    'imagen' => $depImg,
+                    'rol' => 'Recibido por · deposita en banco',
+                    'detalle' => $variosCultos ? $etiqueta : '',
+                ];
+                $porCulto[$etiqueta][] = ($dep !== '' ? $dep : '(firma sin nombre)') . ' — recibido';
             }
-            $firmas[] = [
-                'nombre' => $culto->firma_depositante ?? '',
-                'imagen' => $culto->firma_depositante_imagen ?? '',
-                'rol' => 'Recibido por · deposita en banco',
-            ];
         }
 
-        // Rango de varios cultos (o culto sin firmas): lineas en blanco.
-        if (empty($firmas)) {
-            $firmas = [
-                ['nombre' => '', 'imagen' => '', 'rol' => 'Tesorero'],
-                ['nombre' => '', 'imagen' => '', 'rol' => 'Tesorero'],
-                ['nombre' => '', 'imagen' => '', 'rol' => 'Recibido por · deposita en banco'],
-            ];
+        // Con pocas firmas caben los bloques; con muchas no, asi que se listan
+        // por culto y se dejan lineas en blanco para firmar el resumen a mano.
+        $firmasPorCulto = [];
+        if (count($bloques) > 6) {
+            $firmasPorCulto = $porCulto;
+            $bloques = [];
         }
+
+        $firmas = $bloques ?: [
+            ['nombre' => '', 'imagen' => '', 'rol' => 'Tesorero', 'detalle' => ''],
+            ['nombre' => '', 'imagen' => '', 'rol' => 'Tesorero', 'detalle' => ''],
+            ['nombre' => '', 'imagen' => '', 'rol' => 'Recibido por · deposita en banco', 'detalle' => ''],
+        ];
 
         $pdf = Pdf::loadView('pdfs.resumen-ingresos', [
             'periodoTexto' => $periodoTexto,
@@ -425,6 +483,7 @@ class IngresosAsistenciaController extends Controller
             'totalTransferencias' => $totalTransferencias,
             'totalGeneral' => $totalGeneral,
             'firmas' => $firmas,
+            'firmasPorCulto' => $firmasPorCulto,
         ] + tenant_pdf_data())->setPaper('a4', 'landscape');
 
         $sufijo = $request->filled('fecha_inicio')

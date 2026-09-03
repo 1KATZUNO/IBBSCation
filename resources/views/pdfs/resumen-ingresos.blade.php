@@ -50,6 +50,7 @@
         .firma-linea { border-top: 1px solid #374151; padding-top: 5px; margin-top: 4px; }
         .firma-nombre { font-size: 9px; font-weight: bold; }
         .firma-rol { font-size: 7px; color: #6b7280; }
+        .firma-culto { font-size: 6.5px; color: #9ca3af; margin-top: 1px; }
 
         .leyenda { margin-top: 11px; font-size: 7px; color: #6b7280; text-align: center; line-height: 1.5; }
         .footer { position: fixed; bottom: 0; left: 0; right: 0; text-align: center; font-size: 7px; color: #9ca3af;
@@ -187,11 +188,37 @@
                          contenido y la entidad se imprimia literal como texto. --}}
                     <div class="firma-nombre">@if($f['nombre']){{ $f['nombre'] }}@else&nbsp;@endif</div>
                     <div class="firma-rol">{{ $f['rol'] }}</div>
+                    @if(!empty($f['detalle']))
+                    <div class="firma-culto">{{ $f['detalle'] }}</div>
+                    @endif
                 </div>
             </td>
             @endforeach
         </tr>
     </table>
+
+    @if(!empty($firmasPorCulto))
+    {{-- Con muchos cultos no caben los bloques de firma, asi que se deja
+         constancia de quien firmo cada recuento y las lineas de arriba quedan
+         para firmar este resumen. --}}
+    <h3>Firmas de los recuentos incluidos</h3>
+    <table class="detalle">
+        <thead>
+            <tr>
+                <th class="izq">Culto</th>
+                <th class="izq">Firmaron el recuento</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($firmasPorCulto as $culto => $nombres)
+            <tr>
+                <td class="izq" style="width: 22%;">{{ $culto }}</td>
+                <td class="izq">{{ implode(' · ', $nombres) }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+    @endif
 
     <div class="leyenda">
         Quien firma como &laquo;Recibido por&raquo; confirma que recibió el efectivo detallado en este
