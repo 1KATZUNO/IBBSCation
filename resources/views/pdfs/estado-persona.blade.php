@@ -100,9 +100,13 @@
                             Ha dado ₡{{ number_format($acumulado['dado'], 2) }} de los
                             ₡{{ number_format($acumulado['prometido'], 2) }} que le corresponden.
                         @else
-                            Le faltan ₡{{ number_format(abs($acumulado['diferencia']), 2) }}@if($acumulado['meses_atraso'] > 0),
-                            equivalentes a {{ $acumulado['meses_atraso'] }}
-                            {{ $acumulado['meses_atraso'] == 1 ? 'mes' : 'meses' }} de su promesa@endif.
+                            {{-- Ojo: una directiva pegada a una letra (…promesa@endif) no la
+                                 compila Blade y deja el @if sin cerrar. Va separada a proposito. --}}
+                            Le faltan ₡{{ number_format(abs($acumulado['diferencia']), 2) }}
+                            @if($acumulado['meses_atraso'] > 0)
+                                , equivalentes a {{ $acumulado['meses_atraso'] }}
+                                {{ $acumulado['meses_atraso'] == 1 ? 'mes' : 'meses' }} de su promesa
+                            @endif
                         @endif
                     </div>
                     @if($acumulado['desde'] && $acumulado['hasta'])
