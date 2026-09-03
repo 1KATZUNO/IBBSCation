@@ -58,6 +58,9 @@ Route::middleware(['auth'])->group(function () {
 // Ruta para miembros y servidores - Mi Perfil
 Route::middleware(['auth', 'role:miembro,servidor'])->group(function () {
     Route::get('/mi-perfil', [App\Http\Controllers\MiPerfilController::class, 'index'])->name('mi-perfil.index');
+    // El miembro descarga su propio estado de cuenta: la persona sale de su
+    // usuario, no de la URL, para que nadie pida el de otro cambiando el id.
+    Route::get('/mi-perfil/pdf', [App\Http\Controllers\MiPerfilController::class, 'pdf'])->name('mi-perfil.pdf');
 });
 
 // Ruta para servidores - Marcar Asistencia
@@ -180,6 +183,7 @@ Route::middleware(['auth', 'role:admin', 'audit'])->group(function () {
     
     // Compromisos
     Route::get('personas/{persona}/compromisos', [App\Http\Controllers\CompromisoController::class, 'show'])->name('compromisos.show');
+    Route::get('personas/{persona}/compromisos/pdf', [App\Http\Controllers\CompromisoController::class, 'pdf'])->name('compromisos.pdf');
     Route::post('compromisos/recalcular', [App\Http\Controllers\CompromisoController::class, 'recalcular'])->name('compromisos.recalcular');
     
     // Limpieza de personas inactivas (temporal)

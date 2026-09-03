@@ -60,6 +60,66 @@ class CompromisoController extends Controller
     }
 
     /**
+     * Estado de cuenta de una persona en PDF: lo mismo que ve en pantalla,
+     * pero para imprimir o mandarle por WhatsApp cuando lo pide.
+     */
+    public function pdf(Persona $persona)
+    {
+        $this->promesas->sincronizarHistorial($persona);
+        $acumulado = $this->promesas->resumenAcumulado($persona);
+
+        // Compromisos mes a mes, del mas reciente al mas viejo, sin los meses
+        // futuros que pudo crear alguien navegando el selector.
+        $hoy = Carbon::now();
+        $filas = Compromiso::where('persona_id', $persona->id)
+            ->where(function ($q) use ($hoy) {
+                $q->where('año', '<', $hoy->year)
+                    ->orWhere(function ($q2) use ($hoy) {
+                        $q2->where('año', $hoy->year)->where('mes', '<=', $hoy->month);
+                    });
+            })
+            ->orderByDesc('año')->orderByDesc('mes')
+            ->get();
+
+        // Por rubro: cuanto le tocaba y cuanto lleva dado en total.
+        $porRubro = $filas->groupBy('categoria')->map(fn ($g, $cat) => [
+            'categoria' => $cat,
+            'prometido' => (float) $g->sum('monto_prometido'),
+            'dado' => (float) $g->sum('monto_dado'),
+        ])->sortByDesc('prometido')->values();
+
+        // Mes a mes, sumando todos los rubros de cada mes.
+        $porMes = $filas->groupBy(fn ($c) => $c->año.'-'.str_pad($c->mes, 2, '0', STR_PAD_LEFT))
+            ->map(fn ($g, $k) => [
+                'etiqueta' => Carbon::createFromFormat('Y-m-d', $k.'-01')->locale('es')->isoFormat('MMMM YYYY'),
+                'prometido' => (float) $g->sum('monto_prometido'),
+                'dado' => (float) $g->sum('monto_dado'),
+            ])->values();
+
+        // Cada sobre que entrego, con su fecha: es la parte que la gente
+        // reconoce, porque es el papel que llenaron ese domingo.
+        $aportes = $persona->sobres()
+            ->with(['culto', 'detalles'])
+            ->join('cultos', 'cultos.id', '=', 'sobres.culto_id')
+            ->orderBy('cultos.fecha')
+            ->select('sobres.*')
+            ->get();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdfs.estado-persona', [
+            'persona' => $persona,
+            'acumulado' => $acumulado,
+            'porRubro' => $porRubro,
+            'porMes' => $porMes,
+            'aportes' => $aportes,
+            'aportesSinPromesa' => $this->promesas->aportesSinPromesa($persona, $hoy->year),
+        ] + tenant_pdf_data())->setPaper('a4', 'portrait');
+
+        $nombre = str_replace(' ', '_', trim($persona->nombre)) ?: 'persona';
+
+        return $pdf->download('estado_'.$nombre.'_'.$hoy->format('Y-m-d').'.pdf');
+    }
+
+    /**
      * Recalcula el historial completo de todas las personas activas.
      * Antes solo tocaba el mes en curso.
      */

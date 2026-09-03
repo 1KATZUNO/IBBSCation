@@ -75,4 +75,21 @@ class MiPerfilController extends Controller
             'persona', 'promesasConEstatus', 'compromisos', 'aportesSinPromesa', 'acumulado'
         ));
     }
+
+    /**
+     * El miembro descarga su propio estado de cuenta. Reusa el mismo reporte
+     * que genera la pantalla de compromisos, pero resolviendo la persona desde
+     * el usuario autenticado: asi nadie puede pedir el de otro.
+     */
+    public function pdf(CompromisoController $compromisos)
+    {
+        $persona = Auth::user()->persona;
+
+        if (! $persona) {
+            return redirect()->route('mi-perfil.index')
+                ->with('error', 'No se encontró información de persona asociada.');
+        }
+
+        return $compromisos->pdf($persona);
+    }
 }
