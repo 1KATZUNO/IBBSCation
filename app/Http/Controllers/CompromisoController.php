@@ -47,7 +47,7 @@ class CompromisoController extends Controller
 
         // Si va al dia o no se decide con el acumulado, no con el mes que se
         // este viendo: quien no dio en un mes pero repuso en otro esta al dia.
-        $acumulado = $this->promesas->resumenAcumulado($persona);
+        $acumulado = $this->promesas->resumenAcumulado($persona, $año, $mes);
 
         // Plata que la persona aporto en categorias sin promesa: no computa
         // contra ningun compromiso, y antes no se veia en ninguna parte.
@@ -65,23 +65,23 @@ class CompromisoController extends Controller
      */
     public function pdf(Persona $persona)
     {
-        $this->promesas->sincronizarHistorial($persona);
-        $acumulado = $this->promesas->resumenAcumulado($persona);
-
-        // Compromisos mes a mes, del mas reciente al mas viejo, sin los meses
-        // futuros que pudo crear alguien navegando el selector.
         $hoy = Carbon::now();
+        $anio = (int) request('año', $hoy->year);
+        $hasta = min(12, max(1, (int) request('mes', $anio < $hoy->year ? 12 : $hoy->month)));
+
+        $this->promesas->sincronizarHistorial($persona);
+        $acumulado = $this->promesas->resumenAcumulado($persona, $anio, $hasta);
+
+        // Todo el reporte va acotado al anio y al mes de corte elegidos: la
+        // iglesia lleva las promesas por anio, asi que arrastrar diciembre del
+        // anio anterior ensuciaba el porcentaje.
         $filas = Compromiso::where('persona_id', $persona->id)
-            ->where(function ($q) use ($hoy) {
-                $q->where('año', '<', $hoy->year)
-                    ->orWhere(function ($q2) use ($hoy) {
-                        $q2->where('año', $hoy->year)->where('mes', '<=', $hoy->month);
-                    });
-            })
-            ->orderByDesc('año')->orderByDesc('mes')
+            ->where('año', $anio)
+            ->where('mes', '<=', $hasta)
+            ->orderByDesc('mes')
             ->get();
 
-        // Por rubro: cuanto le tocaba y cuanto lleva dado en total.
+        // Por rubro: cuanto le tocaba y cuanto lleva dado en el periodo.
         $porRubro = $filas->groupBy('categoria')->map(fn ($g, $cat) => [
             'categoria' => $cat,
             'prometido' => (float) $g->sum('monto_prometido'),
@@ -89,18 +89,19 @@ class CompromisoController extends Controller
         ])->sortByDesc('prometido')->values();
 
         // Mes a mes, sumando todos los rubros de cada mes.
-        $porMes = $filas->groupBy(fn ($c) => $c->año.'-'.str_pad($c->mes, 2, '0', STR_PAD_LEFT))
-            ->map(fn ($g, $k) => [
-                'etiqueta' => Carbon::createFromFormat('Y-m-d', $k.'-01')->locale('es')->isoFormat('MMMM YYYY'),
-                'prometido' => (float) $g->sum('monto_prometido'),
-                'dado' => (float) $g->sum('monto_dado'),
-            ])->values();
+        $porMes = $filas->groupBy('mes')->map(fn ($g, $m) => [
+            'etiqueta' => Carbon::create($anio, (int) $m, 1)->locale('es')->isoFormat('MMMM YYYY'),
+            'prometido' => (float) $g->sum('monto_prometido'),
+            'dado' => (float) $g->sum('monto_dado'),
+        ])->values();
 
-        // Cada sobre que entrego, con su fecha: es la parte que la gente
-        // reconoce, porque es el papel que llenaron ese domingo.
+        // Cada sobre que entrego en el periodo, con su fecha: es la parte que
+        // la gente reconoce, porque es el papel que llenaron ese domingo.
         $aportes = $persona->sobres()
             ->with(['culto', 'detalles'])
             ->join('cultos', 'cultos.id', '=', 'sobres.culto_id')
+            ->whereYear('cultos.fecha', $anio)
+            ->whereMonth('cultos.fecha', '<=', $hasta)
             ->orderBy('cultos.fecha')
             ->select('sobres.*')
             ->get();
@@ -111,12 +112,13 @@ class CompromisoController extends Controller
             'porRubro' => $porRubro,
             'porMes' => $porMes,
             'aportes' => $aportes,
-            'aportesSinPromesa' => $this->promesas->aportesSinPromesa($persona, $hoy->year),
+            'periodo' => 'Enero a '.Carbon::create($anio, $hasta, 1)->locale('es')->isoFormat('MMMM').' de '.$anio,
+            'aportesSinPromesa' => $this->promesas->aportesSinPromesa($persona, $anio),
         ] + tenant_pdf_data())->setPaper('a4', 'portrait');
 
         $nombre = str_replace(' ', '_', trim($persona->nombre)) ?: 'persona';
 
-        return $pdf->download('estado_'.$nombre.'_'.$hoy->format('Y-m-d').'.pdf');
+        return $pdf->download(sprintf('estado_%s_%d-%02d.pdf', $nombre, $anio, $hasta));
     }
 
     /**

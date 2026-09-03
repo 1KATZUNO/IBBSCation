@@ -207,37 +207,35 @@ class CalculoPromesasService
      * promesas vigentes), desde su primer aporte/creacion hasta hoy.
      */
     /**
-     * Estado acumulado de la persona: todo lo que se le ha pedido desde que
-     * empezo su promesa contra todo lo que ha dado, hasta el mes en curso.
+     * Estado acumulado de la persona dentro de un anio: de enero al mes de
+     * corte que se pida, contra todo lo que dio en ese mismo tramo.
      *
      * Mirar mes por mes engaña. Si alguien no dio en enero pero en marzo puso
      * el doble, enero sale en rojo y la persona parece atrasada cuando no lo
      * esta. Lo que decide si va al dia es la suma, no cada mes por separado.
      *
-     * Se corta en el mes actual a proposito: al navegar a un mes futuro la
-     * pantalla crea su fila de compromiso, y contarla haria aparecer una deuda
-     * que todavia no se le puede exigir a nadie.
+     * El anio acota a proposito: la iglesia lleva las promesas por anio, asi
+     * que arrastrar diciembre del anio anterior ensucia el porcentaje.
      */
-    public function resumenAcumulado(Persona $persona): array
+    public function resumenAcumulado(Persona $persona, ?int $anio = null, ?int $hastaMes = null): array
     {
         $hoy = Carbon::now();
+        $anio = $anio ?: $hoy->year;
+        $hastaMes = min(12, max(1, $hastaMes ?: ($anio < $hoy->year ? 12 : $hoy->month)));
 
         $filas = Compromiso::where('persona_id', $persona->id)
-            ->where(function ($q) use ($hoy) {
-                $q->where('año', '<', $hoy->year)
-                    ->orWhere(function ($q2) use ($hoy) {
-                        $q2->where('año', $hoy->year)->where('mes', '<=', $hoy->month);
-                    });
-            })
+            ->where('año', $anio)
+            ->where('mes', '<=', $hastaMes)
             ->get();
 
-        // El mes en curso todavia no se puede exigir: si se contara, el dia 1
-        // de cada mes la congregacion entera apareceria atrasada. Se cobra
-        // hasta el ultimo mes cerrado, pero SI se cuenta lo dado este mes,
+        // Si el corte cae en el mes en curso, ese mes todavia no se puede
+        // exigir: contarlo dejaria a todos atrasados el dia 1. Se cobra hasta
+        // el mes anterior, pero SI se cuenta lo que dieron en el mes abierto,
         // porque es justo cuando la gente se pone al dia.
-        $cerrados = $filas->filter(
-            fn ($c) => $c->año < $hoy->year || ($c->año == $hoy->year && $c->mes < $hoy->month)
-        );
+        $enCurso = ($anio === $hoy->year && $hastaMes === $hoy->month);
+        $tope = $enCurso ? $hastaMes - 1 : $hastaMes;
+
+        $cerrados = $filas->filter(fn ($c) => $c->mes <= $tope);
 
         $prometido = (float) $cerrados->sum('monto_prometido');
         $dado = (float) $filas->sum('monto_dado');
@@ -246,15 +244,18 @@ class CalculoPromesasService
         // Meses que de verdad se le podian exigir, para expresar el atraso en
         // mensualidades suyas: deber un mes no es lo mismo que deber siete.
         $mesesExigibles = $cerrados->where('monto_prometido', '>', 0)
-            ->groupBy(fn ($c) => $c->año.'-'.$c->mes)
+            ->groupBy(fn ($c) => $c->mes)
             ->count();
         $promedioMes = $mesesExigibles > 0 ? $prometido / $mesesExigibles : 0.0;
 
-        $ordenadas = $cerrados->sortBy([['año', 'asc'], ['mes', 'asc']]);
+        $ordenadas = $cerrados->sortBy('mes');
         $primera = $ordenadas->first();
         $ultima = $ordenadas->last();
 
         return [
+            'anio' => $anio,
+            'hasta_mes' => $hastaMes,
+            'mes_en_curso' => $enCurso,
             'prometido' => $prometido,
             'dado' => $dado,
             'diferencia' => $diferencia,
@@ -264,8 +265,8 @@ class CalculoPromesasService
             'porcentaje' => $prometido > 0 ? round($dado / $prometido * 100) : null,
             'meses_exigibles' => $mesesExigibles,
             'meses_atraso' => $promedioMes > 0 ? round(max(0, -$diferencia) / $promedioMes, 1) : 0.0,
-            'desde' => $primera ? Carbon::create($primera->año, $primera->mes, 1) : null,
-            'hasta' => $ultima ? Carbon::create($ultima->año, $ultima->mes, 1) : null,
+            'desde' => $primera ? Carbon::create($anio, $primera->mes, 1) : null,
+            'hasta' => $ultima ? Carbon::create($anio, $ultima->mes, 1) : null,
         ];
     }
 

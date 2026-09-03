@@ -4,6 +4,10 @@
 @section('page-title', 'Mi Perfil')
 
 @section('content')
+@php
+    $meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio',
+              'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+@endphp
 <div class="space-y-6">
     <!-- Información Personal -->
     <div class="bg-white rounded-lg shadow p-6">
@@ -18,13 +22,31 @@
                 <p class="text-gray-600">{{ $persona->telefono }}</p>
                 @endif
             </div>
-            <a href="{{ route('mi-perfil.pdf') }}"
-               class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 flex items-center gap-2 whitespace-nowrap">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-                <span class="hidden sm:inline">Descargar mi </span>reporte
-            </a>
+            {{-- El miembro elige hasta que mes quiere el reporte; al cambiarlo
+                 se recarga la pantalla para que el estado de arriba coincida
+                 con lo que va a descargar. --}}
+            <div class="flex items-end gap-2">
+                <div>
+                    <label class="block text-xs text-gray-600 mb-1">Hasta el mes de</label>
+                    <form method="GET" id="formHasta">
+                        <select name="hasta" class="rounded-md border-gray-300 text-sm"
+                                onchange="this.form.submit()">
+                            @foreach($meses as $i => $nombreMes)
+                                <option value="{{ $i + 1 }}" {{ $hastaMes == $i + 1 ? 'selected' : '' }}>
+                                    {{ $nombreMes }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </form>
+                </div>
+                <a href="{{ route('mi-perfil.pdf', ['año' => $año, 'mes' => $hastaMes]) }}"
+                   class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 flex items-center gap-2 whitespace-nowrap">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <span class="hidden sm:inline">Descargar mi </span>reporte
+                </a>
+            </div>
         </div>
     </div>
 
@@ -58,12 +80,12 @@
                         @endif
                     @endif
                 </p>
-                @if($acumulado['desde'] && $acumulado['hasta'])
                 <p class="text-xs text-gray-500 mt-1">
-                    Suma de {{ $acumulado['desde']->locale('es')->isoFormat('MMMM YYYY') }}
-                    a {{ $acumulado['hasta']->locale('es')->isoFormat('MMMM YYYY') }}
+                    Suma de enero a {{ $meses[$hastaMes - 1] }} de {{ $año }}
+                    @if($acumulado['mes_en_curso'])
+                        · {{ $meses[$hastaMes - 1] }} sigue abierto, así que todavía no se cobra
+                    @endif
                 </p>
-                @endif
             </div>
             @if($acumulado['porcentaje'] !== null)
             <div class="text-center sm:text-right">

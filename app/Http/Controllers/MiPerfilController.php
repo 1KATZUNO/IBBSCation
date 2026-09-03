@@ -23,6 +23,8 @@ class MiPerfilController extends Controller
         $servicioPromesas = app(\App\Services\CalculoPromesasService::class);
         $año = (int) Carbon::now()->year;
         $mes = (int) Carbon::now()->month;
+        // Mes de corte del estado general y del reporte: el miembro lo elige.
+        $hastaMes = min(12, max(1, (int) request('hasta', $mes)));
 
         // Los compromisos del miembro se derivan de sus promesas y sobres. Se
         // resincronizan al entrar para que no vea meses viejos con datos
@@ -53,7 +55,7 @@ class MiPerfilController extends Controller
         // meses. Las tarjetas de arriba miraban solo el mes en curso, asi que
         // quien no habia dado todavia este mes se veia en rojo aunque
         // estuviera adelantado.
-        $acumulado = $servicioPromesas->resumenAcumulado($persona);
+        $acumulado = $servicioPromesas->resumenAcumulado($persona, $año, $hastaMes);
 
         // Aportes en categorias donde no hay promesa registrada: sin esto el
         // miembro daba plata y no la veia en ningun lado de su perfil.
@@ -72,7 +74,8 @@ class MiPerfilController extends Controller
             });
 
         return view('mi-perfil.index', compact(
-            'persona', 'promesasConEstatus', 'compromisos', 'aportesSinPromesa', 'acumulado'
+            'persona', 'promesasConEstatus', 'compromisos', 'aportesSinPromesa',
+            'acumulado', 'año', 'hastaMes'
         ));
     }
 

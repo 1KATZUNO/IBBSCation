@@ -4,6 +4,10 @@
 @section('page-title', 'Estado de Compromisos')
 
 @section('content')
+@php
+    $meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio',
+              'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+@endphp
 <div class="space-y-6">
     <!-- Header con información de la persona -->
     <div class="bg-white rounded-lg shadow p-6">
@@ -16,12 +20,12 @@
                 </p>
             </div>
             <div class="flex gap-2">
-                <a href="{{ route('compromisos.pdf', $persona) }}"
+                <a href="{{ route('compromisos.pdf', ['persona' => $persona, 'año' => $año, 'mes' => $mes]) }}"
                    class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 flex items-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
-                    Descargar reporte
+                    Descargar reporte a {{ $meses[$mes - 1] }}
                 </a>
                 <a href="{{ route('personas.index') }}" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
                     ← Volver
@@ -44,9 +48,6 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Mes</label>
                 <select name="mes" class="rounded-md border-gray-300" onchange="this.form.submit()">
-                    @php
-                        $meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-                    @endphp
                     @foreach($meses as $m => $nombreMes)
                         <option value="{{ $m + 1 }}" {{ $mes == ($m + 1) ? 'selected' : '' }}>{{ $nombreMes }}</option>
                     @endforeach
@@ -85,14 +86,14 @@
                         @endif
                     @endif
                 </p>
-                @if($acumulado['desde'] && $acumulado['hasta'])
                 <p class="text-xs text-gray-500 mt-1">
-                    Acumulado de {{ $acumulado['desde']->locale('es')->isoFormat('MMMM YYYY') }}
-                    a {{ $acumulado['hasta']->locale('es')->isoFormat('MMMM YYYY') }}
+                    Acumulado de enero a {{ $meses[$mes - 1] }} de {{ $año }}
                     ({{ $acumulado['meses_exigibles'] }}
-                    {{ $acumulado['meses_exigibles'] == 1 ? 'mes' : 'meses' }})
+                    {{ $acumulado['meses_exigibles'] == 1 ? 'mes exigible' : 'meses exigibles' }})
+                    @if($acumulado['mes_en_curso'])
+                        · {{ $meses[$mes - 1] }} sigue abierto, así que todavía no se cobra
+                    @endif
                 </p>
-                @endif
             </div>
             @if($acumulado['porcentaje'] !== null)
             <div class="text-center sm:text-right">

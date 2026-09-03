@@ -83,6 +83,9 @@
             @if($persona->telefono && $persona->correo) &middot; @endif
             @if($persona->correo){{ $persona->correo }}@endif
         </div>
+        <div class="dato" style="margin-top: 4px; color: #374151; font-weight: bold;">
+            Período: {{ $periodo }}
+        </div>
     </div>
 
     {{-- El estado sale del acumulado de todos los meses cerrados, no del mes
@@ -109,10 +112,9 @@
                             @endif
                         @endif
                     </div>
-                    @if($acumulado['desde'] && $acumulado['hasta'])
+                    @if($acumulado['mes_en_curso'])
                     <div class="detalle" style="color: #6b7280; font-size: 8px;">
-                        Acumulado de {{ $acumulado['desde']->locale('es')->isoFormat('MMMM YYYY') }}
-                        a {{ $acumulado['hasta']->locale('es')->isoFormat('MMMM YYYY') }}
+                        El mes en curso todavía no se cobra, pero lo que ya dio en él sí está contado.
                     </div>
                     @endif
                 </td>
