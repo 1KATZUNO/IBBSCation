@@ -231,15 +231,25 @@
     <table class="t">
         <thead>
             <tr>
-                <th class="izq">Mes</th>
+                <th class="izq" rowspan="2">Mes</th>
+                <th colspan="3">Promesa</th>
+                <th rowspan="2">Diezmo</th>
+                <th rowspan="2">Total del mes</th>
+            </tr>
+            <tr>
                 <th>Le correspondía</th>
                 <th>Dio</th>
-                <th>Diferencia del mes</th>
+                <th>Diferencia</th>
             </tr>
         </thead>
         <tbody>
+            @php $tp = 0; $td = 0; $tz = 0; $tt = 0; @endphp
             @foreach($porMes as $m)
-            @php $dif = $m['dado'] - $m['prometido']; @endphp
+            @php
+                $dif = $m['dado'] - $m['prometido'];
+                $tp += $m['prometido']; $td += $m['dado'];
+                $tz += $m['diezmo']; $tt += $m['total'];
+            @endphp
             <tr>
                 <td class="izq">{{ ucfirst($m['etiqueta']) }}</td>
                 <td class="{{ $m['prometido'] == 0 ? 'cero' : '' }}">₡{{ number_format($m['prometido'], 2) }}</td>
@@ -247,13 +257,27 @@
                 <td class="{{ $dif >= 0 ? 'pos' : 'neg' }}">
                     {{ $dif >= 0 ? '+' : '−' }}₡{{ number_format(abs($dif), 2) }}
                 </td>
+                <td class="{{ $m['diezmo'] == 0 ? 'cero' : '' }}">₡{{ number_format($m['diezmo'], 2) }}</td>
+                <td><strong>₡{{ number_format($m['total'], 2) }}</strong></td>
             </tr>
             @endforeach
+            <tr class="fila-total">
+                <td class="izq">TOTALES</td>
+                <td>₡{{ number_format($tp, 2) }}</td>
+                <td>₡{{ number_format($td, 2) }}</td>
+                <td class="{{ $td - $tp >= 0 ? 'pos' : 'neg' }}">
+                    {{ $td - $tp >= 0 ? '+' : '−' }}₡{{ number_format(abs($td - $tp), 2) }}
+                </td>
+                <td>₡{{ number_format($tz, 2) }}</td>
+                <td>₡{{ number_format($tt, 2) }}</td>
+            </tr>
         </tbody>
     </table>
     <div class="leyenda">
         Un mes en rojo no significa estar atrasado: lo que decide es la suma de todos los meses,
         que es la que aparece arriba. Quien no dio en un mes y repuso en otro está al día.
+        La columna «Total del mes» es todo lo que entregó ese mes, diezmo incluido; las tres
+        columnas de «Promesa» solo miran los rubros que prometió.
     </div>
     @endif
 

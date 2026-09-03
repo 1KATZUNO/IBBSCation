@@ -88,13 +88,6 @@ class CompromisoController extends Controller
             'dado' => (float) $g->sum('monto_dado'),
         ])->sortByDesc('prometido')->values();
 
-        // Mes a mes, sumando todos los rubros de cada mes.
-        $porMes = $filas->groupBy('mes')->map(fn ($g, $m) => [
-            'etiqueta' => Carbon::create($anio, (int) $m, 1)->locale('es')->isoFormat('MMMM YYYY'),
-            'prometido' => (float) $g->sum('monto_prometido'),
-            'dado' => (float) $g->sum('monto_dado'),
-        ])->values();
-
         // Cada sobre que entrego en el periodo, con su fecha: es la parte que
         // la gente reconoce, porque es el papel que llenaron ese domingo.
         $aportes = $persona->sobres()
@@ -130,6 +123,38 @@ class CompromisoController extends Controller
             'total' => $total,
             'de_promesa' => in_array($slug, $rubrosPromesa, true),
         ])->sortByDesc('total')->values();
+
+        // Mes a mes. Ademas de la promesa se muestra el diezmo y el total
+        // entregado en el mes: sin eso, un mes donde la persona solo diezmo
+        // salia en rojo y aparentaba que no habia dado nada.
+        $mensual = [];
+        foreach ($filas as $c) {
+            $m = (int) $c->mes;
+            $mensual[$m] ??= ['prometido' => 0.0, 'dado' => 0.0, 'diezmo' => 0.0, 'total' => 0.0];
+            $mensual[$m]['prometido'] += (float) $c->monto_prometido;
+            $mensual[$m]['dado'] += (float) $c->monto_dado;
+        }
+        foreach ($aportes as $sobre) {
+            if (! $sobre->culto) {
+                continue;
+            }
+            $m = (int) $sobre->culto->fecha->format('n');
+            $mensual[$m] ??= ['prometido' => 0.0, 'dado' => 0.0, 'diezmo' => 0.0, 'total' => 0.0];
+            foreach ($sobre->detalles as $d) {
+                $monto = (float) $d->monto;
+                if ($sobre->moneda === 'USD' && $sobre->tipo_cambio_venta > 0) {
+                    $monto = round($monto * (float) $sobre->tipo_cambio_venta, 2);
+                }
+                $mensual[$m]['total'] += $monto;
+                if (strtolower($d->categoria) === 'diezmo') {
+                    $mensual[$m]['diezmo'] += $monto;
+                }
+            }
+        }
+        krsort($mensual);
+        $porMes = collect($mensual)->map(fn ($v, $m) => $v + [
+            'etiqueta' => Carbon::create($anio, (int) $m, 1)->locale('es')->isoFormat('MMMM YYYY'),
+        ])->values();
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdfs.estado-persona', [
             'entregado' => $entregado,
