@@ -49,6 +49,12 @@ class MiPerfilController extends Controller
             ];
         });
 
+        // Estado general del miembro: se decide con el acumulado de todos sus
+        // meses. Las tarjetas de arriba miraban solo el mes en curso, asi que
+        // quien no habia dado todavia este mes se veia en rojo aunque
+        // estuviera adelantado.
+        $acumulado = $servicioPromesas->resumenAcumulado($persona);
+
         // Aportes en categorias donde no hay promesa registrada: sin esto el
         // miembro daba plata y no la veia en ningun lado de su perfil.
         $aportesSinPromesa = $servicioPromesas->aportesSinPromesa($persona, $año);
@@ -65,6 +71,8 @@ class MiPerfilController extends Controller
                 return $compromiso;
             });
 
-        return view('mi-perfil.index', compact('persona', 'promesasConEstatus', 'compromisos', 'aportesSinPromesa'));
+        return view('mi-perfil.index', compact(
+            'persona', 'promesasConEstatus', 'compromisos', 'aportesSinPromesa', 'acumulado'
+        ));
     }
 }

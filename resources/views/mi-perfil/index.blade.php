@@ -21,6 +21,54 @@
         </div>
     </div>
 
+    {{-- Estado general: sale del acumulado de todos los meses, no del mes en
+         curso. Si un mes no se dio pero se repuso en otro, la persona esta al
+         dia; mirando solo el mes actual parecia lo contrario. --}}
+    <div class="rounded-lg shadow p-6 {{ $acumulado['al_dia'] ? 'bg-green-50 border border-green-300' : 'bg-red-50 border border-red-300' }}">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <p class="text-sm text-gray-600">Estado de mis promesas</p>
+                <p class="text-3xl font-bold {{ $acumulado['al_dia'] ? 'text-green-700' : 'text-red-700' }}">
+                    {{ $acumulado['al_dia'] ? 'Al día' : 'Atrasado' }}
+                </p>
+                <p class="text-sm text-gray-700 mt-1">
+                    @if($acumulado['prometido'] <= 0)
+                        Aún no hay meses que corresponda exigir.
+                    @elseif($acumulado['al_dia'])
+                        Ha dado ₡{{ number_format($acumulado['dado'], 2) }} de
+                        ₡{{ number_format($acumulado['prometido'], 2) }}
+                        @if($acumulado['diferencia'] > 1)
+                            <span class="font-semibold text-green-700">
+                                (₡{{ number_format($acumulado['diferencia'], 2) }} de más)
+                            </span>
+                        @endif
+                    @else
+                        Le faltan
+                        <span class="font-semibold text-red-700">₡{{ number_format(abs($acumulado['diferencia']), 2) }}</span>
+                        @if($acumulado['meses_atraso'] > 0)
+                            · equivale a {{ $acumulado['meses_atraso'] }}
+                            {{ $acumulado['meses_atraso'] == 1 ? 'mes' : 'meses' }} de su promesa
+                        @endif
+                    @endif
+                </p>
+                @if($acumulado['desde'] && $acumulado['hasta'])
+                <p class="text-xs text-gray-500 mt-1">
+                    Suma de {{ $acumulado['desde']->locale('es')->isoFormat('MMMM YYYY') }}
+                    a {{ $acumulado['hasta']->locale('es')->isoFormat('MMMM YYYY') }}
+                </p>
+                @endif
+            </div>
+            @if($acumulado['porcentaje'] !== null)
+            <div class="text-center sm:text-right">
+                <p class="text-xs text-gray-600 uppercase tracking-wide">Cumplimiento</p>
+                <p class="text-4xl font-bold {{ $acumulado['al_dia'] ? 'text-green-700' : 'text-red-700' }}">
+                    {{ $acumulado['porcentaje'] }}%
+                </p>
+            </div>
+            @endif
+        </div>
+    </div>
+
     <!-- Resumen General -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow p-6 text-white">
@@ -38,7 +86,7 @@
         <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow p-6 text-white">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-green-100 text-sm">Promesas Cumplidas</p>
+                    <p class="text-green-100 text-sm">Cumplidas este mes</p>
                     <p class="text-3xl font-bold mt-2">{{ $promesasConEstatus->where('cumplido', true)->count() }}</p>
                 </div>
                 <svg class="w-12 h-12 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,8 +98,9 @@
         <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-lg shadow p-6 text-white">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-red-100 text-sm">Compromisos Pendientes</p>
+                    <p class="text-red-100 text-sm">Meses con faltante</p>
                     <p class="text-3xl font-bold mt-2">{{ $compromisos->count() }}</p>
+                    <p class="text-red-100 text-xs mt-1">Puede haberlos repuesto en otro mes</p>
                 </div>
                 <svg class="w-12 h-12 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>

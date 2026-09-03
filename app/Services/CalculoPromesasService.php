@@ -206,6 +206,69 @@ class CalculoPromesasService
      * Sincroniza todos los meses en que la persona tuvo actividad (o tiene
      * promesas vigentes), desde su primer aporte/creacion hasta hoy.
      */
+    /**
+     * Estado acumulado de la persona: todo lo que se le ha pedido desde que
+     * empezo su promesa contra todo lo que ha dado, hasta el mes en curso.
+     *
+     * Mirar mes por mes engaña. Si alguien no dio en enero pero en marzo puso
+     * el doble, enero sale en rojo y la persona parece atrasada cuando no lo
+     * esta. Lo que decide si va al dia es la suma, no cada mes por separado.
+     *
+     * Se corta en el mes actual a proposito: al navegar a un mes futuro la
+     * pantalla crea su fila de compromiso, y contarla haria aparecer una deuda
+     * que todavia no se le puede exigir a nadie.
+     */
+    public function resumenAcumulado(Persona $persona): array
+    {
+        $hoy = Carbon::now();
+
+        $filas = Compromiso::where('persona_id', $persona->id)
+            ->where(function ($q) use ($hoy) {
+                $q->where('año', '<', $hoy->year)
+                    ->orWhere(function ($q2) use ($hoy) {
+                        $q2->where('año', $hoy->year)->where('mes', '<=', $hoy->month);
+                    });
+            })
+            ->get();
+
+        // El mes en curso todavia no se puede exigir: si se contara, el dia 1
+        // de cada mes la congregacion entera apareceria atrasada. Se cobra
+        // hasta el ultimo mes cerrado, pero SI se cuenta lo dado este mes,
+        // porque es justo cuando la gente se pone al dia.
+        $cerrados = $filas->filter(
+            fn ($c) => $c->año < $hoy->year || ($c->año == $hoy->year && $c->mes < $hoy->month)
+        );
+
+        $prometido = (float) $cerrados->sum('monto_prometido');
+        $dado = (float) $filas->sum('monto_dado');
+        $diferencia = $dado - $prometido;
+
+        // Meses que de verdad se le podian exigir, para expresar el atraso en
+        // mensualidades suyas: deber un mes no es lo mismo que deber siete.
+        $mesesExigibles = $cerrados->where('monto_prometido', '>', 0)
+            ->groupBy(fn ($c) => $c->año.'-'.$c->mes)
+            ->count();
+        $promedioMes = $mesesExigibles > 0 ? $prometido / $mesesExigibles : 0.0;
+
+        $ordenadas = $cerrados->sortBy([['año', 'asc'], ['mes', 'asc']]);
+        $primera = $ordenadas->first();
+        $ultima = $ordenadas->last();
+
+        return [
+            'prometido' => $prometido,
+            'dado' => $dado,
+            'diferencia' => $diferencia,
+            // Un colon de tolerancia: si no, un redondeo deja a alguien
+            // "atrasado" por centimos.
+            'al_dia' => $diferencia >= -1,
+            'porcentaje' => $prometido > 0 ? round($dado / $prometido * 100) : null,
+            'meses_exigibles' => $mesesExigibles,
+            'meses_atraso' => $promedioMes > 0 ? round(max(0, -$diferencia) / $promedioMes, 1) : 0.0,
+            'desde' => $primera ? Carbon::create($primera->año, $primera->mes, 1) : null,
+            'hasta' => $ultima ? Carbon::create($ultima->año, $ultima->mes, 1) : null,
+        ];
+    }
+
     public function sincronizarHistorial(Persona $persona): int
     {
         if (! $persona->relationLoaded('promesas')) {

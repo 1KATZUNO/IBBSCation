@@ -46,20 +46,90 @@
         </form>
     </div>
 
+    {{-- Estado general: se decide con el acumulado de todos los meses, no con
+         el mes que se este viendo abajo. Quien no dio en un mes pero repuso en
+         otro esta al dia, y mirando mes por mes parecia lo contrario. --}}
+    <div class="rounded-lg shadow p-6 {{ $acumulado['al_dia'] ? 'bg-green-50 border border-green-300' : 'bg-red-50 border border-red-300' }}">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <p class="text-sm text-gray-600">Estado de su promesa</p>
+                <p class="text-3xl font-bold {{ $acumulado['al_dia'] ? 'text-green-700' : 'text-red-700' }}">
+                    {{ $acumulado['al_dia'] ? 'Al día' : 'Atrasado' }}
+                </p>
+                <p class="text-sm text-gray-700 mt-1">
+                    @if($acumulado['prometido'] <= 0)
+                        Todavía no hay meses que exigirle.
+                    @elseif($acumulado['al_dia'])
+                        Ha dado ₡{{ number_format($acumulado['dado'], 2) }} de los
+                        ₡{{ number_format($acumulado['prometido'], 2) }} que le corresponden
+                        @if($acumulado['diferencia'] > 1)
+                            <span class="font-semibold text-green-700">
+                                (₡{{ number_format($acumulado['diferencia'], 2) }} de más)
+                            </span>
+                        @endif
+                    @else
+                        Le faltan
+                        <span class="font-semibold text-red-700">₡{{ number_format(abs($acumulado['diferencia']), 2) }}</span>
+                        @if($acumulado['meses_atraso'] > 0)
+                            · equivale a {{ $acumulado['meses_atraso'] }}
+                            {{ $acumulado['meses_atraso'] == 1 ? 'mes' : 'meses' }} de su promesa
+                        @endif
+                    @endif
+                </p>
+                @if($acumulado['desde'] && $acumulado['hasta'])
+                <p class="text-xs text-gray-500 mt-1">
+                    Acumulado de {{ $acumulado['desde']->locale('es')->isoFormat('MMMM YYYY') }}
+                    a {{ $acumulado['hasta']->locale('es')->isoFormat('MMMM YYYY') }}
+                    ({{ $acumulado['meses_exigibles'] }}
+                    {{ $acumulado['meses_exigibles'] == 1 ? 'mes' : 'meses' }})
+                </p>
+                @endif
+            </div>
+            @if($acumulado['porcentaje'] !== null)
+            <div class="text-center sm:text-right">
+                <p class="text-xs text-gray-600 uppercase tracking-wide">Cumplimiento</p>
+                <p class="text-4xl font-bold {{ $acumulado['al_dia'] ? 'text-green-700' : 'text-red-700' }}">
+                    {{ $acumulado['porcentaje'] }}%
+                </p>
+            </div>
+            @endif
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-5">
+            <div class="bg-white rounded-md px-4 py-3">
+                <p class="text-xs text-gray-600">Le correspondía dar</p>
+                <p class="text-xl font-bold text-blue-600">₡{{ number_format($acumulado['prometido'], 2) }}</p>
+            </div>
+            <div class="bg-white rounded-md px-4 py-3">
+                <p class="text-xs text-gray-600">Ha dado</p>
+                <p class="text-xl font-bold text-green-600">₡{{ number_format($acumulado['dado'], 2) }}</p>
+            </div>
+            <div class="bg-white rounded-md px-4 py-3">
+                <p class="text-xs text-gray-600">Diferencia</p>
+                <p class="text-xl font-bold {{ $acumulado['diferencia'] >= 0 ? 'text-green-600' : 'text-red-600' }}">
+                    {{ $acumulado['diferencia'] >= 0 ? '+' : '−' }}₡{{ number_format(abs($acumulado['diferencia']), 2) }}
+                </p>
+            </div>
+        </div>
+    </div>
+
     <!-- Resumen del Mes -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-white rounded-lg shadow p-6">
-            <p class="text-sm text-gray-600">Total Esperado</p>
+            <p class="text-sm text-gray-600">Esperado en {{ $meses[$mes - 1] }}</p>
             <p class="text-2xl font-bold text-blue-600">₡{{ number_format($resumenTotal['total_prometido'], 2) }}</p>
         </div>
         <div class="bg-white rounded-lg shadow p-6">
-            <p class="text-sm text-gray-600">Total Dado</p>
+            <p class="text-sm text-gray-600">Dado en {{ $meses[$mes - 1] }}</p>
             <p class="text-2xl font-bold text-green-600">₡{{ number_format($resumenTotal['total_dado'], 2) }}</p>
         </div>
         <div class="bg-white rounded-lg shadow p-6">
             <p class="text-sm text-gray-600">Diferencia del Mes</p>
             <p class="text-2xl font-bold {{ $resumenTotal['saldo_total'] >= 0 ? 'text-green-600' : 'text-red-600' }}">
                 {{ $resumenTotal['saldo_total'] >= 0 ? '+' : '-' }}₡{{ number_format(abs($resumenTotal['saldo_total']), 2) }}
+            </p>
+            <p class="text-xs text-gray-500 mt-1">
+                Solo este mes. Lo que decide si va al día es el acumulado de arriba.
             </p>
         </div>
     </div>

@@ -45,12 +45,17 @@ class CompromisoController extends Controller
             'saldo_total' => $compromisos->sum('saldo_actual'),
         ];
 
+        // Si va al dia o no se decide con el acumulado, no con el mes que se
+        // este viendo: quien no dio en un mes pero repuso en otro esta al dia.
+        $acumulado = $this->promesas->resumenAcumulado($persona);
+
         // Plata que la persona aporto en categorias sin promesa: no computa
         // contra ningun compromiso, y antes no se veia en ninguna parte.
         $aportesSinPromesa = $this->promesas->aportesSinPromesa($persona, $año);
 
         return view('compromisos.show', compact(
-            'persona', 'compromisos', 'año', 'mes', 'historial', 'resumenTotal', 'aportesSinPromesa'
+            'persona', 'compromisos', 'año', 'mes', 'historial', 'resumenTotal',
+            'aportesSinPromesa', 'acumulado'
         ));
     }
 
