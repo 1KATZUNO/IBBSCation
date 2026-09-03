@@ -106,7 +106,33 @@ class CompromisoController extends Controller
             ->select('sobres.*')
             ->get();
 
+        // Todo lo entregado, rubro por rubro, incluidos diezmo y ofrenda
+        // especial. El cuadro de cumplimiento solo mira los rubros de la
+        // promesa, asi que sin esto el diezmo -- que suele ser la mayor parte
+        // de lo que da la persona -- solo aparecia dentro del detalle de cada
+        // sobre y no se veia sumado en ninguna parte.
+        $nombresCat = tenant_categories()->pluck('nombre', 'slug')->all();
+        $rubrosPromesa = $porRubro->pluck('categoria')->all();
+
+        $entregado = collect();
+        foreach ($aportes as $sobre) {
+            foreach ($sobre->detalles as $d) {
+                $slug = strtolower($d->categoria);
+                $monto = (float) $d->monto;
+                if ($sobre->moneda === 'USD' && $sobre->tipo_cambio_venta > 0) {
+                    $monto = round($monto * (float) $sobre->tipo_cambio_venta, 2);
+                }
+                $entregado[$slug] = ($entregado[$slug] ?? 0) + $monto;
+            }
+        }
+        $entregado = $entregado->map(fn ($total, $slug) => [
+            'nombre' => $nombresCat[$slug] ?? ucfirst($slug),
+            'total' => $total,
+            'de_promesa' => in_array($slug, $rubrosPromesa, true),
+        ])->sortByDesc('total')->values();
+
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdfs.estado-persona', [
+            'entregado' => $entregado,
             'persona' => $persona,
             'acumulado' => $acumulado,
             'porRubro' => $porRubro,

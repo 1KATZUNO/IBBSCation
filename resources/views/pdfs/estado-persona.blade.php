@@ -103,8 +103,11 @@
                             Ha dado ₡{{ number_format($acumulado['dado'], 2) }} de los
                             ₡{{ number_format($acumulado['prometido'], 2) }} que le corresponden.
                         @else
-                            {{-- Ojo: una directiva pegada a una letra (…promesa@endif) no la
-                                 compila Blade y deja el @if sin cerrar. Va separada a proposito. --}}
+                            {{-- Ojo: Blade ignora una directiva pegada a una letra (su patron
+                                 empieza con \B), y entonces el bloque queda sin cerrar. Por eso
+                                 el cierre de abajo va en su propia linea y no pegado al texto.
+                                 Nota: no escribir directivas literales ni dentro de un comentario,
+                                 porque Blade compila las sentencias antes de quitar comentarios. --}}
                             Le faltan ₡{{ number_format(abs($acumulado['diferencia']), 2) }}
                             @if($acumulado['meses_atraso'] > 0)
                                 , equivalentes a {{ $acumulado['meses_atraso'] }}
@@ -147,8 +150,46 @@
         </table>
     </div>
 
+    @if($entregado->count() > 0)
+    {{-- Va antes que el cumplimiento a proposito: es lo que la persona
+         reconoce como "lo que yo di", diezmo incluido. --}}
+    <h3>Todo lo que entregó en el período</h3>
+    <table class="t">
+        <thead>
+            <tr>
+                <th class="izq">Rubro</th>
+                <th>Monto</th>
+                <th class="izq">Cuenta para su promesa</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php $granTotal = 0; @endphp
+            @foreach($entregado as $e)
+            @php $granTotal += $e['total']; @endphp
+            <tr>
+                <td class="izq">{{ $e['nombre'] }}</td>
+                <td>₡{{ number_format($e['total'], 2) }}</td>
+                <td class="izq {{ $e['de_promesa'] ? 'pos' : 'cero' }}">
+                    {{ $e['de_promesa'] ? 'Sí' : 'No, va aparte' }}
+                </td>
+            </tr>
+            @endforeach
+            <tr class="fila-total">
+                <td class="izq">TOTAL ENTREGADO</td>
+                <td>₡{{ number_format($granTotal, 2) }}</td>
+                <td class="izq"></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="leyenda">
+        El diezmo y la ofrenda especial no forman parte de la promesa, así que no entran en el
+        porcentaje de cumplimiento de arriba. Se muestran acá porque sí son parte de lo que la
+        persona entregó.
+    </div>
+    @endif
+
     @if($porRubro->count() > 0)
-    <h3>Por rubro</h3>
+    <h3>Cumplimiento de su promesa, por rubro</h3>
     <table class="t">
         <thead>
             <tr>
@@ -253,10 +294,6 @@
             </tr>
         </tbody>
     </table>
-    <div class="leyenda">
-        Este total incluye todo lo que entregó, diezmo y ofrendas especiales incluidos. El cuadro de
-        arriba solo cuenta los rubros que forman parte de su promesa, por eso las cifras difieren.
-    </div>
     @endif
 
     @if(!empty($aportesSinPromesa))
